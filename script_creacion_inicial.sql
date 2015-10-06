@@ -246,6 +246,49 @@ CREATE TABLE "TS".Viaje
   Aero_Num NUMERIC(18,0) REFERENCES "TS".Aeronave(Aero_Num),
   Ruta_Cod NUMERIC(18,0) REFERENCES "TS".Ruta(Ruta_Cod)
 );
+CREATE TABLE "TS".Pasaje
+(
+  Pas_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
+  Viaj_Cod NUMERIC(18,0) REFERENCES "TS".Viaje(Viaj_Cod),
+  But_Cod NUMERIC(18,0) REFERENCES "TS".Butaca(But_Cod),
+  Pas_Fecha_Compra DATE NOT NULL
+);
+
+CREATE TABLE "TS".Encomienda
+(
+  Enc_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
+  Viaj_Cod NUMERIC(18,0) REFERENCES "TS".Viaje(Viaj_Cod),
+  Enc_Kg NUMERIC(18,0) NOT NULL,
+  Enc_Fecha_Compra DATE NOT NULL
+);
+
+CREATE TABLE "TS".Milla
+(
+  Mil_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
+  Enc_Cod NUMERIC(18,0) REFERENCES "TS".Encomienda(Enc_Cod),
+  Pas_Cod NUMERIC(18,0) REFERENCES "TS".Pasaje(Pas_Cod),
+  Mil_Fecha DATE NOT NULL,
+  Mil_Cantidad NUMERIC(18,0) NOT NULL
+);
+
+CREATE TABLE "TS".Compra
+(
+  Com_PNR NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
+  Com_Forma_Pago NVARCHAR(255) CHECK (Com_Forma_Pago IN('Tarjeta', 'Efectivo')),
+  Tar_Cod NUMERIC(18,0) REFERENCES "TS".Tarjeta(Tar_Cod),
+  Com_Fecha DATE NOT NULL
+);
+
+CREATE TABLE "TS".Cancelacion_Compra
+(
+  Can_Fecha DATE NOT NULL,
+  Com_PNR NUMERIC(18,0) REFERENCES "TS".Compra(Com_PNR),
+  Can_Motivo NVARCHAR(255)
+);
 
 /************************************ FN Y PRODCEDURES *********************************************/
 IF EXISTS (
