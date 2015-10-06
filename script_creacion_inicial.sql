@@ -17,6 +17,19 @@ END
 
 
 /********************************** BORRADO DE TABLAS **************************************/
+
+IF OBJECT_ID('TS.Tipo_Tarjeta', 'U') IS NOT NULL
+  DROP TABLE "TS".Tipo_Tarjeta
+GO
+
+IF OBJECT_ID('TS.Aeronave', 'U') IS NOT NULL
+  DROP TABLE "TS".Aeronaves
+GO
+
+IF OBJECT_ID('TS.Canje', 'U') IS NOT NULL
+  DROP TABLE "TS".Canje
+GO
+
 IF OBJECT_ID('TS.Rol_Funcionalidad', 'U') IS NOT NULL
   DROP TABLE "TS".Rol_Funcionalidad
 GO
@@ -43,14 +56,6 @@ GO
 
 IF OBJECT_ID('TS.Producto', 'U') IS NOT NULL
   DROP TABLE "TS".Producto
-GO
-
-IF OBJECT_ID('TS.Canje', 'U') IS NOT NULL
-  DROP TABLE "TS".Canje
-GO
-
-IF OBJECT_ID('TS.Aeronaves', 'U') IS NOT NULL
-  DROP TABLE "TS".Aeronaves
 GO
 
 /********************************** CREACIÓN DE TABLAS **************************************/
@@ -122,7 +127,7 @@ CREATE TABLE "TS".Canje
   Canje_Total INT DEFAULT 0
 );
 
-CREATE TABLE "TS".Aeronaves
+CREATE TABLE "TS".Aeronave
 (
   Aero_Num NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
   Aero_Fecha_De_Alta DATE NOT NULL,
@@ -136,6 +141,13 @@ CREATE TABLE "TS".Aeronaves
   Aero_Fecha_Reinicio_De_Servicio DATE,
   Aero_Fecha_Baja_Definitiva DATE,
   Aero_Cantidad_Kg_Disponibles NUMERIC(18,0) NOT NULL
+);
+
+CREATE TABLE "TS".Tipo_Tarjeta
+(
+  TipoTar_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  TipoTar_Nombre NVARCHAR(255) NOT NULL,
+  TipoTar_Cuotas INT DEFAULT 0
 );
 
 /************************************ FN Y PRODCEDURES *********************************************/
@@ -391,6 +403,13 @@ INSERT INTO "TS".Producto(Prod_Nombre, Prod_Stock, Prod_Valor) VALUES
   ('Computadora', 12, 30000),
   ('Tostadora', 123, 10000);
 
+INSERT INTO "TS".Tipo_Tarjeta(TipoTar_Nombre, TipoTar_Cuotas) VALUES
+  ('VISA', 12),
+  ('MASTERCARD', 6),
+  ('CREDICOP', 3),
+  ('ICBC', 1),
+  ('FRBA PLUS', 120);
+
 /*********** INSERTO 3 USUARIOS ADMIN, ADMIN2 Y ADMIN3 CON PASSWORD w23e **********************/
 INSERT INTO "TS".Usuario(Usr_Username, Usr_Password, Usr_Intentos_Login, Usr_Borrado) VALUES
   ('admin1', 'e6b87050bfcb8143fcb8db0170a4dc9ed00d904ddd3e2a4ad1b1e8dc0fdc9be7', 0, 0),
@@ -402,13 +421,12 @@ INSERT INTO "TS".Rol_Usuario(Rol_Nombre, Usr_Username) VALUES
   ('Administrador', 'admin2'),
   ('Administrador', 'admin3');
 
-
 /*********** MIGRACION **********************/
 INSERT INTO "TS".Cliente(Cli_Nombre, Cli_Direccion, Cli_Tel, Cli_Mail, Cli_Fecha_Nacimiento, Cli_DNI)
 SELECT DISTINCT Cli_Apellido + ', ' + Cli_Nombre, Cli_Dir, Cli_Telefono, Cli_Mail, Cli_Fecha_Nac, Cli_Dni
 FROM GD2C2015.gd_esquema.Maestra
 WHERE Cli_Dni IS NOT NULL;
 
-INSERT INTO "TS".Aeronaves(Aero_Matricula, Aero_Modelo, Aero_Cantidad_Kg_Disponibles, Aero_Fabricante, Aero_Servicio, Aero_Fecha_Fuera_De_Servicio, Aero_Fecha_Reinicio_De_Servicio, Aero_Fecha_Baja_Definitiva, Aero_Fecha_De_Alta)
+INSERT INTO "TS".Aeronave(Aero_Matricula, Aero_Modelo, Aero_Cantidad_Kg_Disponibles, Aero_Fabricante, Aero_Servicio, Aero_Fecha_Fuera_De_Servicio, Aero_Fecha_Reinicio_De_Servicio, Aero_Fecha_Baja_Definitiva, Aero_Fecha_De_Alta)
 SELECT DISTINCT Aeronave_Matricula, Aeronave_Modelo, Aeronave_KG_Disponibles, Aeronave_Fabricante, Tipo_Servicio, NULL, NULL, NULL, GETDATE()
 FROM GD2C2015.gd_esquema.Maestra
