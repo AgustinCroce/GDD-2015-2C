@@ -31,7 +31,7 @@ IF OBJECT_ID('TS.Tipo_Tarjeta', 'U') IS NOT NULL
 GO
 
 IF OBJECT_ID('TS.Aeronave', 'U') IS NOT NULL
-  DROP TABLE "TS".Aeronaves
+  DROP TABLE "TS".Aeronave
 GO
 
 IF OBJECT_ID('TS.Canje', 'U') IS NOT NULL
