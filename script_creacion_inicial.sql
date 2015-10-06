@@ -353,6 +353,6 @@ INSERT INTO "TS".Rol_Usuario(Rol_Nombre, Usr_Username) VALUES
 
 /*********** MIGRACION **********************/
 INSERT INTO "TS".Cliente(Cli_Nombre, Cli_Direccion, Cli_Tel, Cli_Mail, Cli_Fecha_Nacimiento, Cli_DNI)
-SELECT DISTINCT LOWER(Cli_Nombre, Cli_Apellido), Cli_Dir, Cli_Telefono, Cli_Mail, Cli_Fecha_Nac, Cli_Dni
+SELECT DISTINCT Cli_Apellido + ', ' + Cli_Nombre, Cli_Dir, Cli_Telefono, Cli_Mail, Cli_Fecha_Nac, Cli_Dni
 FROM GD2C2015.gd_esquema.Maestra
 WHERE Cli_Dni IS NOT NULL;
