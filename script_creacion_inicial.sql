@@ -18,6 +18,10 @@ END
 
 /********************************** BORRADO DE TABLAS **************************************/
 
+IF OBJECT_ID('TS.Viaje', 'U') IS NOT NULL
+  DROP TABLE "TS".Viaje
+GO
+
 IF OBJECT_ID('TS.Ruta', 'U') IS NOT NULL
   DROP TABLE "TS".Ruta
 GO
@@ -210,6 +214,17 @@ CREATE TABLE "TS".Ruta
   Ruta_Precio_Base_Kg NUMERIC(18,2) NOT NULL DEFAULT 0,
   Ruta_Precio_Base_Pasaje NUMERIC(18,2) NOT NULL DEFAULT 0,
   Ruta_Servicio NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE "TS".Viaje
+(
+  Viaj_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Viaj_Kgs_Disponibles NUMERIC(18,0) DEFAULT 0,
+  Fecha_Salida DATE NOT NULL,
+  Fecha_Llegada DATE,
+  Fecha_Llegada_Estimada DATE NOT NULL,
+  Aero_Num NUMERIC(18,0) REFERENCES "TS".Aeronave(Aero_Num),
+  Ruta_Cod NUMERIC(18,0) REFERENCES "TS".Ruta(Ruta_Cod)
 );
 
 /************************************ FN Y PRODCEDURES *********************************************/
@@ -514,3 +529,9 @@ SELECT DISTINCT Ruta_Codigo, Ruta_Precio_BaseKG, Ruta_Precio_BasePasaje, Ruta_Ci
 FROM GD2C2015.gd_esquema.Maestra
 WHERE Ruta_Codigo IS NOT NULL
 
+INSERT INTO "TS".Viaje(Fecha_Salida, Fecha_Llegada, Fecha_Llegada_Estimada, Aero_Num, Ruta_Cod)
+SELECT DISTINCT FechaSalida, FechaLLegada, Fecha_LLegada_Estimada, Aero_Num, R.Ruta_Cod
+FROM GD2C2015.gd_esquema.Maestra, "TS".Aeronave, "TS".Ruta as R
+WHERE Aero_Matricula=Aeronave_Matricula
+AND R.Ruta_Codigo=Ruta_Codigo
+AND Ruta_Codigo NOT NULL
