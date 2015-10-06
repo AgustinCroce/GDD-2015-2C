@@ -104,7 +104,7 @@
     - Aero_Modelo
     - Aero_Matricula
     - Aero_Fabricante
-    - Ser_Codigo
+    - Aero_Servicio
     - Aero_Baja_Fuera_De_Servicio
     - Aero_Baja_Vida_Util
     - Aero_Fecha_Fuera_De_Servicio
@@ -143,7 +143,7 @@
     - Ruta_Ciudad_Destino
     - Ruta_Precio_Base_Kg
     - Ruta_Precio_Base_Pasaje
-    - Tipo de servicio
+    - Ruta_Servicio
 
 - Ciudad
     - Ciudad_Nombre
@@ -153,12 +153,11 @@
     - AudFS_Fecha_Inicio
     - AudFS_Fecha_Fin
 
-- Tipo_Servicio
-    - 
-    - 
-    - 
-
 - Viajes
     - Viaj_Cod
     - Viaj_Kgs_Disponibles
-    - 
+    - Fecha_Salida
+    - Fecha_Llegada
+    - Fecha_Llegada_Estimada
+    - Aero_Num
+    - Ruta_Cod 
