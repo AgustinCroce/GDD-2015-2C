@@ -45,6 +45,10 @@ IF OBJECT_ID('TS.Producto', 'U') IS NOT NULL
   DROP TABLE "TS".Producto
 GO
 
+IF OBJECT_ID('TS.Canje', 'U') IS NOT NULL
+  DROP TABLE "TS".Canje
+GO
+
 /********************************** CREACIÓN DE TABLAS **************************************/
 
 CREATE TABLE "TS".Funcionalidad
@@ -102,6 +106,16 @@ CREATE TABLE "TS".Producto
   Prod_Nombre NVARCHAR(255) NOT NULL,
   Prod_Stock INT DEFAULT 0,
   Prod_Valor INT DEFAULT 0
+);
+
+CREATE TABLE "TS".Canje
+(
+  Canje_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
+  Prod_Cod NUMERIC(18,0) REFERENCES "TS".Producto(Prod_Cod),
+  Canje_Cantidad_Prod INT DEFAULT 1,
+  Canje_Fecha DATE NOT NULL,
+  Canje_Total INT DEFAULT 0
 );
 
 /************************************ FN Y PRODCEDURES *********************************************/
