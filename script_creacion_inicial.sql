@@ -4,7 +4,7 @@ GO
 SET LANGUAGE Spanish
 
 /*********************************** CREACIÓN DEL SCHEMA **************************************/
-IF NOT EXISTS 
+IF NOT EXISTS
 (
   SELECT  schema_name
   FROM    information_schema.schemata
@@ -17,6 +17,26 @@ END
 
 
 /********************************** BORRADO DE TABLAS **************************************/
+
+IF OBJECT_ID('TS.Cancelacion_Compra', 'U') IS NOT NULL
+  DROP TABLE "TS".Cancelacion_Compra
+GO
+
+IF OBJECT_ID('TS.Compra', 'U') IS NOT NULL
+  DROP TABLE "TS".Compra
+GO
+
+IF OBJECT_ID('TS.Milla', 'U') IS NOT NULL
+  DROP TABLE "TS".Milla
+GO
+
+IF OBJECT_ID('TS.Encomienda', 'U') IS NOT NULL
+  DROP TABLE "TS".Encomienda
+GO
+
+IF OBJECT_ID('TS.Pasaje', 'U') IS NOT NULL
+  DROP TABLE "TS".Pasaje
+GO
 
 IF OBJECT_ID('TS.Viaje', 'U') IS NOT NULL
   DROP TABLE "TS".Viaje
