@@ -512,7 +512,7 @@ WHERE Aeronave_Matricula IS NOT NULL;
 INSERT INTO "TS".Ciudad(Ciudad_Nombre)
 SELECT DISTINCT Ruta_Ciudad_Destino Ciudad
 FROM GD2C2015.gd_esquema.Maestra
-WHERE Ruta_Ciudad_Destino IS NOT NULL;
+WHERE Ruta_Ciudad_Destino IS NOT NULL
 UNION
 SELECT DISTINCT Ruta_Ciudad_Origen Ciudad
 FROM GD2C2015.gd_esquema.Maestra
