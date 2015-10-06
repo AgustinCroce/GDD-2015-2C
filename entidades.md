@@ -58,81 +58,96 @@ Encomienda_Compra
     - Cli_DNI
 
 - Pasaje
-    - 
-    - 
-    - 
+    -
+    -
+    -
 
 - Encomienda
-    - 
-    - 
-    - 
+    -
+    -
+    -
 
 - Milla
-    - 
-    - 
-    - 
+    -
+    -
+    -
 
 - Producto
-    - 
-    - 
-    - 
+    - Prod_Cod
+    - Prod_Nombre
+    - Prod_Valor
+    - Prod_Stock
 
 - Canje
-    - 
-    - 
-    - 
+    - Canje_Cod
+    - Cli_Cod
+    - Prod_Cod
+    - Canje_Cantidad_Prod
+    - Canje_Fecha
+    - Canje_Total
 
 - Butacas
-    - 
-    - 
-    - 
+    - But_Cod
+    - Aero_Num
+    - But_Numero
+    - But_Piso
+    - But_Tipo
 
 - Aeronaves
-    - 
-    - 
-    - 
+    - Aero_Fecha_De_Alta
+    - Aero_Num
+    - Aero_Modelo
+    - Aero_Matricula
+    - Aero_Fabricante
+    - Ser_Codigo
+    - Aero_Baja_Fuera_De_Servicio
+    - Aero_Baja_Vida_Util
+    - Aero_Fecha_Fuera_De_Servicio
+    - Aero_Fecha_Reinicio_De_Servicio
+    - Aero_Fecha_Baja_Definitiva
+    - Aero_Cantidad_Kg_Disponibles
 
 - Compra
-    - 
-    - 
-    - 
+    -
+    -
 
 - Cacelacion_Compra
-    - 
-    - 
-    - 
+    -
+    -
+    -
 
 - Tarjeta
-    - 
-    - 
-    - 
+    -
+    -
+    -
 
 - Tipo_Tarjeta
-    - 
-    - 
-    - 
+    -
+    -
+    -
 
 - Ruta
-    - 
-    - 
-    - 
+    - Ruta_Cod
+    - Ruta_Ciudad_Origen
+    - Ruta_Ciudad_Destino
+    - Ruta_Precio_Base_Kg
+    - Ruta_Precio_Base_Pasaje
+    - Tipo de servicio
 
 - Ciudad
-    - 
-    - 
-    - 
+    - Ciudad_Nombre
 
 - Auditoria_Fuera_De_Servicio
-    - 
-    - 
-    - 
+    -
+    -
+    -
 
 - Tipo_Servicio
-    - 
-    - 
-    - 
+    -
+    -
+    -
 
 - Viajes
-    - 
-    - 
-    - 
+    -
+    -
+    -
