@@ -18,6 +18,10 @@ END
 
 /********************************** BORRADO DE TABLAS **************************************/
 
+IF OBJECT_ID('TS.Auditoria_Fuera_De_Servicio', 'U') IS NOT NULL
+  DROP TABLE "TS".Auditoria_Fuera_De_Servicio
+GO
+
 IF OBJECT_ID('TS.Ciudad', 'U') IS NOT NULL
   DROP TABLE "TS".Ciudad
 GO
@@ -157,6 +161,14 @@ CREATE TABLE "TS".Tipo_Tarjeta
 CREATE TABLE "TS".Ciudad
 (
   Ciudad_Nombre NVARCHAR(255) PRIMARY KEY
+);
+
+CREATE TABLE "TS".Auditoria_Fuera_De_Servicio
+(
+  AudFS_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Aero_Num NUMERIC(18,0) REFERENCES "TS".Aeronave(Aero_Num),
+  AudFS_Fecha_Inicio DATE NOT NULL,
+  AudFS_Fecha_Fin DATE NOT NULL
 );
 
 /************************************ FN Y PRODCEDURES *********************************************/
