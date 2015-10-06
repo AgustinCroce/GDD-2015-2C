@@ -41,6 +41,10 @@ IF OBJECT_ID('TS.Cliente', 'U') IS NOT NULL
   DROP TABLE "TS".Cliente
 GO
 
+IF OBJECT_ID('TS.Producto', 'U') IS NOT NULL
+  DROP TABLE "TS".Producto
+GO
+
 /********************************** CREACIÓN DE TABLAS **************************************/
 
 CREATE TABLE "TS".Funcionalidad
@@ -90,6 +94,14 @@ CREATE TABLE "TS".Cliente
   Cli_Mail NVARCHAR(255),
   Cli_Fecha_Nacimiento DATE NOT NULL,
   Cli_DNI NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE "TS".Producto
+(
+  Prod_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Prod_Nombre NVARCHAR(255) NOT NULL,
+  Prod_Stock INT DEFAULT 0,
+  Prod_Valor INT DEFAULT 0
 );
 
 /************************************ FN Y PRODCEDURES *********************************************/
@@ -338,6 +350,12 @@ INSERT INTO "TS".Rol_Funcionalidad(Func_Cod, Rol_Nombre) VALUES
   (10, 'Cliente'),
   (11, 'Cliente'),
   (12, 'Administrador');
+
+INSERT INTO "TS".Producto(Prod_Nombre, Prod_Stock, Prod_Valor) VALUES
+  ('Llavero', 1000, 30),
+  ('Viaje a Jujuy', 5, 100000),
+  ('Computadora', 12, 30000),
+  ('Tostadora', 123, 10000);
 
 /*********** INSERTO 3 USUARIOS ADMIN, ADMIN2 Y ADMIN3 CON PASSWORD w23e **********************/
 INSERT INTO "TS".Usuario(Usr_Username, Usr_Password, Usr_Intentos_Login, Usr_Borrado) VALUES
