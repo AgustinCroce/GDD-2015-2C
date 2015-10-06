@@ -49,6 +49,10 @@ IF OBJECT_ID('TS.Canje', 'U') IS NOT NULL
   DROP TABLE "TS".Canje
 GO
 
+IF OBJECT_ID('TS.Aeronaves', 'U') IS NOT NULL
+  DROP TABLE "TS".Aeronaves
+GO
+
 /********************************** CREACIÓN DE TABLAS **************************************/
 
 CREATE TABLE "TS".Funcionalidad
@@ -116,6 +120,22 @@ CREATE TABLE "TS".Canje
   Canje_Cantidad_Prod INT DEFAULT 1,
   Canje_Fecha DATE NOT NULL,
   Canje_Total INT DEFAULT 0
+);
+
+CREATE TABLE "TS".Aeronaves
+(
+  Aero_Num NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Aero_Fecha_De_Alta DATE NOT NULL,
+  Aero_Modelo NVARCHAR(255) NOT NULL,
+  Aero_Matricula NVARCHAR(255) NOT NULL,
+  Aero_Fabricante NVARCHAR(255) NOT NULL,
+  Aero_Servicio NVARCHAR(255) NOT NULL,
+  Aero_Baja_Fuera_De_Servicio BIT NOT NULL DEFAULT 0,
+  Aero_Baja_Vida_Util BIT NOT NULL DEFAULT 0,
+  Aero_Fecha_Fuera_De_Servicio DATE,
+  Aero_Fecha_Reinicio_De_Servicio DATE,
+  Aero_Fecha_Baja_Definitiva DATE,
+  Aero_Cantidad_Kg_Disponibles NUMERIC(18,0) NOT NULL
 );
 
 /************************************ FN Y PRODCEDURES *********************************************/
@@ -388,3 +408,7 @@ INSERT INTO "TS".Cliente(Cli_Nombre, Cli_Direccion, Cli_Tel, Cli_Mail, Cli_Fecha
 SELECT DISTINCT Cli_Apellido + ', ' + Cli_Nombre, Cli_Dir, Cli_Telefono, Cli_Mail, Cli_Fecha_Nac, Cli_Dni
 FROM GD2C2015.gd_esquema.Maestra
 WHERE Cli_Dni IS NOT NULL;
+
+INSERT INTO "TS".Aeronaves(Aero_Matricula, Aero_Modelo, Aero_Cantidad_Kg_Disponibles, Aero_Fabricante, Aero_Servicio, Aero_Fecha_Fuera_De_Servicio, Aero_Fecha_Reinicio_De_Servicio, Aero_Fecha_Baja_Definitiva, Aero_Fecha_De_Alta)
+SELECT DISTINCT Aeronave_Matricula, Aeronave_Modelo, Aeronave_KG_Disponibles, Aeronave_Fabricante, Tipo_Servicio, NULL, NULL, NULL, GETDATE()
+FROM GD2C2015.gd_esquema.Maestra
