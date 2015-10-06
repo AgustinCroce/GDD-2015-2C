@@ -18,6 +18,10 @@ END
 
 /********************************** BORRADO DE TABLAS **************************************/
 
+IF OBJECT_ID('TS.Ciudad', 'U') IS NOT NULL
+  DROP TABLE "TS".Ciudad
+GO
+
 IF OBJECT_ID('TS.Tipo_Tarjeta', 'U') IS NOT NULL
   DROP TABLE "TS".Tipo_Tarjeta
 GO
@@ -148,6 +152,11 @@ CREATE TABLE "TS".Tipo_Tarjeta
   TipoTar_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
   TipoTar_Nombre NVARCHAR(255) NOT NULL,
   TipoTar_Cuotas INT DEFAULT 0
+);
+
+CREATE TABLE "TS".Ciudad
+(
+  Ciudad_Nombre NVARCHAR(255) PRIMARY KEY
 );
 
 /************************************ FN Y PRODCEDURES *********************************************/
@@ -429,4 +438,11 @@ WHERE Cli_Dni IS NOT NULL;
 
 INSERT INTO "TS".Aeronave(Aero_Matricula, Aero_Modelo, Aero_Cantidad_Kg_Disponibles, Aero_Fabricante, Aero_Servicio, Aero_Fecha_Fuera_De_Servicio, Aero_Fecha_Reinicio_De_Servicio, Aero_Fecha_Baja_Definitiva, Aero_Fecha_De_Alta)
 SELECT DISTINCT Aeronave_Matricula, Aeronave_Modelo, Aeronave_KG_Disponibles, Aeronave_Fabricante, Tipo_Servicio, NULL, NULL, NULL, GETDATE()
+FROM GD2C2015.gd_esquema.Maestra
+
+INSERT INTO "TS".Ciudad(Ciudad_Nombre)
+SELECT DISTINCT Ruta_Ciudad_Destino Ciudad
+FROM GD2C2015.gd_esquema.Maestra
+UNION
+SELECT DISTINCT Ruta_Ciudad_Origen Ciudad
 FROM GD2C2015.gd_esquema.Maestra
