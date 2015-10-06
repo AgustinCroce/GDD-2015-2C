@@ -263,7 +263,7 @@ CREATE TABLE "TS".Encomienda
   Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
   Viaj_Cod NUMERIC(18,0) REFERENCES "TS".Viaje(Viaj_Cod),
   Enc_Kg NUMERIC(18,0) NOT NULL,
-  Enc_Fecha_Compra DATE NOT NULL
+  Enc_Fecha_Compra DATE NOT NULL,
   Enc_Precio NUMERIC(18,2) NOT NULL
 );
 
@@ -602,6 +602,8 @@ WHERE Aero_Matricula=Aeronave_Matricula
 AND R.Ruta_Codigo=M.Ruta_Codigo
 AND M.Ruta_Codigo IS NOT NULL
 
+SET IDENTITY_INSERT "TS".Pasaje ON;
+
 INSERT INTO "TS".Pasaje(Pas_Cod, Pas_Fecha_Compra, Pas_Precio, Viaj_Cod, But_Cod, Cli_Cod)
 SELECT DISTINCT M.Pasaje_Codigo, M.Pasaje_FechaCompra, M.Pasaje_Precio, R.Ruta_Cod, B.But_Cod, Cli.Cli_Cod
 FROM GD2C2015.gd_esquema.Maestra as M, "TS".Aeronave, "TS".Ruta as R, "TS".Butaca as B, "TS".Cliente as Cli
@@ -611,10 +613,15 @@ AND R.Ruta_Codigo = M.Ruta_Codigo AND R.Ruta_Servicio = M.Tipo_Servicio AND R.Ru
 AND B.But_Piso=M.Butaca_Piso AND B.But_Numero=M.Butaca_Nro
 AND Cli.Cli_Nombre = M.Cli_Apellido + ', ' + M.Cli_Nombre AND Cli.Cli_DNI = M.Cli_Dni
 
-INSERT INTO "TS".Encomienda(Enc_Cod, Enc_Fecha_Compra, Enc_Kg, Enc_Precio, Viaj_Cod, Aero_Num, Cli_Cod)
-SELECT DISTINCT Paquete_Codigo, Paquete_FechaCompra, Paquete_KG, Paquete_Precio, R.Ruta_Cod, Aero_Num, Cli.Cli_Cod
-FROM GD2C2015.gd_esquema.Maestra as M, "TS".Aeronave, "TS".Ruta as R, "TS".Butaca as B, "TS".Cliente as Cli
+SET IDENTITY_INSERT "TS".Pasaje OFF;
+
+SET IDENTITY_INSERT "TS".Encomienda ON;
+
+INSERT INTO "TS".Encomienda(Enc_Cod, Enc_Fecha_Compra, Enc_Kg, Enc_Precio, Viaj_Cod, Cli_Cod)
+SELECT DISTINCT Paquete_Codigo, Paquete_FechaCompra, Paquete_KG, Paquete_Precio, R.Ruta_Cod, Cli.Cli_Cod
+FROM GD2C2015.gd_esquema.Maestra as M, "TS".Ruta as R, "TS".Butaca as B, "TS".Cliente as Cli
 WHERE Paquete_Codigo > 0
-AND Aero_Matricula=Aeronave_Matricula
 AND R.Ruta_Codigo = M.Ruta_Codigo AND R.Ruta_Servicio = M.Tipo_Servicio AND R.Ruta_Ciudad_Destino = M.Ruta_Ciudad_Destino AND R.Ruta_Ciudad_Origen = M.Ruta_Ciudad_Origen
 AND Cli.Cli_Nombre = M.Cli_Apellido + ', ' + M.Cli_Nombre AND Cli.Cli_DNI = M.Cli_Dni
+
+SET IDENTITY_INSERT "TS".Encomienda OFF;
