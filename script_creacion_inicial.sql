@@ -37,6 +37,10 @@ IF OBJECT_ID('TS.Usuario', 'U') IS NOT NULL
   DROP TABLE "TS".Usuario
 GO
 
+IF OBJECT_ID('TS.Cliente', 'U') IS NOT NULL
+  DROP TABLE "TS".Cliente
+GO
+
 /********************************** CREACIÓN DE TABLAS **************************************/
 
 CREATE TABLE "TS".Funcionalidad
@@ -75,6 +79,17 @@ CREATE TABLE "TS".Rol_Usuario
   Rol_Nombre NVARCHAR(255) REFERENCES "TS".Rol(Rol_Nombre),
   Usr_Username NVARCHAR(255) REFERENCES "TS".Usuario(Usr_Username),
   PRIMARY KEY(Rol_Nombre, Usr_Username)
+);
+
+CREATE TABLE "TS".Cliente
+(
+  Cli_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Cli_Nombre NVARCHAR(255) NOT NULL,
+  Cli_Direccion NVARCHAR(255) NOT NULL,
+  Cli_Tel NVARCHAR(255) NOT NULL,
+  Cli_Mail NVARCHAR(255),
+  Cli_Fecha_Nacimiento DATE NOT NULL,
+  Cli_DNI NVARCHAR(255) NOT NULL
 );
 
 /************************************ FN Y PRODCEDURES *********************************************/
@@ -334,3 +349,10 @@ INSERT INTO "TS".Rol_Usuario(Rol_Nombre, Usr_Username) VALUES
   ('Administrador', 'admin1'),
   ('Administrador', 'admin2'),
   ('Administrador', 'admin3');
+
+
+/*********** MIGRACION **********************/
+INSERT INTO "TS".Cliente(Cli_Nombre, Cli_Direccion, Cli_Tel, Cli_Mail, Cli_Fecha_Nacimiento, Cli_DNI)
+SELECT DISTINCT LOWER(Cli_Nombre, Cli_Apellido), Cli_Dir, Cli_Telefono, Cli_Mail, Cli_Fecha_Nac, Cli_Dni
+FROM GD2C2015.gd_esquema.Maestra
+WHERE Cli_Dni IS NOT NULL;
