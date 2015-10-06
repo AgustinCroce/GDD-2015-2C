@@ -353,7 +353,7 @@ BEGIN
 	INSERT INTO [GD2C2015].[TS].[Rol](Rol_Nombre, Rol_Estado)
 	VALUES (@Rol_Nombre, @Rol_Estado)
 	
-	INSERT INTO [GD2C2015].[TC].[Rol_Funcionalidad](Rol_Nombre, Func_Cod)
+	INSERT INTO [GD2C2015].[TS].[Rol_Funcionalidad](Rol_Nombre, Func_Cod)
 	SELECT @Rol_Nombre, number FROM @Lista_Funcionalidades
 	END
 	
@@ -370,14 +370,14 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	DELETE [GD2C2015].[TC].[Rol_Funcionalidad]
+	DELETE [GD2C2015].[TS].[Rol_Funcionalidad]
 	WHERE Rol_Nombre = @Rol_Pk
 	
-	UPDATE [GD2C2015].[TC].[Rol]
+	UPDATE [GD2C2015].[TS].[Rol]
 	SET Rol_Nombre = @Rol_Nombre, Rol_Estado = @Rol_Estado
 	WHERE Rol_Nombre = @Rol_Pk
 	
-	INSERT INTO [GD2C2015].[TC].[Rol_Funcionalidad](Rol_Nombre, Func_Cod)
+	INSERT INTO [GD2C2015].[TS].[Rol_Funcionalidad](Rol_Nombre, Func_Cod)
 	SELECT @Rol_Nombre, number FROM @Lista_Funcionalidades
 END
 GO
