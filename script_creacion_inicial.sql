@@ -597,4 +597,4 @@ SELECT DISTINCT FechaSalida, FechaLLegada, Fecha_LLegada_Estimada, Aero_Num, R.R
 FROM GD2C2015.gd_esquema.Maestra, "TS".Aeronave, "TS".Ruta as R
 WHERE Aero_Matricula=Aeronave_Matricula
 AND R.Ruta_Codigo=Ruta_Codigo
-AND Ruta_Codigo NOT NULL
+AND Ruta_Codigo IS NOT NULL
