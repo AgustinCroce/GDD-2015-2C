@@ -20,3 +20,12 @@ Ciudad
 Auditoria_Fuera_De_Servicio
 Tipo_Servicio
 Viajes
+
+# Tablas Internedias
+
+Rol_Funcionalidad
+Rol_Usuario
+Pasaje_Cancelacion
+Encomienda_Cancelacion
+Pasaje_Compra
+Encomienda_Compra
