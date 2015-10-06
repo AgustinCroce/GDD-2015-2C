@@ -18,6 +18,14 @@ END
 
 /********************************** BORRADO DE TABLAS **************************************/
 
+IF OBJECT_ID('TS.Ruta', 'U') IS NOT NULL
+  DROP TABLE "TS".Ruta
+GO
+
+IF OBJECT_ID('TS.Tarjeta', 'U') IS NOT NULL
+  DROP TABLE "TS".Tarjeta
+GO
+
 IF OBJECT_ID('TS.Butaca', 'U') IS NOT NULL
   DROP TABLE "TS".Butaca
 GO
@@ -182,6 +190,26 @@ CREATE TABLE "TS".Butaca
   But_Numero NUMERIC(18,0) NOT NULL,
   But_Piso NUMERIC(18,0) NOT NULL,
   But_Tipo NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE "TS".Tarjeta
+(
+  Tar_Numero NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Tar_Fecha_Vencimiento DATE NOT NULL,
+  Tar_Codigo_Seguridad NUMERIC(18,0) NOT NULL,
+  Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
+  TipoTar_Cod NUMERIC(18,0) REFERENCES "TS".Tipo_Tarjeta(TipoTar_Cod)
+);
+
+CREATE TABLE "TS".Ruta
+(
+  Ruta_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Ruta_Codigo NUMERIC(18,0) NOT NULL,
+  Ruta_Ciudad_Origen NVARCHAR(255) REFERENCES "TS".Ciudad(Ciudad_Nombre),
+  Ruta_Ciudad_Destino NVARCHAR(255) REFERENCES "TS".Ciudad(Ciudad_Nombre),
+  Ruta_Precio_Base_Kg NUMERIC(18,2) NOT NULL DEFAULT 0,
+  Ruta_Precio_Base_Pasaje NUMERIC(18,2) NOT NULL DEFAULT 0,
+  Ruta_Servicio NVARCHAR(255) NOT NULL
 );
 
 /************************************ FN Y PRODCEDURES *********************************************/
@@ -480,3 +508,9 @@ SELECT DISTINCT Aero_Num, Butaca_Nro, Butaca_Piso, Butaca_Tipo
 FROM GD2C2015.gd_esquema.Maestra, "TS".Aeronave
 WHERE Aero_Matricula=Aeronave_Matricula
 AND Butaca_Nro IS NOT NULL;
+
+INSERT INTO "TS".Ruta(Ruta_Codigo, Ruta_Precio_Base_Kg, Ruta_Precio_Base_Pasaje, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Ruta_Servicio)
+SELECT DISTINCT Ruta_Codigo, Ruta_Precio_BaseKG, Ruta_Precio_BasePasaje, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Tipo_Servicio
+FROM GD2C2015.gd_esquema.Maestra
+WHERE Ruta_Codigo IS NOT NULL
+
