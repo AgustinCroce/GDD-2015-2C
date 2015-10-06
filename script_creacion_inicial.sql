@@ -18,6 +18,10 @@ END
 
 /********************************** BORRADO DE TABLAS **************************************/
 
+IF OBJECT_ID('TS.Butaca', 'U') IS NOT NULL
+  DROP TABLE "TS".Butaca
+GO
+
 IF OBJECT_ID('TS.Auditoria_Fuera_De_Servicio', 'U') IS NOT NULL
   DROP TABLE "TS".Auditoria_Fuera_De_Servicio
 GO
@@ -169,6 +173,15 @@ CREATE TABLE "TS".Auditoria_Fuera_De_Servicio
   Aero_Num NUMERIC(18,0) REFERENCES "TS".Aeronave(Aero_Num),
   AudFS_Fecha_Inicio DATE NOT NULL,
   AudFS_Fecha_Fin DATE NOT NULL
+);
+
+CREATE TABLE "TS".Butaca
+(
+  But_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Aero_Num NUMERIC(18,0) REFERENCES "TS".Aeronave(Aero_Num),
+  But_Numero NUMERIC(18,0) NOT NULL,
+  But_Piso NUMERIC(18,0) NOT NULL,
+  But_Tipo NVARCHAR(255) NOT NULL
 );
 
 /************************************ FN Y PRODCEDURES *********************************************/
@@ -451,10 +464,19 @@ WHERE Cli_Dni IS NOT NULL;
 INSERT INTO "TS".Aeronave(Aero_Matricula, Aero_Modelo, Aero_Cantidad_Kg_Disponibles, Aero_Fabricante, Aero_Servicio, Aero_Fecha_Fuera_De_Servicio, Aero_Fecha_Reinicio_De_Servicio, Aero_Fecha_Baja_Definitiva, Aero_Fecha_De_Alta)
 SELECT DISTINCT Aeronave_Matricula, Aeronave_Modelo, Aeronave_KG_Disponibles, Aeronave_Fabricante, Tipo_Servicio, NULL, NULL, NULL, GETDATE()
 FROM GD2C2015.gd_esquema.Maestra
+WHERE Aeronave_Matricula IS NOT NULL;
 
 INSERT INTO "TS".Ciudad(Ciudad_Nombre)
 SELECT DISTINCT Ruta_Ciudad_Destino Ciudad
 FROM GD2C2015.gd_esquema.Maestra
+WHERE Ruta_Ciudad_Destino IS NOT NULL;
 UNION
 SELECT DISTINCT Ruta_Ciudad_Origen Ciudad
 FROM GD2C2015.gd_esquema.Maestra
+WHERE Ruta_Ciudad_Origen IS NOT NULL;
+
+INSERT INTO "TS".Butaca(Aero_Num, But_Numero, But_Piso, But_Tipo)
+SELECT DISTINCT Aero_Num, Butaca_Nro, Butaca_Piso, Butaca_Tipo
+FROM GD2C2015.gd_esquema.Maestra, "TS".Aeronave
+WHERE Aero_Matricula=Aeronave_Matricula
+AND Butaca_Nro IS NOT NULL;
