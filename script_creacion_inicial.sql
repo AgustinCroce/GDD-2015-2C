@@ -65,10 +65,6 @@ CREATE TABLE "TS".Usuario
 (
   Usr_Username NVARCHAR(255) PRIMARY KEY,
   Usr_Password NVARCHAR(255) NOT NULL,
-  Usr_Fecha_Creacion DATETIME NOT NULL,
-  Usr_Fecha_Ultima_Modificacion DATETIME NOT NULL,
-  Usr_Pregunta_Secreta NVARCHAR(255) NOT NULL,
-  Usr_Respuesta_Secreta NVARCHAR(255) NOT NULL,
   Usr_Intentos_Login INT DEFAULT 0,
   Usr_Borrado BIT NOT NULL DEFAULT 0,
   Usr_Estado NVARCHAR(255) DEFAULT 'Habilitado' NOT NULL CHECK (Usr_Estado IN('Habilitado', 'Deshabilitado'))
@@ -329,20 +325,12 @@ INSERT INTO "TS".Rol_Funcionalidad(Func_Cod, Rol_Nombre) VALUES
   (12, 'Administrador');
 
 /*********** INSERTO 3 USUARIOS ADMIN, ADMIN2 Y ADMIN3 CON PASSWORD w23e **********************/
-INSERT INTO "TS".Usuario(Usr_Username, Usr_Password, Usr_Fecha_Creacion, 
-              Usr_Fecha_Ultima_Modificacion, Usr_Pregunta_Secreta,
-              Usr_Respuesta_Secreta, Usr_Intentos_Login, Usr_Borrado) VALUES
-  ('admin', 'e6b87050bfcb8143fcb8db0170a4dc9ed00d904ddd3e2a4ad1b1e8dc0fdc9be7',
-  GETDATE(), GETDATE(), 'Pregunta?',
-  '9853528a46d3fc973096dc43528e4a2a660496fb5a24739d9788d5891a49121d', 0, 0),
-  ('admin2', 'e6b87050bfcb8143fcb8db0170a4dc9ed00d904ddd3e2a4ad1b1e8dc0fdc9be7',
-  GETDATE(), GETDATE(), 'Pregunta?',
-  '9853528a46d3fc973096dc43528e4a2a660496fb5a24739d9788d5891a49121d', 0, 0),
-  ('admin3', 'e6b87050bfcb8143fcb8db0170a4dc9ed00d904ddd3e2a4ad1b1e8dc0fdc9be7',
-  GETDATE(), GETDATE(), 'Pregunta?',
-  '9853528a46d3fc973096dc43528e4a2a660496fb5a24739d9788d5891a49121d', 0, 0);
+INSERT INTO "TS".Usuario(Usr_Username, Usr_Password, Usr_Intentos_Login, Usr_Borrado) VALUES
+  ('admin1', 'e6b87050bfcb8143fcb8db0170a4dc9ed00d904ddd3e2a4ad1b1e8dc0fdc9be7', 0, 0),
+  ('admin2', 'e6b87050bfcb8143fcb8db0170a4dc9ed00d904ddd3e2a4ad1b1e8dc0fdc9be7', 0, 0),
+  ('admin3', 'e6b87050bfcb8143fcb8db0170a4dc9ed00d904ddd3e2a4ad1b1e8dc0fdc9be7', 0, 0);
 
 INSERT INTO "TS".Rol_Usuario(Rol_Nombre, Usr_Username) VALUES
-  ('Administrador', 'admin'),
+  ('Administrador', 'admin1'),
   ('Administrador', 'admin2'),
   ('Administrador', 'admin3');
