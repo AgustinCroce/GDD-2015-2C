@@ -279,7 +279,7 @@ CREATE TABLE "TS".Compra
   Com_PNR NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
   Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
   Com_Forma_Pago NVARCHAR(255) CHECK (Com_Forma_Pago IN('Tarjeta', 'Efectivo')),
-  Tar_Cod NUMERIC(18,0) REFERENCES "TS".Tarjeta(Tar_Cod),
+  Tar_Numero NUMERIC(18,0) REFERENCES "TS".Tarjeta(Tar_Numero),
   Com_Fecha DATE NOT NULL
 );
 
@@ -593,8 +593,8 @@ FROM GD2C2015.gd_esquema.Maestra
 WHERE Ruta_Codigo IS NOT NULL
 
 INSERT INTO "TS".Viaje(Fecha_Salida, Fecha_Llegada, Fecha_Llegada_Estimada, Aero_Num, Ruta_Cod)
-SELECT DISTINCT FechaSalida, FechaLLegada, Fecha_LLegada_Estimada, Aero_Num, R.Ruta_Cod
-FROM GD2C2015.gd_esquema.Maestra, "TS".Aeronave, "TS".Ruta as R
+SELECT DISTINCT M.FechaSalida, M.FechaLLegada, M.Fecha_LLegada_Estimada, Aero_Num, R.Ruta_Cod
+FROM GD2C2015.gd_esquema.Maestra as M, "TS".Aeronave, "TS".Ruta as R
 WHERE Aero_Matricula=Aeronave_Matricula
-AND R.Ruta_Codigo=Ruta_Codigo
-AND Ruta_Codigo IS NOT NULL
+AND R.Ruta_Codigo=M.Ruta_Codigo
+AND M.Ruta_Codigo IS NOT NULL
