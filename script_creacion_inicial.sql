@@ -590,10 +590,25 @@ FROM GD2C2015.gd_esquema.Maestra, "TS".Aeronave
 WHERE Aero_Matricula=Aeronave_Matricula
 AND Butaca_Nro IS NOT NULL;
 
-INSERT INTO "TS".Ruta(Ruta_Codigo, Ruta_Precio_Base_Kg, Ruta_Precio_Base_Pasaje, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Ruta_Servicio)
-SELECT DISTINCT Ruta_Codigo, Ruta_Precio_BaseKG, Ruta_Precio_BasePasaje, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Tipo_Servicio
+SELECT DISTINCT Ruta_Codigo, Ruta_Precio_BaseKG, Ruta_Ciudad_Origen, 
+				  Ruta_Ciudad_Destino, Tipo_Servicio
+INTO #RutasXEmpaques
 FROM GD2C2015.gd_esquema.Maestra
-WHERE Ruta_Codigo IS NOT NULL
+WHERE Ruta_Precio_BaseKG > 0
+
+SELECT DISTINCT Ruta_Codigo, Ruta_Precio_BasePasaje, Ruta_Ciudad_Origen, 
+				  Ruta_Ciudad_Destino, Tipo_Servicio
+INTO #RutasXPasaje
+FROM GD2C2015.gd_esquema.Maestra
+WHERE Ruta_Precio_BasePasaje > 0
+  
+INSERT INTO "TS".Ruta(Ruta_Codigo, Ruta_Precio_Base_Kg, Ruta_Precio_Base_Pasaje, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Ruta_Servicio)
+SELECT e.Ruta_Codigo, e.Ruta_Precio_BaseKG, p.Ruta_Precio_BasePasaje, e.Ruta_Ciudad_Origen, 
+         e.Ruta_Ciudad_Destino, e.Tipo_Servicio
+FROM #RutasXEmpaques as e, #RutasXPasaje as p
+WHERE e.Ruta_Codigo = p.Ruta_Codigo AND e.Ruta_Ciudad_Origen = p.Ruta_Ciudad_Origen 
+      AND e.Ruta_Ciudad_Destino = p.Ruta_Ciudad_Destino 
+      AND e.Tipo_Servicio = p.Tipo_Servicio
 
 INSERT INTO "TS".Viaje(Fecha_Salida, Fecha_Llegada, Fecha_Llegada_Estimada, Aero_Num, Ruta_Cod)
 SELECT DISTINCT M.FechaSalida, M.FechaLLegada, M.Fecha_LLegada_Estimada, Aero_Num, R.Ruta_Cod
