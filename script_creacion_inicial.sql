@@ -18,6 +18,30 @@ END
 
 /********************************** BORRADO DE TABLAS **************************************/
 
+IF OBJECT_ID('TS.Butaca_Pasaje', 'U') IS NOT NULL
+  DROP TABLE "TS".Butaca_Pasaje
+GO
+
+IF OBJECT_ID('TS.Encomienda_Compra', 'U') IS NOT NULL
+  DROP TABLE "TS".Encomienda_Compra
+GO
+
+IF OBJECT_ID('TS.Encomienda_Cancelacion', 'U') IS NOT NULL
+  DROP TABLE "TS".Encomienda_Cancelacion
+GO
+
+IF OBJECT_ID('TS.Butaca_Pasaje', 'U') IS NOT NULL
+  DROP TABLE "TS".Butaca_Pasaje
+GO
+
+IF OBJECT_ID('TS.Pasaje_Compra', 'U') IS NOT NULL
+  DROP TABLE "TS".Pasaje_Compra
+GO
+
+IF OBJECT_ID('TS.Pasaje_Cancelacion', 'U') IS NOT NULL
+  DROP TABLE "TS".Pasaje_Cancelacion
+GO
+
 IF OBJECT_ID('TS.Cancelacion_Compra', 'U') IS NOT NULL
   DROP TABLE "TS".Cancelacion_Compra
 GO
@@ -252,7 +276,6 @@ CREATE TABLE "TS".Pasaje
   Pas_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
   Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
   Viaj_Cod NUMERIC(18,0) REFERENCES "TS".Viaje(Viaj_Cod),
-  But_Cod NUMERIC(18,0) REFERENCES "TS".Butaca(But_Cod),
   Pas_Fecha_Compra DATE NOT NULL,
   Pas_Precio NUMERIC(18,2) NOT NULL
 );
@@ -288,9 +311,45 @@ CREATE TABLE "TS".Compra
 
 CREATE TABLE "TS".Cancelacion_Compra
 (
+  Can_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
   Can_Fecha DATE NOT NULL,
   Com_PNR NUMERIC(18,0) REFERENCES "TS".Compra(Com_PNR),
   Can_Motivo NVARCHAR(255)
+);
+
+CREATE TABLE "TS".Butaca_Pasaje
+(
+  But_Cod NUMERIC(18,0) REFERENCES "TS".Butaca(But_Cod),
+  Pas_Cod NUMERIC(18,0) REFERENCES "TS".Pasaje(Pas_Cod),
+  PRIMARY KEY(But_Cod, Pas_Cod)
+);
+
+CREATE TABLE "TS".Pasaje_Compra
+(
+  Pas_Cod NUMERIC(18,0) REFERENCES "TS".Pasaje(Pas_Cod),
+  Com_PNR NUMERIC(18,0) REFERENCES "TS".Compra(Com_PNR),
+  PRIMARY KEY(Pas_Cod, Com_PNR)
+);
+
+CREATE TABLE "TS".Pasaje_Cancelacion
+(
+  Can_Cod NUMERIC(18,0) REFERENCES "TS".Cancelacion_Compra(Can_Cod),
+  Pas_Cod NUMERIC(18,0) REFERENCES "TS".Pasaje(Pas_Cod),
+  PRIMARY KEY(Pas_Cod, Can_Cod)
+);
+
+CREATE TABLE "TS".Encomienda_Cancelacion
+(
+  Can_Cod NUMERIC(18,0) REFERENCES "TS".Cancelacion_Compra(Can_Cod),
+  Enc_Cod NUMERIC(18,0) REFERENCES "TS".Encomienda(Enc_Cod), 
+  PRIMARY KEY(Enc_Cod, Can_Cod)
+);
+
+CREATE TABLE "TS".Encomienda_Compra
+(
+  Com_PNR NUMERIC(18,0) REFERENCES "TS".Compra(Com_PNR),
+  Enc_Cod NUMERIC(18,0) REFERENCES "TS".Encomienda(Enc_Cod),
+  PRIMARY KEY(Enc_Cod, Com_PNR)
 );
 
 /************************************ FN Y PRODCEDURES *********************************************/
@@ -619,16 +678,23 @@ AND M.Ruta_Codigo IS NOT NULL
 
 SET IDENTITY_INSERT "TS".Pasaje ON;
 
-INSERT INTO "TS".Pasaje(Pas_Cod, Pas_Fecha_Compra, Pas_Precio, Viaj_Cod, But_Cod, Cli_Cod)
-SELECT DISTINCT M.Pasaje_Codigo, M.Pasaje_FechaCompra, M.Pasaje_Precio, R.Ruta_Cod, B.But_Cod, Cli.Cli_Cod
-FROM GD2C2015.gd_esquema.Maestra as M, "TS".Aeronave, "TS".Ruta as R, "TS".Butaca as B, "TS".Cliente as Cli
+INSERT INTO "TS".Pasaje(Pas_Cod, Pas_Fecha_Compra, Pas_Precio, Viaj_Cod, Cli_Cod)
+SELECT DISTINCT M.Pasaje_Codigo, M.Pasaje_FechaCompra, M.Pasaje_Precio, R.Ruta_Cod, Cli.Cli_Cod
+FROM GD2C2015.gd_esquema.Maestra as M, "TS".Aeronave, "TS".Ruta as R, "TS".Cliente as Cli
 WHERE Pasaje_Codigo > 0
 AND Aero_Matricula=Aeronave_Matricula
 AND R.Ruta_Codigo = M.Ruta_Codigo AND R.Ruta_Servicio = M.Tipo_Servicio AND R.Ruta_Ciudad_Destino = M.Ruta_Ciudad_Destino AND R.Ruta_Ciudad_Origen = M.Ruta_Ciudad_Origen
-AND B.But_Piso=M.Butaca_Piso AND B.But_Numero=M.Butaca_Nro
 AND Cli.Cli_Nombre = M.Cli_Apellido + ', ' + M.Cli_Nombre AND Cli.Cli_DNI = M.Cli_Dni
 
 SET IDENTITY_INSERT "TS".Pasaje OFF;
+
+INSERT INTO "TS".Butaca_Pasaje(Pas_Cod, But_Cod)
+SELECT DISTINCT P.Pas_Cod, B.But_Cod
+FROM GD2C2015.gd_esquema.Maestra as M, "TS".Butaca as B, "TS".Pasaje as P
+WHERE Pasaje_Codigo > 0
+AND B.But_Piso=M.Butaca_Piso AND B.But_Numero=M.Butaca_Nro
+AND P.Pas_Cod = M.Pasaje_Codigo
+
 
 SET IDENTITY_INSERT "TS".Encomienda ON;
 
