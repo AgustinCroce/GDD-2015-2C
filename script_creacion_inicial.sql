@@ -126,6 +126,9 @@ IF OBJECT_ID('TS.Producto', 'U') IS NOT NULL
   DROP TABLE "TS".Producto
 GO
 
+DROP TABLE #RutasxEncomienda
+DROP TABLE #RutasxPasaje
+
 /********************************** CREACIÓN DE TABLAS **************************************/
 
 CREATE TABLE "TS".Funcionalidad
@@ -651,7 +654,7 @@ AND Butaca_Nro IS NOT NULL;
 
 SELECT DISTINCT Ruta_Codigo, Ruta_Precio_BaseKG, Ruta_Ciudad_Origen, 
 				  Ruta_Ciudad_Destino, Tipo_Servicio
-INTO #RutasXEmpaques
+INTO #RutasXEncomienda
 FROM GD2C2015.gd_esquema.Maestra
 WHERE Ruta_Precio_BaseKG > 0
 
@@ -664,7 +667,7 @@ WHERE Ruta_Precio_BasePasaje > 0
 INSERT INTO "TS".Ruta(Ruta_Codigo, Ruta_Precio_Base_Kg, Ruta_Precio_Base_Pasaje, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Ruta_Servicio)
 SELECT e.Ruta_Codigo, e.Ruta_Precio_BaseKG, p.Ruta_Precio_BasePasaje, e.Ruta_Ciudad_Origen, 
          e.Ruta_Ciudad_Destino, e.Tipo_Servicio
-FROM #RutasXEmpaques as e, #RutasXPasaje as p
+FROM #RutasXEncomienda as e, #RutasXPasaje as p
 WHERE e.Ruta_Codigo = p.Ruta_Codigo AND e.Ruta_Ciudad_Origen = p.Ruta_Ciudad_Origen 
       AND e.Ruta_Ciudad_Destino = p.Ruta_Ciudad_Destino 
       AND e.Tipo_Servicio = p.Tipo_Servicio
