@@ -30,10 +30,6 @@ IF OBJECT_ID('TS.Encomienda_Cancelacion', 'U') IS NOT NULL
   DROP TABLE "TS".Encomienda_Cancelacion
 GO
 
-IF OBJECT_ID('TS.Butaca_Pasaje', 'U') IS NOT NULL
-  DROP TABLE "TS".Butaca_Pasaje
-GO
-
 IF OBJECT_ID('TS.Pasaje_Compra', 'U') IS NOT NULL
   DROP TABLE "TS".Pasaje_Compra
 GO
@@ -698,7 +694,6 @@ WHERE Pasaje_Codigo > 0
 AND B.But_Piso=M.Butaca_Piso AND B.But_Numero=M.Butaca_Nro
 AND P.Pas_Cod = M.Pasaje_Codigo
 
-
 SET IDENTITY_INSERT "TS".Encomienda ON;
 
 INSERT INTO "TS".Encomienda(Enc_Cod, Enc_Fecha_Compra, Enc_Kg, Enc_Precio, Viaj_Cod, Cli_Cod)
@@ -709,3 +704,31 @@ AND R.Ruta_Codigo = M.Ruta_Codigo AND R.Ruta_Servicio = M.Tipo_Servicio AND R.Ru
 AND Cli.Cli_Nombre = M.Cli_Apellido + ', ' + M.Cli_Nombre AND Cli.Cli_DNI = M.Cli_Dni
 
 SET IDENTITY_INSERT "TS".Encomienda OFF;
+
+INSERT INTO "TS".Pasaje_Compra(Pas_Cod, Com_PNR)
+SELECT DISTINCT P.Pas_Cod, C.Com_PNR
+FROM GD2C2015.gd_esquema.Maestra as M, "TS".Compra AS C, "TS".Pasaje AS P
+WHERE Pasaje_Codigo > 0
+AND P.Pas_Cod = M.Pasaje_Codigo
+/*** AND COMPRA ***/
+
+INSERT INTO "TS".Pasaje_Cancelacion(Can_Cod, Pas_Cod)
+SELECT DISTINCT Can_Cod, Pas_Cod
+FROM GD2C2015.gd_esquema.Maestra as M, "TS".Pasaje AS P, "TS".Cancelacion_Compra AS C
+WHERE Pasaje_Codigo > 0
+AND P.Pas_Cod = M.Pasaje_Codigo
+/*** AND CANCELACION ***/
+
+INSERT INTO "TS".Encomienda_Cancelacion(Can_Cod, Enc_Cod)
+SELECT DISTINCT Can_Cod, Enc_Cod
+FROM GD2C2015.gd_esquema.Maestra as M, "TS".Encomienda AS E, "TS".Cancelacion_Compra AS C
+WHERE Paquete_Codigo > 0
+AND E.Enc_Cod = M.Paquete_Codigo
+/*** AND CANCELACION ***/
+
+INSERT INTO "TS".Encomienda_Compra(Com_PNR, Enc_Cod)
+SELECT DISTINCT Com_PNR, Enc_Cod
+FROM GD2C2015.gd_esquema.Maestra as M, "TS".Compra AS C, "TS".Encomienda AS E
+WHERE Paquete_Codigo > 0
+AND E.Enc_Cod = M.Paquete_Codigo
+/*** AND COMPRA ***/
