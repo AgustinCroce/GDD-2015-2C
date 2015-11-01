@@ -77,11 +77,47 @@
     <Compile Include="Commons\EnabledButtons.cs" />
     <Compile Include="Commons\Sha256Generator.cs" />
     <Compile Include="Commons\Validator.cs" />
-    <Compile Include="Compra\Form1.cs">
+    <Compile Include="Compra\DatosBase.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Compra\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Compra\DatosBase.Designer.cs">
+      <DependentUpon>DatosBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Compra\DatosPasajeroForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\DatosPasajeroForm.Designer.cs">
+      <DependentUpon>DatosPasajeroForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Compra\DatosEncomiendaForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\DatosEncomiendaForm.Designer.cs">
+      <DependentUpon>DatosEncomiendaForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Compra\PagoAdminForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\PagoAdminForm.Designer.cs">
+      <DependentUpon>PagoAdminForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Compra\PagoKioskoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\PagoKioskoForm.Designer.cs">
+      <DependentUpon>PagoKioskoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Compra\SeleccionCantidadesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\SeleccionCantidadesForm.Designer.cs">
+      <DependentUpon>SeleccionCantidadesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Compra\SeleccionVueloForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\SeleccionVueloForm.Designer.cs">
+      <DependentUpon>SeleccionVueloForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Consulta Millas\Form1.cs">
       <SubType>Form</SubType>
@@ -128,6 +164,27 @@
     <Compile Include="Registro Llegada Destino\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Compra\DatosBase.resx">
+      <DependentUpon>DatosBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra\DatosPasajeroForm.resx">
+      <DependentUpon>DatosPasajeroForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra\DatosEncomiendaForm.resx">
+      <DependentUpon>DatosEncomiendaForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra\PagoAdminForm.resx">
+      <DependentUpon>PagoAdminForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra\PagoKioskoForm.resx">
+      <DependentUpon>PagoKioskoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra\SeleccionCantidadesForm.resx">
+      <DependentUpon>SeleccionCantidadesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra\SeleccionVueloForm.resx">
+      <DependentUpon>SeleccionVueloForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -151,7 +208,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
