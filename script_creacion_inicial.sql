@@ -559,6 +559,243 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID (N'TS.spConsultarViaje') IS NOT NULL
+   DROP PROCEDURE "TS".spConsultarViaje
+GO
+
+CREATE PROCEDURE "TS".spConsultarViaje
+	@CiudadOrigen varchar(255),
+	@CiudadDestino varchar(255),
+	@AeroNum Numeric(18,0)
+AS
+BEGIN
+	DECLARE @Cantidad INT
+	SET @Cantidad = (SELECT COUNT(*)
+						FROM TS.Viaje as V, TS.Ruta as R
+						WHERE V.Ruta_Cod = R.Ruta_Cod AND R.Ruta_Ciudad_Origen = @CiudadOrigen
+						AND R.Ruta_Ciudad_Destino = @CiudadDestino AND V.Aero_Num = @AeroNum AND V.Fecha_Llegada = NULL)
+	RETURN @Cantidad
+END
+GO
+
+IF OBJECT_ID (N'TS.spRegistrarLlegada') IS NOT NULL
+   DROP PROCEDURE "TS".spRegistrarLlegada
+GO
+
+CREATE PROCEDURE "TS".spRegistrarLlegada
+	@ViajeCod Numeric(18,0),
+	@Llegada Datetime
+AS
+BEGIN
+	UPDATE TS.Viaje
+	SET Fecha_Llegada = @Llegada
+	WHERE Viaj_Cod = @ViajeCod
+END
+GO
+
+IF OBJECT_ID (N'TS.spRegistrarLlegadaUnica') IS NOT NULL
+   DROP PROCEDURE "TS".spRegistrarLlegadaUnica
+GO
+
+CREATE PROCEDURE "TS".spRegistrarLlegadaUnica
+	@CiudadOrigen varchar(255),
+	@CiudadDestino varchar(255),
+	@AeroNum Numeric(18,0),
+	@Llegada Datetime
+AS
+BEGIN
+	DECLARE @ViajeCod Numeric(18,0)
+	SET @ViajeCod = (SELECT V.Viaj_Cod
+						FROM TS.Viaje as V, TS.Ruta as R
+						WHERE V.Ruta_Cod = R.Ruta_Cod AND R.Ruta_Ciudad_Origen = @CiudadOrigen
+						AND R.Ruta_Ciudad_Destino = @CiudadDestino AND V.Aero_Num = @AeroNum AND V.Fecha_Llegada = NULL)
+	EXEC TS.spRegistrarLlegada @ViajeCod, @Llegada
+END
+GO
+
+IF OBJECT_ID (N'TS.trCompraPasaje') IS NOT NULL
+   DROP TRIGGER "TS".trCompraPasaje
+GO
+
+CREATE TRIGGER "TS".trCompraPasaje ON "TS".Pasaje_Compra AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+	IF (SELECT COUNT(*) FROM inserted) >= 1
+	BEGIN
+		INSERT INTO "TS".Milla(Cli_Cod, Pas_Cod, Mil_Fecha, Mil_Cantidad)
+		SELECT P.Cli_Cod, P.Pas_Cod, P.Pas_Fecha_Compra, P.Pas_Precio / 10
+		FROM "TS".Pasaje as P , inserted as I
+		WHERE P.Pas_Cod = I.Pas_Cod
+	END
+
+	IF (SELECT COUNT(*) FROM deleted) >= 1
+	BEGIN
+		DELETE
+		FROM "TS".Milla
+		WHERE Pas_Cod IN (SELECT D.Pas_Cod FROM deleted as D)
+	END
+
+END
+
+IF OBJECT_ID (N'TS.trCompraEncomienda') IS NOT NULL
+   DROP TRIGGER "TS".trCompraEncomienda
+GO
+
+CREATE TRIGGER "TS".trCompraEncomienda ON "TS".Encomienda_Compra AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+	IF (SELECT COUNT(*) FROM inserted) >= 1
+	BEGIN
+		INSERT INTO "TS".Milla(Cli_Cod, Enc_Cod, Mil_Fecha, Mil_Cantidad)
+		SELECT E.Cli_Cod, E.Enc_Cod, E.Enc_Fecha_Compra, E.Enc_Precio / 10
+		FROM "TS".Encomienda as E , inserted as I
+		WHERE E.Enc_Cod = I.Enc_Cod
+	END
+
+	IF (SELECT COUNT(*) FROM deleted) >= 1
+	BEGIN
+		DELETE
+		FROM "TS".Milla
+		WHERE Enc_Cod IN (SELECT D.Enc_Cod FROM deleted as D)
+	END
+
+END
+
+IF OBJECT_ID (N'TS.trCancelacionPasaje') IS NOT NULL
+   DROP TRIGGER "TS".CancelacionPasaje
+GO
+
+CREATE TRIGGER "TS".CancelacionPasaje ON "TS".Pasaje_Cancelacion AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+	IF (SELECT COUNT(*) FROM inserted) >= 1
+	BEGIN
+		DELETE
+		FROM "TS".Milla
+		WHERE Pas_Cod IN (SELECT I.Pas_Cod FROM inserted as I)
+	END
+
+	IF (SELECT COUNT(*) FROM deleted) >= 1
+	BEGIN
+		INSERT INTO "TS".Milla(Cli_Cod, Pas_Cod, Mil_Fecha, Mil_Cantidad)
+		SELECT P.Cli_Cod, P.Pas_Cod, P.Pas_Fecha_Compra, P.Pas_Precio / 10
+		FROM "TS".Pasaje as P , deleted as D
+		WHERE P.Pas_Cod = D.Pas_Cod
+	END
+
+END
+
+IF OBJECT_ID (N'TS.trCancelacionEncomienda') IS NOT NULL
+   DROP TRIGGER "TS".CancelacionEncomienda
+GO
+
+CREATE TRIGGER "TS".CancelacionEncomienda ON "TS".Encomienda_Cancelacion AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+	IF (SELECT COUNT(*) FROM inserted) >= 1
+	BEGIN
+		DELETE
+		FROM "TS".Milla
+		WHERE Enc_Cod IN (SELECT I.Enc_Cod FROM inserted as I)
+	END
+
+	IF (SELECT COUNT(*) FROM deleted) >= 1
+	BEGIN
+		INSERT INTO "TS".Milla(Cli_Cod, Enc_Cod, Mil_Fecha, Mil_Cantidad)
+		SELECT E.Cli_Cod, E.Enc_Cod, E.Enc_Fecha_Compra, E.Enc_Precio / 10
+		FROM "TS".Encomienda as E , deleted as D
+		WHERE E.Enc_Cod = D.Enc_Cod
+	END
+
+END
+
+IF OBJECT_ID (N'TS.fnConsultarSaldoMillas') IS NOT NULL
+   DROP FUNCTION "TS".fnConsultarSaldoMillas
+GO
+
+CREATE FUNCTION "TS".fnConsultarSaldoMillas(
+  @Hoy DATE,
+  @Cli_Cod NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	DECLARE @Millas INT;
+	DECLARE @Canjes INT;
+	DECLARE @Saldo INT;
+
+	IF (SELECT COUNT(*) FROM "TS".Cliente WHERE Cli_Cod = @Cli_Cod) = 0
+	BEGIN
+		RETURN -1
+	END
+	ELSE
+	BEGIN
+
+		SET @Millas= (SELECT SUM(Mil_Cantidad)
+						FROM "TS".Milla
+						WHERE Cli_Cod = @Cli_Cod AND DATEDIFF(DAY, Mil_Fecha, @Hoy) <= 365
+						GROUP BY Cli_Cod);
+		SET @Canjes = (SELECT SUM(Canje_Total)
+						FROM "TS".Canje
+						WHERE Cli_Cod = @Cli_Cod AND DATEDIFF(DAY, Canje_Fecha, @Hoy) <= 365
+						GROUP BY Cli_Cod)
+		SET @Saldo = @Millas - @Canjes
+		
+		IF @Saldo <= 0
+		BEGIN
+			RETURN 0
+		END
+	END
+	RETURN @Saldo
+END
+GO
+
+
+IF OBJECT_ID (N'TS.spRegistrarCanje') IS NOT NULL
+   DROP PROCEDURE "TS".spRegistrarCanje
+GO
+
+CREATE PROCEDURE "TS".spRegistrarCanje
+  @Cli_Cod NUMERIC(18,0),
+  @Cli_DNI NVARCHAR(255),
+  @Prod_Cod NUMERIC(18,0),
+  @Canje_Cantidad_Prod INT,
+  @Canje_Fecha DATE
+AS
+BEGIN
+	DECLARE @Saldo INT;
+	SET @Saldo = "TS".fnConsultarSaldoMillas(@Canje_Fecha, @Cli_Cod);
+
+	IF(SELECT Prod_Stock FROM "TS".Producto WHERE Prod_Cod = @Prod_Cod) < @Canje_Cantidad_Prod
+	BEGIN
+		RETURN -2
+	END
+
+	IF(SELECT COUNT(*) FROM "TS".Cliente WHERE Cli_Cod = @Cli_Cod AND Cli_DNI = @Cli_DNI) = 0
+	BEGIN
+		RETURN -1
+	END
+
+	IF(@Saldo = 0 )
+	BEGIN
+		RETURN @Saldo
+	END
+	ELSE
+	BEGIN
+		DECLARE @Costo INT;
+		SET @Costo = (SELECT Prod_Valor FROM "TS".Producto WHERE Prod_Cod = @Prod_Cod)
+
+		INSERT INTO "TS".Canje(Cli_Cod, Prod_Cod, Canje_Cantidad_Prod, Canje_Fecha, Canje_Total)
+		VALUES(@Cli_Cod, @Prod_Cod, @Canje_Cantidad_Prod, @Canje_Fecha, @Costo * @Canje_Cantidad_Prod)
+		
+		UPDATE "TS".Producto
+		SET Prod_Stock = Prod_Stock - @Canje_Cantidad_Prod
+		WHERE Prod_Cod = @Prod_Cod
+		
+		RETURN 0
+	END
+END
+GO
+
 /******************************* MIGRACION *********************************************/
 
 SET IDENTITY_INSERT "TS".Funcionalidad ON
@@ -634,8 +871,8 @@ FROM GD2C2015.gd_esquema.Maestra
 WHERE Aeronave_Matricula IS NOT NULL;
 
 INSERT INTO "TS".Ciudad(Ciudad_Nombre)
-SELECT DISTINCT Ruta_Ciudad_Destino Ciudad
-FROM GD2C2015.gd_esquema.Maestra
+SELECT DISTINCT LTRIM(Ruta_Ciudad_Destino) Ciudad
+FROM GD2C2015.gd_esquema.Maestra 
 WHERE Ruta_Ciudad_Destino IS NOT NULL
 UNION
 SELECT DISTINCT Ruta_Ciudad_Origen Ciudad

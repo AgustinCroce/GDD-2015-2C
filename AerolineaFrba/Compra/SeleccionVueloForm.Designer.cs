@@ -34,18 +34,18 @@
             this.origenComboBox = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.destinoComboBox = new System.Windows.Forms.ComboBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.vuelosGridView = new System.Windows.Forms.DataGridView();
             this.searchButton = new System.Windows.Forms.Button();
             this.cleanButton = new System.Windows.Forms.Button();
             this.selectButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vuelosGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // despegueTimePicker
             // 
             this.despegueTimePicker.Location = new System.Drawing.Point(131, 12);
             this.despegueTimePicker.Name = "despegueTimePicker";
-            this.despegueTimePicker.Size = new System.Drawing.Size(166, 20);
+            this.despegueTimePicker.Size = new System.Drawing.Size(200, 20);
             this.despegueTimePicker.TabIndex = 0;
             // 
             // label1
@@ -91,13 +91,13 @@
             this.destinoComboBox.Size = new System.Drawing.Size(166, 21);
             this.destinoComboBox.TabIndex = 5;
             // 
-            // dataGridView1
+            // vuelosGridView
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(12, 116);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(422, 150);
-            this.dataGridView1.TabIndex = 6;
+            this.vuelosGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.vuelosGridView.Location = new System.Drawing.Point(12, 116);
+            this.vuelosGridView.Name = "vuelosGridView";
+            this.vuelosGridView.Size = new System.Drawing.Size(422, 150);
+            this.vuelosGridView.TabIndex = 6;
             // 
             // searchButton
             // 
@@ -107,6 +107,7 @@
             this.searchButton.TabIndex = 7;
             this.searchButton.Text = "Buscar Vuelos";
             this.searchButton.UseVisualStyleBackColor = true;
+            this.searchButton.Click += new System.EventHandler(this.searchButton_Click);
             // 
             // cleanButton
             // 
@@ -134,7 +135,7 @@
             this.Controls.Add(this.selectButton);
             this.Controls.Add(this.cleanButton);
             this.Controls.Add(this.searchButton);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.vuelosGridView);
             this.Controls.Add(this.destinoComboBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.origenComboBox);
@@ -143,7 +144,7 @@
             this.Controls.Add(this.despegueTimePicker);
             this.Name = "SeleccionVueloForm";
             this.Text = "Compra de pasaje y/o encomienda";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vuelosGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -157,7 +158,7 @@
         private System.Windows.Forms.ComboBox origenComboBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox destinoComboBox;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView vuelosGridView;
         private System.Windows.Forms.Button searchButton;
         private System.Windows.Forms.Button cleanButton;
         private System.Windows.Forms.Button selectButton;
