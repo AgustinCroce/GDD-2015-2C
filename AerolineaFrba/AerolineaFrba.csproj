@@ -104,32 +104,50 @@
     <Compile Include="Abm Ruta\ModificacionRuta.Designer.cs">
       <DependentUpon>ModificacionRuta.cs</DependentUpon>
     </Compile>
-    <Compile Include="Canje Millas\Form1.cs">
+    <Compile Include="Canje Millas\CanjeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Canje Millas\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Canje Millas\CanjeForm.designer.cs">
+      <DependentUpon>CanjeForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Commons\EnabledButtons.cs" />
     <Compile Include="Commons\Sha256Generator.cs" />
     <Compile Include="Commons\Validator.cs" />
+    <Compile Include="Compra\ClienteAgregarForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\ClienteAgregarForm.Designer.cs">
+      <DependentUpon>ClienteAgregarForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Compra\ClienteEditarForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\ClienteEditarForm.Designer.cs">
+      <DependentUpon>ClienteEditarForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Compra\DatosBase.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Compra\DatosBase.Designer.cs">
       <DependentUpon>DatosBase.cs</DependentUpon>
     </Compile>
-    <Compile Include="Compra\DatosPasajeroForm.cs">
+    <Compile Include="Compra\DatosBuscadorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Compra\DatosPasajeroForm.Designer.cs">
-      <DependentUpon>DatosPasajeroForm.cs</DependentUpon>
+    <Compile Include="Compra\DatosBuscadorForm.Designer.cs">
+      <DependentUpon>DatosBuscadorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Compra\DatosEncomiendaForm.cs">
+    <Compile Include="Compra\DatosEncomienda.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Compra\DatosEncomiendaForm.Designer.cs">
-      <DependentUpon>DatosEncomiendaForm.cs</DependentUpon>
+    <Compile Include="Compra\DatosEncomienda.Designer.cs">
+      <DependentUpon>DatosEncomienda.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Compra\DatosPasajeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\DatosPasajeForm.Designer.cs">
+      <DependentUpon>DatosPasajeForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Compra\PagoAdminForm.cs">
       <SubType>Form</SubType>
@@ -149,19 +167,25 @@
     <Compile Include="Compra\SeleccionCantidadesForm.Designer.cs">
       <DependentUpon>SeleccionCantidadesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Compra\SeleccionItemsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\SeleccionItemsForm.Designer.cs">
+      <DependentUpon>SeleccionItemsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Compra\SeleccionVueloForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Compra\SeleccionVueloForm.Designer.cs">
       <DependentUpon>SeleccionVueloForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Consulta Millas\Form1.cs">
+    <Compile Include="Commons\DbComunicator.cs" />
+    <Compile Include="Consulta Millas\ConsultaForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Consulta Millas\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Consulta Millas\ConsultaForm.Designer.cs">
+      <DependentUpon>ConsultaForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Commons\DbComunicator.cs" />
     <Compile Include="Devolucion\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -194,11 +218,17 @@
     <Compile Include="Registro de Usuario\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Registro Llegada Destino\Form1.cs">
+    <Compile Include="Registro Llegada Destino\Llegada.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Registro Llegada Destino\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Registro Llegada Destino\Llegada.Designer.cs">
+      <DependentUpon>Llegada.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Registro Llegada Destino\SeleccionarViajeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Registro Llegada Destino\SeleccionarViajeForm.Designer.cs">
+      <DependentUpon>SeleccionarViajeForm.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Abm Aeronave\AltaAeronave.resx">
       <DependentUpon>AltaAeronave.cs</DependentUpon>
@@ -224,14 +254,26 @@
     <EmbeddedResource Include="Abm Ruta\ModificacionRuta.resx">
       <DependentUpon>ModificacionRuta.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Canje Millas\CanjeForm.resx">
+      <DependentUpon>CanjeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra\ClienteAgregarForm.resx">
+      <DependentUpon>ClienteAgregarForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra\ClienteEditarForm.resx">
+      <DependentUpon>ClienteEditarForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Compra\DatosBase.resx">
       <DependentUpon>DatosBase.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Compra\DatosPasajeroForm.resx">
-      <DependentUpon>DatosPasajeroForm.cs</DependentUpon>
+    <EmbeddedResource Include="Compra\DatosBuscadorForm.resx">
+      <DependentUpon>DatosBuscadorForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Compra\DatosEncomiendaForm.resx">
-      <DependentUpon>DatosEncomiendaForm.cs</DependentUpon>
+    <EmbeddedResource Include="Compra\DatosEncomienda.resx">
+      <DependentUpon>DatosEncomienda.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra\DatosPasajeForm.resx">
+      <DependentUpon>DatosPasajeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Compra\PagoAdminForm.resx">
       <DependentUpon>PagoAdminForm.cs</DependentUpon>
@@ -242,8 +284,14 @@
     <EmbeddedResource Include="Compra\SeleccionCantidadesForm.resx">
       <DependentUpon>SeleccionCantidadesForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Compra\SeleccionItemsForm.resx">
+      <DependentUpon>SeleccionItemsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Compra\SeleccionVueloForm.resx">
       <DependentUpon>SeleccionVueloForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Consulta Millas\ConsultaForm.resx">
+      <DependentUpon>ConsultaForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

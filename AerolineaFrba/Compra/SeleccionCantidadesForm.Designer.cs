@@ -60,6 +60,7 @@
             // 
             // pasajesInput
             // 
+            this.pasajesInput.Enabled = false;
             this.pasajesInput.Location = new System.Drawing.Point(210, 61);
             this.pasajesInput.Name = "pasajesInput";
             this.pasajesInput.Size = new System.Drawing.Size(100, 20);
@@ -67,6 +68,7 @@
             // 
             // encomiendaInput
             // 
+            this.encomiendaInput.Enabled = false;
             this.encomiendaInput.Location = new System.Drawing.Point(210, 87);
             this.encomiendaInput.Name = "encomiendaInput";
             this.encomiendaInput.Size = new System.Drawing.Size(100, 20);
@@ -98,6 +100,7 @@
             this.acceptButton.TabIndex = 6;
             this.acceptButton.Text = "Aceptar";
             this.acceptButton.UseVisualStyleBackColor = true;
+            this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
             // 
             // cancelButton
             // 
@@ -107,6 +110,7 @@
             this.cancelButton.TabIndex = 7;
             this.cancelButton.Text = "Cancelar";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
             // SeleccionCantidadesForm
             // 

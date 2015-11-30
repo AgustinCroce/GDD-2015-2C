@@ -117,6 +117,7 @@
             this.cleanButton.TabIndex = 8;
             this.cleanButton.Text = "Limpiar Vuelos";
             this.cleanButton.UseVisualStyleBackColor = true;
+            this.cleanButton.Click += new System.EventHandler(this.cleanButton_Click);
             // 
             // selectButton
             // 
@@ -126,6 +127,7 @@
             this.selectButton.TabIndex = 9;
             this.selectButton.Text = "Seleccionar Vuelo";
             this.selectButton.UseVisualStyleBackColor = true;
+            this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
             // 
             // SeleccionVueloForm
             // 
