@@ -40,18 +40,19 @@ namespace AerolineaFrba.Abm_Ruta
 
         private void BaseRuta_Load(object sender, EventArgs e)
         {
-            string QueryCiudades = "SELECT Ciudad_Nombre 'Nombre' FROM [GD2C2015].[TS].[Ciudad]";
-            Dictionary<object, object> Ciudades = this.db.GetQueryDictionary(QueryCiudades, "Nombre", "Nombre");
+            string QueryCiudades = "SELECT Ciudad_Cod Codigo, Ciudad_Nombre 'Nombre' FROM [GD2C2015].[TS].[Ciudad]";
+            Dictionary<object, object> Ciudades = this.db.GetQueryDictionary(QueryCiudades, "Codigo", "Nombre");
             CB_destino.DataSource = new BindingSource(Ciudades, null);
             CB_origen.DataSource = new BindingSource(Ciudades, null);
             CB_destino.DisplayMember = "Value";
             CB_destino.ValueMember = "Key";
             CB_origen.DisplayMember = "Value";
             CB_origen.ValueMember = "Key";
-        }
-
-        private void label6_Click(object sender, EventArgs e)
-        {
+            string QueryServicio = "SELECT DISTINCT Aero_Servicio Nombre FROM [GD2C2015].[TS].[Aeronave]";
+            Dictionary<object, object> Servicios = this.db.GetQueryDictionary(QueryServicio, "Nombre", "Nombre");
+            CB_servicio.DataSource = new BindingSource(Servicios, null);
+            CB_servicio.DisplayMember = "Value";
+            CB_servicio.ValueMember = "Key";
 
         }
     }
