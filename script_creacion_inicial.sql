@@ -816,6 +816,298 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID (N'TS.spGenerarButacas') IS NOT NULL
+  DROP PROCEDURE "TS".spGenerarButacas
+GO
+
+CREATE PROCEDURE "TS".spGenerarButacas
+  @AeronaveNum NUMERIC(18, 0),
+  @cantidad INT,
+  @tipo VARCHAR(255)
+AS
+BEGIN
+  DECLARE @Status INT
+  DECLARE @Butacas INT
+  SET @Butacas = @cantidad
+  WHILE @Butacas <> 0
+  BEGIN
+    SET @Butacas = @Butacas - 1
+    INSERT INTO "TS".Butaca(Aero_Num, But_Numero, But_Piso, But_Tipo)
+    VALUES (@AeronaveNum, @Butacas, 1, @tipo)
+  END
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spAltaAeronave') IS NOT NULL
+  DROP PROCEDURE "TS".spAltaAeronave
+GO
+
+CREATE PROCEDURE "TS".spAltaAeronave
+  @butacas_v INT,
+  @butacas_p INT,
+  @modelo VARCHAR(255),
+  @matricula VARCHAR(255),
+  @fabricante VARCHAR(255),
+  @kg_disponibles NUMERIC(18,0),
+  @servicio VARCHAR(255)
+AS
+BEGIN
+  DECLARE @Status INT
+  DECLARE @StatusButacasV INT
+  DECLARE @StatusButacasP INT
+  SET @Status = 0
+  INSERT INTO "TS".Aeronave(Aero_Matricula, Aero_Modelo, Aero_Cantidad_Kg_Disponibles, Aero_Fabricante, Aero_Servicio, Aero_Fecha_Fuera_De_Servicio, Aero_Fecha_Reinicio_De_Servicio, Aero_Fecha_Baja_Definitiva, Aero_Fecha_De_Alta)
+  VALUES (@matricula, @modelo, @kg_disponibles, @fabricante, @servicio, NULL, NULL, NULL, GETDATE())
+  DECLARE @AeronaveNum NUMERIC(18, 0)
+  SET @AeronaveNum = (SELECT Aero_Num FROM [GD2C2015].[TS].[Aeronave] WHERE Aero_Matricula = @matricula AND Aero_Modelo = @modelo)
+  EXEC "TS".spGenerarButacas @AeronaveNum, @butacas_p, 'Pasillo'
+  EXEC "TS".spGenerarButacas @AeronaveNum, @butacas_v, 'Ventanilla'
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spBorrarAeronave') IS NOT NULL
+  DROP PROCEDURE "TS".spBorrarAeronave
+GO
+
+CREATE PROCEDURE "TS".spBorrarAeronave
+  @numero NUMERIC(18,0)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  UPDATE [GD2C2015].[TS].[Aeronave] SET Aero_Borrado = 1  WHERE Aero_Num = @numero
+  UPDATE [GD2C2015].[TS].[Butaca] SET But_Borrada = 1  WHERE Aero_Num = @numero
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spModificarAeronave') IS NOT NULL
+  DROP PROCEDURE "TS".spModificarAeronave
+GO
+
+CREATE PROCEDURE "TS".spModificarAeronave
+  @modelo VARCHAR(255),
+  @matricula VARCHAR(255),
+  @fabricante VARCHAR(255),
+  @kg_disponibles NUMERIC(18,0),
+  @numero NUMERIC(18,0),
+  @servicio VARCHAR(255)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  UPDATE [GD2C2015].[TS].[Aeronave]
+  SET
+    Aero_Modelo = @modelo,
+    Aero_Matricula = @matricula,
+    Aero_Fabricante = @fabricante,
+    Aero_Servicio = @servicio,
+    Aero_Cantidad_Kg_Disponibles = @kg_disponibles
+  WHERE Aero_Num = @numero
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spAltaCiudad') IS NOT NULL
+  DROP PROCEDURE "TS".spAltaCiudad
+GO
+
+CREATE PROCEDURE "TS".spAltaCiudad
+  @nombre VARCHAR(255)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  INSERT INTO "TS".Ciudad(Ciudad_Nombre)
+  VALUES (@nombre)
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spBorrarCiudad') IS NOT NULL
+  DROP PROCEDURE "TS".spBorrarCiudad
+GO
+
+CREATE PROCEDURE "TS".spBorrarCiudad
+  @Codigo NUMERIC(18, 0)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  UPDATE [GD2C2015].[TS].[Ciudad] SET Ciudad_Borrada = 1  WHERE Ciudad_Cod = @Codigo
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spModificarCiudad') IS NOT NULL
+  DROP PROCEDURE "TS".spModificarCiudad
+GO
+
+CREATE PROCEDURE "TS".spModificarCiudad
+  @codigo NUMERIC(18, 0),
+  @nombre VARCHAR(255)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  UPDATE [GD2C2015].[TS].[Ciudad] SET Ciudad_Nombre = @nombre  WHERE Ciudad_Cod = @codigo
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spAltaRol') IS NOT NULL
+  DROP PROCEDURE "TS".spAltaRol
+GO
+
+CREATE PROCEDURE "TS".spAltaRol
+  @nombre VARCHAR(255),
+  @estado VARCHAR(255)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  INSERT INTO "TS".Rol(Rol_Nombre, Rol_Estado)
+  VALUES (@nombre, @estado)
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spBorrarRol') IS NOT NULL
+  DROP PROCEDURE "TS".spBorrarRol
+GO
+
+CREATE PROCEDURE "TS".spBorrarRol
+  @nombre VARCHAR(255)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  UPDATE [GD2C2015].[TS].[Rol] SET Rol_Borrado = 1  WHERE Rol_Nombre = @nombre
+  UPDATE [GD2C2015].[TS].[Rol_Usuario] SET Rol_Usuario_Borrado = 1 WHERE Rol_Nombre = @nombre
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spHabilitarRol') IS NOT NULL
+  DROP PROCEDURE "TS".spHabilitarRol
+GO
+
+CREATE PROCEDURE "TS".spHabilitarRol
+  @nombre VARCHAR(255)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  UPDATE [GD2C2015].[TS].[Rol] SET Rol_Estado = 'Habilitado'  WHERE Rol_Nombre = @nombre
+  UPDATE [GD2C2015].[TS].[Rol_Usuario] SET Rol_Usuario_Borrado = 0 WHERE Rol_Nombre = @nombre
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spDeshabilitarRol') IS NOT NULL
+  DROP PROCEDURE "TS".spDeshabilitarRol
+GO
+
+CREATE PROCEDURE "TS".spDeshabilitarRol
+  @nombre VARCHAR(255)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  UPDATE [GD2C2015].[TS].[Rol] SET Rol_Estado = 'Deshabilitado'  WHERE Rol_Nombre = @nombre
+  UPDATE [GD2C2015].[TS].[Rol_Usuario] SET Rol_Usuario_Borrado = 1 WHERE Rol_Nombre = @nombre
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spModificarRol') IS NOT NULL
+  DROP PROCEDURE "TS".spModificarRol
+GO
+
+CREATE PROCEDURE "TS".spModificarRol
+  @nombre VARCHAR(255),
+  @estado VARCHAR(255)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  IF (@estado = 'Habilitado')
+	EXEC "TS".spHabilitarRol @nombre
+  ELSE IF (@Status = 'Deshabilitado')
+	EXEC "TS".spDeshabilitarRol @nombre
+  ELSE
+	SET @Status = -1
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spAltaRuta') IS NOT NULL
+  DROP PROCEDURE "TS".spAltaRuta
+GO
+
+CREATE PROCEDURE "TS".spAltaRuta
+  @origen NUMERIC(18,0),
+  @destino NUMERIC(18,0),
+  @servicio VARCHAR(255),
+  @codigo NUMERIC(18,0),
+  @precio_kg NUMERIC(18,2),
+  @precio_pasaje NUMERIC(18,2)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  INSERT INTO "TS".Ruta(Ruta_Codigo, Ruta_Precio_Base_Kg, Ruta_Precio_Base_Pasaje, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Ruta_Servicio) VALUES
+    (@codigo, @precio_kg, @precio_pasaje, @origen, @destino, @servicio)
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spBorrarRuta') IS NOT NULL
+  DROP PROCEDURE "TS".spBorrarRuta
+GO
+
+CREATE PROCEDURE "TS".spBorrarRuta
+  @Codigo NUMERIC(18,0)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  UPDATE [GD2C2015].[TS].[Ruta] SET Ruta_Borrada = 1  WHERE Ruta_Cod = @Codigo
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spModificarRuta') IS NOT NULL
+  DROP PROCEDURE "TS".spModificarRuta
+GO
+
+CREATE PROCEDURE "TS".spModificarRuta
+  @origen NUMERIC(18,0),
+  @destino NUMERIC(18,0),
+  @servicio VARCHAR(255),
+  @codigo NUMERIC(18,0),
+  @codigo_unico NUMERIC(18,0),
+  @precio_kg NUMERIC(18,2),
+  @precio_pasaje NUMERIC(18,2)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  UPDATE [GD2C2015].[TS].[Ruta]
+  SET
+    Ruta_Codigo = @codigo,
+    Ruta_Ciudad_Origen = @origen,
+    Ruta_Ciudad_Destino = @destino,
+    Ruta_Precio_Base_Kg = @precio_kg,
+    Ruta_Precio_Base_Pasaje = @precio_pasaje,
+    Ruta_Servicio = @servicio
+  WHERE Ruta_Cod = @codigo_unico
+  RETURN @Status
+END
+GO
+
 /******************************* MIGRACION *********************************************/
 
 SET IDENTITY_INSERT "TS".Funcionalidad ON
