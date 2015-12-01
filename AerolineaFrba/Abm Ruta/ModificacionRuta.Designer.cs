@@ -52,9 +52,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 295);
+            this.ClientSize = new System.Drawing.Size(284, 312);
             this.Name = "ModificacionRuta";
             this.Text = "Modificar Ruta";
+            this.Load += new System.EventHandler(this.ModificacionRuta_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
