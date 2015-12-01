@@ -11,13 +11,16 @@ using AerolineaFrba.Commons;
 
 namespace AerolineaFrba.Compra
 {
-    public partial class DatosBase : Form
+    public partial class DatosPasajeForm : DatosBuscadorForm
     {
-        public DatosBase()
-        {
-            InitializeComponent();
-        }
+        private DataGridView pasajeGridView;
 
-                  
+        public DatosPasajeForm(DataGridView pasajeGridView)
+        {
+            // TODO: Complete member initialization
+            InitializeComponent();
+            DbComunicator db = new DbComunicator();
+            this.pasajeGridView = pasajeGridView;
+        }
     }
 }

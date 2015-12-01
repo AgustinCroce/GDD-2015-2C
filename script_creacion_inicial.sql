@@ -269,6 +269,7 @@ CREATE TABLE "TS".Viaje
 (
   Viaj_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
   Viaj_Kgs_Disponibles NUMERIC(18,0) DEFAULT 0,
+  Viaj_Butacas_Disponibles NUMERIC(18,0) DEFAULT 0,
   Fecha_Salida DATE NOT NULL,
   Fecha_Llegada DATE,
   Fecha_Llegada_Estimada DATE NOT NULL,
@@ -715,20 +716,6 @@ BEGIN
 
 END
 
-IF OBJECT_ID (N'TS.fnButacasAeronave') IS NOT NULL
-   DROP FUNCTION "TS".fnButacasAeronave
-GO
-
-CREATE FUNCTION "TS".fnButacasAeronave(
-  @Aeronave_cod NUMERIC(18,0),
-  @Tipo NVARCHAR(255))
-RETURNS INT
-AS
-BEGIN
-	RETURN (SELECT COUNT(*) FROM [GD2C2015].[TS].[Butaca] WHERE Aero_Num = @Aeronave_cod AND But_Tipo = @Tipo)
-END
-GO
-
 IF OBJECT_ID (N'TS.fnConsultarSaldoMillas') IS NOT NULL
    DROP FUNCTION "TS".fnConsultarSaldoMillas
 GO
@@ -766,6 +753,56 @@ BEGIN
 		END
 	END
 	RETURN @Saldo
+END
+GO
+
+IF OBJECT_ID (N'TS.fnConsultarButacas') IS NOT NULL
+   DROP FUNCTION "TS".fnConsultarButacas
+GO
+
+CREATE FUNCTION "TS".fnConsultarButacas(
+  @Viaj_Cod NUMERIC(18,0),
+  @Cantidad INT)
+RETURNS INT
+AS
+BEGIN
+	DECLARE @Butacas INT
+	DECLARE @Retorno INT
+
+	SET @Retorno = 1
+	SET @Butacas = (SELECT Viaj_Butacas_Disponibles FROM TS.Viaje WHERE Viaj_Cod = @Viaj_Cod) 
+	 
+	IF (@Butacas >= @Cantidad)
+	BEGIN
+		SET @Retorno = 0
+	END
+
+	RETURN @Retorno
+END
+GO
+
+IF OBJECT_ID (N'TS.fnConsultarKgs') IS NOT NULL
+   DROP FUNCTION "TS".fnConsultarKgs
+GO
+
+CREATE FUNCTION "TS".fnConsultarKgs(
+  @Viaj_Cod NUMERIC(18,0),
+  @Kgs INT)
+RETURNS INT
+AS
+BEGIN
+	DECLARE @KgsDisponibles INT
+	DECLARE @Retorno INT
+	
+	SET @Retorno = 1	
+	SET @KgsDisponibles = (SELECT Viaj_Kgs_Disponibles FROM TS.Viaje WHERE Viaj_Cod = @Viaj_Cod) 
+	 
+	IF (@KgsDisponibles >= @Kgs)
+	BEGIN
+		SET @Retorno = 0
+	END
+
+	RETURN @Retorno
 END
 GO
 
@@ -813,6 +850,65 @@ BEGIN
 		
 		RETURN 0
 	END
+END
+GO
+
+IF OBJECT_ID (N'TS.spEditarCliente') IS NOT NULL
+   DROP PROCEDURE "TS".spEditarCliente
+GO
+
+CREATE PROCEDURE "TS".spEditarCliente
+  @Cli_Cod NUMERIC(18,0),
+  @Cli_Nombre NVARCHAR(255),
+  @Cli_Direccion NVARCHAR(255),
+  @Cli_Tel NVARCHAR(255),
+  @Cli_Mail NVARCHAR(255),
+  @Cli_Fecha_Nacimiento DATE,
+  @Cli_DNI NVARCHAR(255)
+AS
+BEGIN
+	DECLARE @CantDni INT
+	SET @CantDni = (SELECT COUNT(*) FROM TS.Cliente WHERE Cli_DNI = @Cli_DNI AND Cli_Cod != @Cli_Cod)
+
+	IF @CantDni > 0 
+	BEGIN
+		RETURN -1
+	END
+
+	UPDATE TS.Cliente
+	SET Cli_DNI = @Cli_DNI, Cli_Direccion = @Cli_Direccion, Cli_Nombre = @Cli_Nombre, 
+		Cli_Tel = @Cli_Tel, Cli_Mail = @Cli_Mail, Cli_Fecha_Nacimiento = @Cli_Fecha_Nacimiento
+	WHERE Cli_Cod = @Cli_Cod
+
+	RETURN 0
+END
+GO
+
+IF OBJECT_ID (N'TS.spCrearCliente') IS NOT NULL
+   DROP PROCEDURE "TS".spCrearCliente
+GO
+
+CREATE PROCEDURE "TS".spCrearCliente
+  @Cli_Nombre NVARCHAR(255),
+  @Cli_Direccion NVARCHAR(255),
+  @Cli_Tel NVARCHAR(255),
+  @Cli_Mail NVARCHAR(255),
+  @Cli_Fecha_Nacimiento DATE,
+  @Cli_DNI NVARCHAR(255)
+AS
+BEGIN
+	DECLARE @CantDni INT
+	SET @CantDni = (SELECT COUNT(*) FROM TS.Cliente WHERE Cli_DNI = @Cli_DNI)
+
+	IF @CantDni > 0 
+	BEGIN
+		RETURN -1
+	END
+
+	INSERT INTO TS.Cliente(Cli_DNI, Cli_Direccion, Cli_Nombre, Cli_Tel, Cli_Mail, Cli_Fecha_Nacimiento)
+	VALUES(@Cli_DNI, @Cli_Direccion, @Cli_Nombre, @Cli_Tel, @Cli_Mail, @Cli_Fecha_Nacimiento)
+
+	RETURN 0
 END
 GO
 

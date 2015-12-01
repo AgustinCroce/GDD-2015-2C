@@ -29,10 +29,30 @@ namespace AerolineaFrba.Compra
         private void searchButton_Click(object sender, EventArgs e)
         {
             DbComunicator db = new DbComunicator();
-            string queryVuelos = "SELECT Fecha_Salida, R.Ruta_Ciudad_Origen, R.Ruta_Ciudad_Destino ,Fecha_Llegada_Estimada, Ruta_Servicio ";
+            string queryVuelos = "SELECT Viaj_Cod, Fecha_Salida, R.Ruta_Ciudad_Origen, R.Ruta_Ciudad_Destino ,Fecha_Llegada_Estimada, Ruta_Servicio ";
             queryVuelos += "FROM TS.Ruta as R, Ts.Viaje as V ";
             queryVuelos += "WHERE R.Ruta_Cod = V.Ruta_Cod AND R.Ruta_Ciudad_Origen = '" + origenComboBox.SelectedValue.ToString() +"' AND R.Ruta_Ciudad_Destino = '"+ destinoComboBox.SelectedValue.ToString() +"' AND Fecha_Salida ='"+ despegueTimePicker.Value.ToShortDateString() +"'";
             vuelosGridView.DataSource = db.GetDataAdapter(queryVuelos).Tables[0];
         }
+
+        private void cleanButton_Click(object sender, EventArgs e)
+        {
+            this.vuelosGridView.DataSource = null;
+        }
+
+        private void selectButton_Click(object sender, EventArgs e)
+        {
+            SeleccionCantidadesForm sc = new SeleccionCantidadesForm(vuelosGridView.SelectedRows[0]);
+            sc.FormClosed += new FormClosedEventHandler(selectItems);
+            sc.Show();
+
+        }
+
+        private void selectItems(object sender, FormClosedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+       
     }
 }

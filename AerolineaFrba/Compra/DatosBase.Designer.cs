@@ -45,7 +45,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 13);
+            this.label1.Location = new System.Drawing.Point(12, 39);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(92, 13);
             this.label1.TabIndex = 0;
@@ -53,15 +53,15 @@
             // 
             // fullNameTextBox
             // 
-            this.fullNameTextBox.Location = new System.Drawing.Point(127, 10);
+            this.fullNameTextBox.Location = new System.Drawing.Point(127, 36);
             this.fullNameTextBox.Name = "fullNameTextBox";
-            this.fullNameTextBox.Size = new System.Drawing.Size(200, 20);
+            this.fullNameTextBox.Size = new System.Drawing.Size(310, 20);
             this.fullNameTextBox.TabIndex = 1;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 39);
+            this.label2.Location = new System.Drawing.Point(13, 13);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(64, 13);
             this.label2.TabIndex = 2;
@@ -105,44 +105,44 @@
             // 
             // dniTextBox
             // 
-            this.dniTextBox.Location = new System.Drawing.Point(127, 36);
+            this.dniTextBox.Location = new System.Drawing.Point(127, 10);
             this.dniTextBox.Name = "dniTextBox";
-            this.dniTextBox.Size = new System.Drawing.Size(200, 20);
+            this.dniTextBox.Size = new System.Drawing.Size(310, 20);
             this.dniTextBox.TabIndex = 7;
             // 
             // addressTextBox
             // 
             this.addressTextBox.Location = new System.Drawing.Point(127, 62);
             this.addressTextBox.Name = "addressTextBox";
-            this.addressTextBox.Size = new System.Drawing.Size(200, 20);
+            this.addressTextBox.Size = new System.Drawing.Size(310, 20);
             this.addressTextBox.TabIndex = 8;
             // 
             // phoneTextBox
             // 
             this.phoneTextBox.Location = new System.Drawing.Point(127, 87);
             this.phoneTextBox.Name = "phoneTextBox";
-            this.phoneTextBox.Size = new System.Drawing.Size(200, 20);
+            this.phoneTextBox.Size = new System.Drawing.Size(310, 20);
             this.phoneTextBox.TabIndex = 9;
             // 
             // mailTextBox
             // 
             this.mailTextBox.Location = new System.Drawing.Point(127, 138);
             this.mailTextBox.Name = "mailTextBox";
-            this.mailTextBox.Size = new System.Drawing.Size(200, 20);
+            this.mailTextBox.Size = new System.Drawing.Size(310, 20);
             this.mailTextBox.TabIndex = 10;
             // 
             // bornDateTimePicker
             // 
             this.bornDateTimePicker.Location = new System.Drawing.Point(127, 112);
             this.bornDateTimePicker.Name = "bornDateTimePicker";
-            this.bornDateTimePicker.Size = new System.Drawing.Size(200, 20);
+            this.bornDateTimePicker.Size = new System.Drawing.Size(310, 20);
             this.bornDateTimePicker.TabIndex = 11;
             // 
             // DatosBase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(345, 262);
+            this.ClientSize = new System.Drawing.Size(451, 262);
             this.Controls.Add(this.bornDateTimePicker);
             this.Controls.Add(this.mailTextBox);
             this.Controls.Add(this.phoneTextBox);
@@ -165,16 +165,16 @@
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox fullNameTextBox;
+        public System.Windows.Forms.TextBox fullNameTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox dniTextBox;
-        private System.Windows.Forms.TextBox addressTextBox;
-        private System.Windows.Forms.TextBox phoneTextBox;
-        private System.Windows.Forms.TextBox mailTextBox;
-        private System.Windows.Forms.DateTimePicker bornDateTimePicker;
+        public System.Windows.Forms.TextBox dniTextBox;
+        public System.Windows.Forms.TextBox addressTextBox;
+        public System.Windows.Forms.TextBox phoneTextBox;
+        public System.Windows.Forms.TextBox mailTextBox;
+        public System.Windows.Forms.DateTimePicker bornDateTimePicker;
     }
 }
