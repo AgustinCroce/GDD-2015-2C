@@ -22,7 +22,6 @@ namespace AerolineaFrba.Abm_Aeronave
             this.enabledButtons.RegisterTextBox(TB_kg_disponibles);
             this.enabledButtons.RegisterTextBox(TB_matricula);
             this.enabledButtons.RegisterTextBox(TB_modelo);
-            this.enabledButtons.RegisterTextBox(TB_numero);
             this.enabledButtons.RegisterButton(BT_guardar);
         }
 
@@ -30,12 +29,14 @@ namespace AerolineaFrba.Abm_Aeronave
         {
             SqlCommand spALtaAeronave = this.db.GetStoreProcedure("TS.spAltaAeronave");
             spALtaAeronave.Parameters.Add(new SqlParameter("@modelo", TB_modelo.Text));
-            spALtaAeronave.Parameters.Add(new SqlParameter("@matricula", TB_matricula));
-            spALtaAeronave.Parameters.Add(new SqlParameter("@fabricante", TB_fabricante));
+            spALtaAeronave.Parameters.Add(new SqlParameter("@matricula", TB_matricula.Text));
+            spALtaAeronave.Parameters.Add(new SqlParameter("@fabricante", TB_fabricante.Text));
+            spALtaAeronave.Parameters.Add(new SqlParameter("@servicio", CB_servicio.SelectedValue));
             spALtaAeronave.Parameters.Add(new SqlParameter("@butacas_v", Convert.ToInt64(TB_butacas_ventanilla.Text)));
             spALtaAeronave.Parameters.Add(new SqlParameter("@butacas_p", Convert.ToInt64(TB_butacas_pasillo.Text)));
             spALtaAeronave.Parameters.Add(new SqlParameter("@kg_disponibles", Convert.ToInt64(TB_kg_disponibles.Text)));
             spALtaAeronave.ExecuteNonQuery();
+            this.Close();
         }
     }
 }
