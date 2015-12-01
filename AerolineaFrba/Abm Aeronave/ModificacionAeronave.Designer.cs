@@ -36,6 +36,14 @@
             // 
             this.BT_guardar.Click += new System.EventHandler(this.BT_guardar_Click);
             // 
+            // TB_butacas_pasillo
+            // 
+            this.TB_butacas_pasillo.Enabled = false;
+            // 
+            // TB_butacas_ventanilla
+            // 
+            this.TB_butacas_ventanilla.Enabled = false;
+            // 
             // ModificacionAeronave
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
