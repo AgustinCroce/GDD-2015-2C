@@ -68,17 +68,53 @@
     <Compile Include="Abm Aeronave\ModificacionAeronave.Designer.cs">
       <DependentUpon>ModificacionAeronave.cs</DependentUpon>
     </Compile>
-    <Compile Include="Abm Ciudad\Form1.cs">
+    <Compile Include="Abm Ciudad\AltaCiudad.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Abm Ciudad\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Abm Ciudad\AltaCiudad.Designer.cs">
+      <DependentUpon>AltaCiudad.cs</DependentUpon>
     </Compile>
-    <Compile Include="Abm Rol\Form1.cs">
+    <Compile Include="Abm Ciudad\BaseCiudad.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Abm Rol\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Abm Ciudad\BaseCiudad.Designer.cs">
+      <DependentUpon>BaseCiudad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abm Ciudad\ListadoCiudad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Ciudad\ListadoCiudad.Designer.cs">
+      <DependentUpon>ListadoCiudad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abm Ciudad\ModificacionCiudad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Ciudad\ModificacionCiudad.Designer.cs">
+      <DependentUpon>ModificacionCiudad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abm Rol\AltaRol.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Rol\AltaRol.Designer.cs">
+      <DependentUpon>AltaRol.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abm Rol\BaseRol.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Rol\BaseRol.Designer.cs">
+      <DependentUpon>BaseRol.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abm Rol\ListadoRol.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Rol\ListadoRol.Designer.cs">
+      <DependentUpon>ListadoRol.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abm Rol\ModificacionRol.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Rol\ModificacionRol.Designer.cs">
+      <DependentUpon>ModificacionRol.cs</DependentUpon>
     </Compile>
     <Compile Include="Abm Ruta\AltaRuta.cs">
       <SubType>Form</SubType>
@@ -104,11 +140,11 @@
     <Compile Include="Abm Ruta\ModificacionRuta.Designer.cs">
       <DependentUpon>ModificacionRuta.cs</DependentUpon>
     </Compile>
-    <Compile Include="Canje Millas\Form1.cs">
+    <Compile Include="Canje Millas\CanjeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Canje Millas\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Canje Millas\CanjeForm.designer.cs">
+      <DependentUpon>CanjeForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Commons\EnabledButtons.cs" />
     <Compile Include="Commons\Sha256Generator.cs" />
@@ -155,11 +191,11 @@
     <Compile Include="Compra\SeleccionVueloForm.Designer.cs">
       <DependentUpon>SeleccionVueloForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Consulta Millas\Form1.cs">
+    <Compile Include="Consulta Millas\CosultaForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Consulta Millas\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Consulta Millas\CosultaForm.Designer.cs">
+      <DependentUpon>CosultaForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Commons\DbComunicator.cs" />
     <Compile Include="Devolucion\Form1.cs">
@@ -194,11 +230,17 @@
     <Compile Include="Registro de Usuario\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Registro Llegada Destino\Form1.cs">
+    <Compile Include="Registro Llegada Destino\Llegada.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Registro Llegada Destino\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Registro Llegada Destino\Llegada.Designer.cs">
+      <DependentUpon>Llegada.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Registro Llegada Destino\SeleccionarViajeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Registro Llegada Destino\SeleccionarViajeForm.Designer.cs">
+      <DependentUpon>SeleccionarViajeForm.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Abm Aeronave\AltaAeronave.resx">
       <DependentUpon>AltaAeronave.cs</DependentUpon>
@@ -212,6 +254,30 @@
     <EmbeddedResource Include="Abm Aeronave\ModificacionAeronave.resx">
       <DependentUpon>ModificacionAeronave.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Abm Ciudad\AltaCiudad.resx">
+      <DependentUpon>AltaCiudad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Ciudad\BaseCiudad.resx">
+      <DependentUpon>BaseCiudad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Ciudad\ListadoCiudad.resx">
+      <DependentUpon>ListadoCiudad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Ciudad\ModificacionCiudad.resx">
+      <DependentUpon>ModificacionCiudad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Rol\AltaRol.resx">
+      <DependentUpon>AltaRol.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Rol\BaseRol.resx">
+      <DependentUpon>BaseRol.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Rol\ListadoRol.resx">
+      <DependentUpon>ListadoRol.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Rol\ModificacionRol.resx">
+      <DependentUpon>ModificacionRol.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Abm Ruta\AltaRuta.resx">
       <DependentUpon>AltaRuta.cs</DependentUpon>
     </EmbeddedResource>
@@ -223,6 +289,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Ruta\ModificacionRuta.resx">
       <DependentUpon>ModificacionRuta.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Canje Millas\CanjeForm.resx">
+      <DependentUpon>CanjeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Compra\DatosBase.resx">
       <DependentUpon>DatosBase.cs</DependentUpon>
@@ -245,6 +314,9 @@
     <EmbeddedResource Include="Compra\SeleccionVueloForm.resx">
       <DependentUpon>SeleccionVueloForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Consulta Millas\CosultaForm.resx">
+      <DependentUpon>CosultaForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -257,6 +329,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Registro Llegada Destino\Llegada.resx">
+      <DependentUpon>Llegada.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
