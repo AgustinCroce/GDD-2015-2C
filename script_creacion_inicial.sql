@@ -162,6 +162,7 @@ CREATE TABLE "TS".Rol_Usuario
 (
   Rol_Nombre NVARCHAR(255) REFERENCES "TS".Rol(Rol_Nombre),
   Usr_Username NVARCHAR(255) REFERENCES "TS".Usuario(Usr_Username),
+  Rol_Usuario_Borrado BIT NOT NULL DEFAULT 0,
   PRIMARY KEY(Rol_Nombre, Usr_Username)
 );
 
@@ -207,7 +208,8 @@ CREATE TABLE "TS".Aeronave
   Aero_Fecha_Fuera_De_Servicio DATE,
   Aero_Fecha_Reinicio_De_Servicio DATE,
   Aero_Fecha_Baja_Definitiva DATE,
-  Aero_Cantidad_Kg_Disponibles NUMERIC(18,0) NOT NULL
+  Aero_Cantidad_Kg_Disponibles NUMERIC(18,0) NOT NULL,
+  Aero_Borrado BIT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE "TS".Tipo_Tarjeta
@@ -219,7 +221,9 @@ CREATE TABLE "TS".Tipo_Tarjeta
 
 CREATE TABLE "TS".Ciudad
 (
-  Ciudad_Nombre NVARCHAR(255) PRIMARY KEY
+  Ciudad_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(12,1),
+  Ciudad_Nombre NVARCHAR(255),
+  Ciudad_Borrada BIT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE "TS".Auditoria_Fuera_De_Servicio
@@ -236,7 +240,8 @@ CREATE TABLE "TS".Butaca
   Aero_Num NUMERIC(18,0) REFERENCES "TS".Aeronave(Aero_Num),
   But_Numero NUMERIC(18,0) NOT NULL,
   But_Piso NUMERIC(18,0) NOT NULL,
-  But_Tipo NVARCHAR(255) NOT NULL
+  But_Tipo NVARCHAR(255) NOT NULL,
+  But_Borrada BIT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE "TS".Tarjeta
@@ -252,11 +257,12 @@ CREATE TABLE "TS".Ruta
 (
   Ruta_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
   Ruta_Codigo NUMERIC(18,0) NOT NULL,
-  Ruta_Ciudad_Origen NVARCHAR(255) REFERENCES "TS".Ciudad(Ciudad_Nombre),
-  Ruta_Ciudad_Destino NVARCHAR(255) REFERENCES "TS".Ciudad(Ciudad_Nombre),
+  Ruta_Ciudad_Origen NUMERIC(18,0) REFERENCES "TS".Ciudad(Ciudad_Cod),
+  Ruta_Ciudad_Destino NUMERIC(18,0) REFERENCES "TS".Ciudad(Ciudad_Cod),
   Ruta_Precio_Base_Kg NUMERIC(18,2) NOT NULL DEFAULT 0,
   Ruta_Precio_Base_Pasaje NUMERIC(18,2) NOT NULL DEFAULT 0,
-  Ruta_Servicio NVARCHAR(255) NOT NULL
+  Ruta_Servicio NVARCHAR(255) NOT NULL,
+  Ruta_Borrada BIT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE "TS".Viaje
@@ -709,6 +715,20 @@ BEGIN
 
 END
 
+IF OBJECT_ID (N'TS.fnButacasAeronave') IS NOT NULL
+   DROP FUNCTION "TS".fnButacasAeronave
+GO
+
+CREATE FUNCTION "TS".fnButacasAeronave(
+  @Aeronave_cod NUMERIC(18,0),
+  @Tipo NVARCHAR(255))
+RETURNS INT
+AS
+BEGIN
+	RETURN (SELECT COUNT(*) FROM [GD2C2015].[TS].[Butaca] WHERE Aero_Num = @Aeronave_cod AND But_Tipo = @Tipo)
+END
+GO
+
 IF OBJECT_ID (N'TS.fnConsultarSaldoMillas') IS NOT NULL
    DROP FUNCTION "TS".fnConsultarSaldoMillas
 GO
@@ -898,12 +918,13 @@ FROM GD2C2015.gd_esquema.Maestra
 WHERE Ruta_Precio_BasePasaje > 0
   
 INSERT INTO "TS".Ruta(Ruta_Codigo, Ruta_Precio_Base_Kg, Ruta_Precio_Base_Pasaje, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Ruta_Servicio)
-SELECT e.Ruta_Codigo, e.Ruta_Precio_BaseKG, p.Ruta_Precio_BasePasaje, e.Ruta_Ciudad_Origen, 
-         e.Ruta_Ciudad_Destino, e.Tipo_Servicio
-FROM #RutasXEncomienda as e, #RutasXPasaje as p
+SELECT e.Ruta_Codigo, e.Ruta_Precio_BaseKG, p.Ruta_Precio_BasePasaje, C1.Ciudad_Cod, C2.Ciudad_Cod, e.Tipo_Servicio
+FROM #RutasXEncomienda as e, #RutasXPasaje as p, TS.Ciudad as C1, TS.Ciudad as C2
 WHERE e.Ruta_Codigo = p.Ruta_Codigo AND e.Ruta_Ciudad_Origen = p.Ruta_Ciudad_Origen 
       AND e.Ruta_Ciudad_Destino = p.Ruta_Ciudad_Destino 
       AND e.Tipo_Servicio = p.Tipo_Servicio
+	  AND e.Ruta_Ciudad_Origen = C1.Ciudad_Nombre
+	  AND e.Ruta_Ciudad_Destino = C2.Ciudad_Nombre
 
 INSERT INTO "TS".Viaje(Fecha_Salida, Fecha_Llegada, Fecha_Llegada_Estimada, Aero_Num, Ruta_Cod)
 SELECT DISTINCT M.FechaSalida, M.FechaLLegada, M.Fecha_LLegada_Estimada, Aero_Num, R.Ruta_Cod
@@ -916,10 +937,11 @@ SET IDENTITY_INSERT "TS".Pasaje ON;
 
 INSERT INTO "TS".Pasaje(Pas_Cod, Pas_Fecha_Compra, Pas_Precio, Viaj_Cod, Cli_Cod)
 SELECT DISTINCT M.Pasaje_Codigo, M.Pasaje_FechaCompra, M.Pasaje_Precio, R.Ruta_Cod, Cli.Cli_Cod
-FROM GD2C2015.gd_esquema.Maestra as M, "TS".Aeronave, "TS".Ruta as R, "TS".Cliente as Cli
+FROM GD2C2015.gd_esquema.Maestra as M, "TS".Aeronave, "TS".Ruta as R, "TS".Cliente as Cli, TS.Ciudad as C1, TS.Ciudad as C2
 WHERE Pasaje_Codigo > 0
 AND Aero_Matricula=Aeronave_Matricula
-AND R.Ruta_Codigo = M.Ruta_Codigo AND R.Ruta_Servicio = M.Tipo_Servicio AND R.Ruta_Ciudad_Destino = M.Ruta_Ciudad_Destino AND R.Ruta_Ciudad_Origen = M.Ruta_Ciudad_Origen
+AND C2.Ciudad_Nombre = M.Ruta_Ciudad_Destino AND C1.Ciudad_Nombre = M.Ruta_Ciudad_Origen
+AND R.Ruta_Codigo = M.Ruta_Codigo AND R.Ruta_Servicio = M.Tipo_Servicio AND R.Ruta_Ciudad_Destino = C2.Ciudad_Cod AND R.Ruta_Ciudad_Origen = C1.Ciudad_Cod
 AND Cli.Cli_Nombre = M.Cli_Apellido + ', ' + M.Cli_Nombre AND Cli.Cli_DNI = M.Cli_Dni
 
 SET IDENTITY_INSERT "TS".Pasaje OFF;
@@ -935,9 +957,10 @@ SET IDENTITY_INSERT "TS".Encomienda ON;
 
 INSERT INTO "TS".Encomienda(Enc_Cod, Enc_Fecha_Compra, Enc_Kg, Enc_Precio, Viaj_Cod, Cli_Cod)
 SELECT DISTINCT Paquete_Codigo, Paquete_FechaCompra, Paquete_KG, Paquete_Precio, R.Ruta_Cod, Cli.Cli_Cod
-FROM GD2C2015.gd_esquema.Maestra as M, "TS".Ruta as R, "TS".Butaca as B, "TS".Cliente as Cli
+FROM GD2C2015.gd_esquema.Maestra as M, "TS".Ruta as R, "TS".Butaca as B, "TS".Cliente as Cli, TS.Ciudad as C1, TS.Ciudad as C2
 WHERE Paquete_Codigo > 0
-AND R.Ruta_Codigo = M.Ruta_Codigo AND R.Ruta_Servicio = M.Tipo_Servicio AND R.Ruta_Ciudad_Destino = M.Ruta_Ciudad_Destino AND R.Ruta_Ciudad_Origen = M.Ruta_Ciudad_Origen
+AND C2.Ciudad_Nombre = M.Ruta_Ciudad_Destino AND C1.Ciudad_Nombre = M.Ruta_Ciudad_Origen
+AND R.Ruta_Codigo = M.Ruta_Codigo AND R.Ruta_Servicio = M.Tipo_Servicio AND R.Ruta_Ciudad_Destino = C2.Ciudad_Cod AND R.Ruta_Ciudad_Origen = C1.Ciudad_Cod
 AND Cli.Cli_Nombre = M.Cli_Apellido + ', ' + M.Cli_Nombre AND Cli.Cli_DNI = M.Cli_Dni
 
 SET IDENTITY_INSERT "TS".Encomienda OFF;
