@@ -58,7 +58,7 @@
             this.groupBox2.Controls.Add(this.BT_eliminar);
             this.groupBox2.Controls.Add(this.BT_modificar);
             this.groupBox2.Controls.Add(this.BT_agregar);
-            this.groupBox2.Location = new System.Drawing.Point(687, 81);
+            this.groupBox2.Location = new System.Drawing.Point(989, 81);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(89, 227);
             this.groupBox2.TabIndex = 13;
@@ -104,7 +104,7 @@
             this.groupBox1.Controls.Add(this.BT_buscar);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(764, 63);
+            this.groupBox1.Size = new System.Drawing.Size(1066, 63);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Busqueda";
@@ -114,7 +114,7 @@
             this.CB_servicio.FormattingEnabled = true;
             this.CB_servicio.Location = new System.Drawing.Point(65, 21);
             this.CB_servicio.Name = "CB_servicio";
-            this.CB_servicio.Size = new System.Drawing.Size(604, 21);
+            this.CB_servicio.Size = new System.Drawing.Size(906, 21);
             this.CB_servicio.TabIndex = 4;
             // 
             // label1
@@ -128,7 +128,7 @@
             // 
             // BT_buscar
             // 
-            this.BT_buscar.Location = new System.Drawing.Point(681, 19);
+            this.BT_buscar.Location = new System.Drawing.Point(983, 21);
             this.BT_buscar.Name = "BT_buscar";
             this.BT_buscar.Size = new System.Drawing.Size(75, 23);
             this.BT_buscar.TabIndex = 3;
@@ -151,14 +151,14 @@
             this.DGV_aeronave.ShowCellToolTips = false;
             this.DGV_aeronave.ShowEditingIcon = false;
             this.DGV_aeronave.ShowRowErrors = false;
-            this.DGV_aeronave.Size = new System.Drawing.Size(669, 227);
+            this.DGV_aeronave.Size = new System.Drawing.Size(971, 227);
             this.DGV_aeronave.TabIndex = 15;
             // 
             // ListadoAeronave
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(788, 348);
+            this.ClientSize = new System.Drawing.Size(1090, 348);
             this.Controls.Add(this.DGV_aeronave);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.groupBox2);
