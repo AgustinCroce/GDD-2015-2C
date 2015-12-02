@@ -21,19 +21,22 @@ namespace AerolineaFrba.Abm_Aeronave
             TB_matricula.Text = selected.Cells["Matricula"].Value.ToString();
             TB_modelo.Text = selected.Cells["Modelo"].Value.ToString();
             TB_numero.Text = selected.Cells["Numero"].Value.ToString();
+            TB_butacas_pasillo.Text = selected.Cells["Butacas Pasillo"].Value.ToString();
+            TB_butacas_ventanilla.Text = selected.Cells["Butacas Ventanilla"].Value.ToString();
+            CB_servicio.Text = selected.Cells["Servicio"].Value.ToString();
         }
 
         private void BT_guardar_Click(object sender, EventArgs e)
         {
             SqlCommand spModificarAeronave = this.db.GetStoreProcedure("TS.spModificarAeronave");
             spModificarAeronave.Parameters.Add(new SqlParameter("@modelo", TB_modelo.Text));
-            spModificarAeronave.Parameters.Add(new SqlParameter("@matricula", TB_matricula));
-            spModificarAeronave.Parameters.Add(new SqlParameter("@fabricante", TB_fabricante));
+            spModificarAeronave.Parameters.Add(new SqlParameter("@matricula", TB_matricula.Text));
+            spModificarAeronave.Parameters.Add(new SqlParameter("@fabricante", TB_fabricante.Text));
+            spModificarAeronave.Parameters.Add(new SqlParameter("@servicio", CB_servicio.SelectedValue));
             spModificarAeronave.Parameters.Add(new SqlParameter("@numero", Convert.ToInt64(TB_numero.Text)));
-            spModificarAeronave.Parameters.Add(new SqlParameter("@butacas_v", Convert.ToInt64(TB_butacas_ventanilla.Text)));
-            spModificarAeronave.Parameters.Add(new SqlParameter("@butacas_p", Convert.ToInt64(TB_butacas_pasillo.Text)));
             spModificarAeronave.Parameters.Add(new SqlParameter("@kg_disponibles", Convert.ToInt64(TB_kg_disponibles.Text)));
             spModificarAeronave.ExecuteNonQuery();
+            this.Close();
         }
     }
 }

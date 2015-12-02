@@ -1,6 +1,6 @@
-﻿namespace AerolineaFrba.Abm_Aeronave
+﻿namespace AerolineaFrba.Abm_Rol
 {
-    partial class ListadoAeronave
+    partial class ListadoRol
     {
         /// <summary>
         /// Required designer variable.
@@ -34,13 +34,15 @@
             this.BT_modificar = new System.Windows.Forms.Button();
             this.BT_agregar = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.CB_servicio = new System.Windows.Forms.ComboBox();
+            this.TB_rol = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.BT_buscar = new System.Windows.Forms.Button();
-            this.DGV_aeronave = new System.Windows.Forms.DataGridView();
+            this.DGV_rol = new System.Windows.Forms.DataGridView();
+            this.BT_Habilitar = new System.Windows.Forms.Button();
+            this.BT_Deshabilitar = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DGV_aeronave)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DGV_rol)).BeginInit();
             this.SuspendLayout();
             // 
             // button4
@@ -55,10 +57,12 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.BT_Deshabilitar);
+            this.groupBox2.Controls.Add(this.BT_Habilitar);
             this.groupBox2.Controls.Add(this.BT_eliminar);
             this.groupBox2.Controls.Add(this.BT_modificar);
             this.groupBox2.Controls.Add(this.BT_agregar);
-            this.groupBox2.Location = new System.Drawing.Point(989, 81);
+            this.groupBox2.Location = new System.Drawing.Point(395, 81);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(89, 227);
             this.groupBox2.TabIndex = 13;
@@ -68,7 +72,7 @@
             // BT_eliminar
             // 
             this.BT_eliminar.Enabled = false;
-            this.BT_eliminar.Location = new System.Drawing.Point(6, 77);
+            this.BT_eliminar.Location = new System.Drawing.Point(6, 135);
             this.BT_eliminar.Name = "BT_eliminar";
             this.BT_eliminar.Size = new System.Drawing.Size(75, 23);
             this.BT_eliminar.TabIndex = 2;
@@ -99,23 +103,22 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.CB_servicio);
+            this.groupBox1.Controls.Add(this.TB_rol);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.BT_buscar);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1066, 63);
+            this.groupBox1.Size = new System.Drawing.Size(472, 63);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Busqueda";
             // 
-            // CB_servicio
+            // TB_rol
             // 
-            this.CB_servicio.FormattingEnabled = true;
-            this.CB_servicio.Location = new System.Drawing.Point(65, 21);
-            this.CB_servicio.Name = "CB_servicio";
-            this.CB_servicio.Size = new System.Drawing.Size(906, 21);
-            this.CB_servicio.TabIndex = 4;
+            this.TB_rol.Location = new System.Drawing.Point(65, 21);
+            this.TB_rol.Name = "TB_rol";
+            this.TB_rol.Size = new System.Drawing.Size(312, 20);
+            this.TB_rol.TabIndex = 4;
             // 
             // label1
             // 
@@ -128,7 +131,7 @@
             // 
             // BT_buscar
             // 
-            this.BT_buscar.Location = new System.Drawing.Point(983, 21);
+            this.BT_buscar.Location = new System.Drawing.Point(389, 19);
             this.BT_buscar.Name = "BT_buscar";
             this.BT_buscar.Size = new System.Drawing.Size(75, 23);
             this.BT_buscar.TabIndex = 3;
@@ -136,40 +139,62 @@
             this.BT_buscar.UseVisualStyleBackColor = true;
             this.BT_buscar.Click += new System.EventHandler(this.BT_buscar_Click);
             // 
-            // DGV_aeronave
+            // DGV_rol
             // 
-            this.DGV_aeronave.AllowUserToAddRows = false;
-            this.DGV_aeronave.AllowUserToDeleteRows = false;
-            this.DGV_aeronave.AllowUserToResizeColumns = false;
-            this.DGV_aeronave.AllowUserToResizeRows = false;
-            this.DGV_aeronave.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DGV_aeronave.Location = new System.Drawing.Point(12, 81);
-            this.DGV_aeronave.MultiSelect = false;
-            this.DGV_aeronave.Name = "DGV_aeronave";
-            this.DGV_aeronave.ReadOnly = true;
-            this.DGV_aeronave.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DGV_aeronave.ShowCellToolTips = false;
-            this.DGV_aeronave.ShowEditingIcon = false;
-            this.DGV_aeronave.ShowRowErrors = false;
-            this.DGV_aeronave.Size = new System.Drawing.Size(971, 227);
-            this.DGV_aeronave.TabIndex = 15;
+            this.DGV_rol.AllowUserToAddRows = false;
+            this.DGV_rol.AllowUserToDeleteRows = false;
+            this.DGV_rol.AllowUserToResizeColumns = false;
+            this.DGV_rol.AllowUserToResizeRows = false;
+            this.DGV_rol.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DGV_rol.Location = new System.Drawing.Point(12, 81);
+            this.DGV_rol.MultiSelect = false;
+            this.DGV_rol.Name = "DGV_rol";
+            this.DGV_rol.ReadOnly = true;
+            this.DGV_rol.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.DGV_rol.ShowCellToolTips = false;
+            this.DGV_rol.ShowEditingIcon = false;
+            this.DGV_rol.ShowRowErrors = false;
+            this.DGV_rol.Size = new System.Drawing.Size(377, 227);
+            this.DGV_rol.TabIndex = 15;
             // 
-            // ListadoAeronave
+            // BT_Habilitar
+            // 
+            this.BT_Habilitar.Enabled = false;
+            this.BT_Habilitar.Location = new System.Drawing.Point(6, 77);
+            this.BT_Habilitar.Name = "BT_Habilitar";
+            this.BT_Habilitar.Size = new System.Drawing.Size(75, 23);
+            this.BT_Habilitar.TabIndex = 3;
+            this.BT_Habilitar.Text = "Habilitar";
+            this.BT_Habilitar.UseVisualStyleBackColor = true;
+            this.BT_Habilitar.Click += new System.EventHandler(this.BT_Habilitar_Click);
+            // 
+            // BT_Deshabilitar
+            // 
+            this.BT_Deshabilitar.Enabled = false;
+            this.BT_Deshabilitar.Location = new System.Drawing.Point(6, 106);
+            this.BT_Deshabilitar.Name = "BT_Deshabilitar";
+            this.BT_Deshabilitar.Size = new System.Drawing.Size(75, 23);
+            this.BT_Deshabilitar.TabIndex = 4;
+            this.BT_Deshabilitar.Text = "Deshabilitar";
+            this.BT_Deshabilitar.UseVisualStyleBackColor = true;
+            this.BT_Deshabilitar.Click += new System.EventHandler(this.BT_Deshabilitar_Click);
+            // 
+            // ListadoRol
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1090, 348);
-            this.Controls.Add(this.DGV_aeronave);
+            this.ClientSize = new System.Drawing.Size(493, 348);
+            this.Controls.Add(this.DGV_rol);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Name = "ListadoAeronave";
-            this.Text = "Aeronaves";
-            this.Load += new System.EventHandler(this.ListadoAeronave_Load);
+            this.Name = "ListadoRol";
+            this.Text = "Roles";
+            this.Load += new System.EventHandler(this.ListadoRol_Load);
             this.groupBox2.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DGV_aeronave)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DGV_rol)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -184,8 +209,10 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button BT_buscar;
-        private System.Windows.Forms.DataGridView DGV_aeronave;
-        private System.Windows.Forms.ComboBox CB_servicio;
+        private System.Windows.Forms.DataGridView DGV_rol;
+        private System.Windows.Forms.TextBox TB_rol;
+        private System.Windows.Forms.Button BT_Deshabilitar;
+        private System.Windows.Forms.Button BT_Habilitar;
 
     }
 }

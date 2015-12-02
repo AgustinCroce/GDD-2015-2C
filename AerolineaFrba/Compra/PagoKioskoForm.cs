@@ -91,6 +91,7 @@ namespace AerolineaFrba.Compra
             ta.ShowDialog();
             cardNumberTextBox.Text = ta.tarjetaNumero;
             fillCardInputs();
+            foundCliCod(this.cliCod);
         }
 
         private void editCreditCardButton_Click(object sender, EventArgs e)

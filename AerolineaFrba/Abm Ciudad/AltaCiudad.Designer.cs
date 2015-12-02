@@ -1,6 +1,6 @@
-﻿namespace AerolineaFrba.Abm_Aeronave
+﻿namespace AerolineaFrba.Abm_Ciudad
 {
-    partial class ModificacionAeronave
+    partial class AltaCiudad
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -36,23 +35,13 @@
             // 
             this.BT_guardar.Click += new System.EventHandler(this.BT_guardar_Click);
             // 
-            // TB_butacas_pasillo
-            // 
-            this.TB_butacas_pasillo.Enabled = false;
-            // 
-            // TB_butacas_ventanilla
-            // 
-            this.TB_butacas_ventanilla.Enabled = false;
-            // 
-            // ModificacionAeronave
+            // AltaCiudad
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 327);
-            this.Name = "ModificacionAeronave";
-            this.Text = "ModificacionAeronave";
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.ClientSize = new System.Drawing.Size(282, 129);
+            this.Name = "AltaCiudad";
+            this.Text = "Agregar Ciudad";
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);

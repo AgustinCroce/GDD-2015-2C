@@ -192,7 +192,6 @@
             this.label6.Size = new System.Drawing.Size(71, 13);
             this.label6.TabIndex = 18;
             this.label6.Text = "Código Unico";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // TB_codigo_unico
             // 

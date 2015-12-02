@@ -29,7 +29,7 @@ namespace AerolineaFrba.Abm_Ruta
 
         private void ListadoRutas_Load(object sender, EventArgs e)
         {
-            string QueryRutas = "SELECT Ruta_Cod 'Codigo Unico', Ruta_Codigo 'Codigo', Ruta_Ciudad_Origen 'Origen', Ruta_Ciudad_Destino 'Destino', Ruta_Servicio 'Servicio', Ruta_Precio_Base_Kg 'Precio Kg', Ruta_Precio_Base_Pasaje 'Precio Pasaje' FROM [GD2C2015].[TS].[Ruta]";
+            string QueryRutas = "SELECT Ruta_Cod 'Codigo Unico', Ruta_Codigo 'Codigo', C1.Ciudad_Nombre 'Origen', C2.Ciudad_Nombre 'Destino', Ruta_Servicio 'Servicio', Ruta_Precio_Base_Kg 'Precio Kg', Ruta_Precio_Base_Pasaje 'Precio Pasaje', Ruta_Borrada Borrada FROM [GD2C2015].[TS].[Ruta], [GD2C2015].[TS].[Ciudad] as C1, [GD2C2015].[TS].[Ciudad] as C2 WHERE C1.Ciudad_Cod = Ruta_Ciudad_Origen AND  C2.Ciudad_Cod = Ruta_Ciudad_Destino";
             string QueryCiudades = "SELECT Ciudad_Nombre 'Nombre' FROM [GD2C2015].[TS].[Ciudad]";
             DGV_rutas.DataSource = db.GetDataAdapter(QueryRutas).Tables[0];
             Dictionary<object, object> Ciudades = this.db.GetQueryDictionary(QueryCiudades, "Nombre", "Nombre");
@@ -61,7 +61,7 @@ namespace AerolineaFrba.Abm_Ruta
 
         private void BT_buscar_Click(object sender, EventArgs e)
         {
-            string QueryBusqueda = "SELECT Ruta_Cod 'Codigo Unico', Ruta_Codigo 'Codigo', Ruta_Ciudad_Origen 'Origen', Ruta_Ciudad_Destino 'Destino', Ruta_Servicio 'Servicio', Ruta_Precio_Base_Kg 'Precio Kg', Ruta_Precio_Base_Pasaje 'Precio Pasaje' FROM [GD2C2015].[TS].[Ruta] WHERE Ruta_Ciudad_Destino LIKE '%" + CB_ciudad.SelectedValue + "%' OR Ruta_Ciudad_Origen LIKE '%" + CB_ciudad.SelectedValue + "%'";
+            string QueryBusqueda = "SELECT Ruta_Cod 'Codigo Unico', Ruta_Codigo 'Codigo', C1.Ciudad_Nombre 'Origen', C2.Ciudad_Nombre 'Destino', Ruta_Servicio 'Servicio', Ruta_Precio_Base_Kg 'Precio Kg', Ruta_Precio_Base_Pasaje 'Precio Pasaje', Ruta_Borrada Borrada FROM [GD2C2015].[TS].[Ruta], [GD2C2015].[TS].[Ciudad] as C1, [GD2C2015].[TS].[Ciudad] as C2 WHERE (C1.Ciudad_Cod = Ruta_Ciudad_Origen AND C1.Ciudad_Nombre LIKE '%" + CB_ciudad.SelectedValue + "%' AND C2.Ciudad_Cod = Ruta_Ciudad_Destino) OR (C1.Ciudad_Cod = Ruta_Ciudad_Origen AND C2.Ciudad_Nombre LIKE '%" + CB_ciudad.SelectedValue + "%' AND C2.Ciudad_Cod = Ruta_Ciudad_Destino)";
             DGV_rutas.DataSource = db.GetDataAdapter(QueryBusqueda).Tables[0];
         }
 
@@ -78,9 +78,10 @@ namespace AerolineaFrba.Abm_Ruta
             if (dialogResult == DialogResult.Yes)
             {
                 SqlCommand spBorrarRuta = this.db.GetStoreProcedure("TS.spBorrarRuta");
-                spBorrarRuta.Parameters.Add(new SqlParameter("@Codigo", Convert.ToInt64(DGV_rutas.SelectedRows[0].Cells["Codigo"].Value)));
+                spBorrarRuta.Parameters.Add(new SqlParameter("@Codigo", Convert.ToInt64(DGV_rutas.SelectedRows[0].Cells["Codigo Unico"].Value)));
                 spBorrarRuta.ExecuteNonQuery();
             }
+            this.ListadoRutas_Load(sender, e);
         }
 
         private void BT_agregar_Click(object sender, EventArgs e)

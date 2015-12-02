@@ -9,29 +9,21 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AerolineaFrba.Commons;
 
-namespace AerolineaFrba.Abm_Aeronave
+namespace AerolineaFrba.Abm_Ciudad
 {
-    public partial class BaseAeronave : Form
+    public partial class BaseCiudad : Form
     {
         public DbComunicator db;
         public Commons.Validator validator;
         public Commons.EnabledButtons enabledButtons;
 
-        public BaseAeronave()
+        public BaseCiudad()
         {
             InitializeComponent();
             this.db = new DbComunicator();
             this.validator = new Commons.Validator();
             this.enabledButtons = new Commons.EnabledButtons();
-            TB_butacas_pasillo.KeyPress += this.InputNumField_KeyPress;
-            TB_butacas_ventanilla.KeyPress += this.InputNumField_KeyPress;
-            TB_kg_disponibles.KeyPress += this.InputNumField_KeyPress;
-            TB_numero.KeyPress += this.InputNumField_KeyPress;
-            string QueryServicio = "SELECT DISTINCT Aero_Servicio Nombre FROM [GD2C2015].[TS].[Aeronave]";
-            Dictionary<object, object> Servicios = this.db.GetQueryDictionary(QueryServicio, "Nombre", "Nombre");
-            CB_servicio.DataSource = new BindingSource(Servicios, null);
-            CB_servicio.DisplayMember = "Value";
-            CB_servicio.ValueMember = "Key";
+            TB_codigo.KeyPress += this.InputNumField_KeyPress;
         }
 
         private void InputNumField_KeyPress(object sender, KeyPressEventArgs e)

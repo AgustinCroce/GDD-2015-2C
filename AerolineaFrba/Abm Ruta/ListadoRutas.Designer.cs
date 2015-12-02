@@ -50,7 +50,7 @@
             this.groupBox1.Controls.Add(this.BT_buscar);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(852, 63);
+            this.groupBox1.Size = new System.Drawing.Size(943, 63);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Busqueda";
@@ -60,7 +60,7 @@
             this.CB_ciudad.FormattingEnabled = true;
             this.CB_ciudad.Location = new System.Drawing.Point(79, 21);
             this.CB_ciudad.Name = "CB_ciudad";
-            this.CB_ciudad.Size = new System.Drawing.Size(678, 21);
+            this.CB_ciudad.Size = new System.Drawing.Size(769, 21);
             this.CB_ciudad.TabIndex = 5;
             // 
             // label1
@@ -74,7 +74,7 @@
             // 
             // BT_buscar
             // 
-            this.BT_buscar.Location = new System.Drawing.Point(769, 19);
+            this.BT_buscar.Location = new System.Drawing.Point(860, 19);
             this.BT_buscar.Name = "BT_buscar";
             this.BT_buscar.Size = new System.Drawing.Size(75, 23);
             this.BT_buscar.TabIndex = 3;
@@ -87,7 +87,7 @@
             this.groupBox2.Controls.Add(this.BT_eliminar);
             this.groupBox2.Controls.Add(this.BT_modificar);
             this.groupBox2.Controls.Add(this.BT_agregar);
-            this.groupBox2.Location = new System.Drawing.Point(775, 81);
+            this.groupBox2.Location = new System.Drawing.Point(866, 81);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(89, 227);
             this.groupBox2.TabIndex = 1;
@@ -151,14 +151,14 @@
             this.DGV_rutas.ShowCellToolTips = false;
             this.DGV_rutas.ShowEditingIcon = false;
             this.DGV_rutas.ShowRowErrors = false;
-            this.DGV_rutas.Size = new System.Drawing.Size(757, 227);
+            this.DGV_rutas.Size = new System.Drawing.Size(848, 227);
             this.DGV_rutas.TabIndex = 7;
             // 
             // ListadoRutas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(876, 350);
+            this.ClientSize = new System.Drawing.Size(967, 350);
             this.Controls.Add(this.DGV_rutas);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.groupBox2);

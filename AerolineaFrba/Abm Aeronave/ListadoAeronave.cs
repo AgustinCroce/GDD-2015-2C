@@ -24,7 +24,7 @@ namespace AerolineaFrba.Abm_Aeronave
 
         private void ListadoAeronave_Load(object sender, EventArgs e)
         {
-            string QueryAeronave = "SELECT Aero_Num Numero, Aero_Modelo Modelo, Aero_Matricula Matricula, Aero_Fabricante Fabricante, Aero_Servicio Servicio, Aero_Cantidad_Kg_Disponibles 'KG Disponible' FROM [GD2C2015].[TS].[Aeronave]";
+            string QueryAeronave = "SELECT Aero_Num Numero, Aero_Modelo Modelo, Aero_Matricula Matricula, Aero_Fabricante Fabricante, Aero_Servicio Servicio, Aero_Cantidad_Kg_Disponibles 'KG Disponible', TS.fnButacasAeronave(Aero_Num, 'Ventanilla') 'Butacas Ventanilla', TS.fnButacasAeronave(Aero_Num, 'Pasillo') 'Butacas Pasillo', Aero_Borrado Borrada FROM [GD2C2015].[TS].[Aeronave]";
             string QueryServicio = "SELECT DISTINCT Aero_Servicio Nombre FROM [GD2C2015].[TS].[Aeronave]";
             DGV_aeronave.DataSource = db.GetDataAdapter(QueryAeronave).Tables[0];
             Dictionary<object, object> Servicios = this.db.GetQueryDictionary(QueryServicio, "Nombre", "Nombre");
@@ -55,7 +55,7 @@ namespace AerolineaFrba.Abm_Aeronave
 
         private void BT_buscar_Click(object sender, EventArgs e)
         {
-            string QueryBusqueda = "SELECT Aero_Num Numero, Aero_Modelo Modelo, Aero_Matricula Matricula, Aero_Fabricante Fabricante, Aero_Servicio Servicio, Aero_Cantidad_Kg_Disponibles 'KG Disponible' FROM [GD2C2015].[TS].[Aeronave] WHERE Aero_Servicio LIKE '%" + CB_servicio.SelectedValue + "%'";
+            string QueryBusqueda = "SELECT Aero_Num Numero, Aero_Modelo Modelo, Aero_Matricula Matricula, Aero_Fabricante Fabricante, Aero_Servicio Servicio, Aero_Cantidad_Kg_Disponibles 'KG Disponible', TS.fnButacasAeronave(Aero_Num, 'Ventanilla') 'Butacas Ventanilla', TS.fnButacasAeronave(Aero_Num, 'Pasillo') 'Butacas Pasillo', Aero_Borrado Borrada FROM [GD2C2015].[TS].[Aeronave] WHERE Aero_Servicio LIKE '%" + CB_servicio.SelectedValue + "%'";
             DGV_aeronave.DataSource = db.GetDataAdapter(QueryBusqueda).Tables[0];
         }
 
@@ -78,10 +78,11 @@ namespace AerolineaFrba.Abm_Aeronave
             DialogResult dialogResult = MessageBox.Show("¿Usted esta seguro de borrar esta aeronave?", "Confirmación", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
-                SqlCommand spBorrarRuta = this.db.GetStoreProcedure("TS.spBorrarAeronave");
-                spBorrarRuta.Parameters.Add(new SqlParameter("@Matricula", Convert.ToInt64(DGV_aeronave.SelectedRows[0].Cells["Matricula"].Value)));
-                spBorrarRuta.ExecuteNonQuery();
+                SqlCommand spBorrarAeronave = this.db.GetStoreProcedure("TS.spBorrarAeronave");
+                spBorrarAeronave.Parameters.Add(new SqlParameter("@numero", Convert.ToInt64(DGV_aeronave.SelectedRows[0].Cells["Numero"].Value)));
+                spBorrarAeronave.ExecuteNonQuery();
             }
+            this.ListadoAeronave_Load(sender, e);
         }
 
         private void button4_Click(object sender, EventArgs e)
