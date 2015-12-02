@@ -28,7 +28,7 @@ namespace AerolineaFrba.Compra
             if (Convert.ToInt16(kgsTextBox.Text) > maxKgs){
                 MessageBox.Show("No puede superar más de los " + maxKgs.ToString() + " kilos");
             } else {
-                this.encomiendaGridView.Rows.Insert(0, dniTextBox.Text, fullNameTextBox.Text, addressTextBox.Text, phoneTextBox.Text, bornDateTimePicker.Value, mailTextBox.Text, kgsTextBox.Text);
+                this.encomiendaGridView.Rows.Insert(0, this.cliCod, dniTextBox.Text, fullNameTextBox.Text, addressTextBox.Text, phoneTextBox.Text, bornDateTimePicker.Value, mailTextBox.Text, kgsTextBox.Text);
                 this.Close();
             }
         }

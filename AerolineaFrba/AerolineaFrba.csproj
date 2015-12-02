@@ -180,6 +180,24 @@
       <DependentUpon>SeleccionVueloForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Commons\DbComunicator.cs" />
+    <Compile Include="Compra\TarjetaAgregarForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\TarjetaAgregarForm.Designer.cs">
+      <DependentUpon>TarjetaAgregarForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Compra\TarjetaBaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\TarjetaBaseForm.Designer.cs">
+      <DependentUpon>TarjetaBaseForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Compra\TarjetaEditarForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra\TarjetaEditarForm.Designer.cs">
+      <DependentUpon>TarjetaEditarForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Consulta Millas\ConsultaForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -289,6 +307,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Compra\SeleccionVueloForm.resx">
       <DependentUpon>SeleccionVueloForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra\TarjetaAgregarForm.resx">
+      <DependentUpon>TarjetaAgregarForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra\TarjetaBaseForm.resx">
+      <DependentUpon>TarjetaBaseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra\TarjetaEditarForm.resx">
+      <DependentUpon>TarjetaEditarForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Consulta Millas\ConsultaForm.resx">
       <DependentUpon>ConsultaForm.cs</DependentUpon>

@@ -29,9 +29,10 @@ namespace AerolineaFrba.Compra
         private void searchButton_Click(object sender, EventArgs e)
         {
             DbComunicator db = new DbComunicator();
-            string queryVuelos = "SELECT Viaj_Cod, Fecha_Salida, R.Ruta_Ciudad_Origen, R.Ruta_Ciudad_Destino ,Fecha_Llegada_Estimada, Ruta_Servicio ";
-            queryVuelos += "FROM TS.Ruta as R, Ts.Viaje as V ";
-            queryVuelos += "WHERE R.Ruta_Cod = V.Ruta_Cod AND R.Ruta_Ciudad_Origen = '" + origenComboBox.SelectedValue.ToString() +"' AND R.Ruta_Ciudad_Destino = '"+ destinoComboBox.SelectedValue.ToString() +"' AND Fecha_Salida ='"+ despegueTimePicker.Value.ToShortDateString() +"'";
+            string queryVuelos = "SELECT Viaj_Cod, Fecha_Salida, R.Ruta_Ciudad_Origen, R.Ruta_Ciudad_Destino ,Fecha_Llegada_Estimada, Ruta_Servicio, Viaj_Kgs_Disponibles, Viaj_Butacas_Disponibles ";
+            queryVuelos += "FROM TS.Ruta as R, TS.Viaje as V, TS.Aeronave as A ";
+            queryVuelos += "WHERE R.Ruta_Cod = V.Ruta_Cod AND R.Ruta_Ciudad_Origen = '" + origenComboBox.SelectedValue.ToString() +"' AND R.Ruta_Ciudad_Destino = '"+ destinoComboBox.SelectedValue.ToString() +"' AND Fecha_Salida ='"+ despegueTimePicker.Value.ToShortDateString() +"' ";
+            queryVuelos += "AND V.Aero_Num = A.Aero_Num AND A.Aero_Baja_Fuera_De_Servicio = 0 AND A.Aero_Baja_Vida_Util = 0";
             vuelosGridView.DataSource = db.GetDataAdapter(queryVuelos).Tables[0];
         }
 

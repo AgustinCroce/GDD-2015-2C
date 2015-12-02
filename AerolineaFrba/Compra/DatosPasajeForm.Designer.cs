@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.label7 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.butacaComboBox = new System.Windows.Forms.ComboBox();
             this.acceptButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -42,13 +42,13 @@
             this.label7.TabIndex = 13;
             this.label7.Text = "Butaca";
             // 
-            // comboBox1
+            // butacaComboBox
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(127, 193);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(310, 21);
-            this.comboBox1.TabIndex = 14;
+            this.butacaComboBox.FormattingEnabled = true;
+            this.butacaComboBox.Location = new System.Drawing.Point(127, 193);
+            this.butacaComboBox.Name = "butacaComboBox";
+            this.butacaComboBox.Size = new System.Drawing.Size(310, 21);
+            this.butacaComboBox.TabIndex = 14;
             // 
             // acceptButton
             // 
@@ -58,6 +58,7 @@
             this.acceptButton.TabIndex = 15;
             this.acceptButton.Text = "Aceptar";
             this.acceptButton.UseVisualStyleBackColor = true;
+            this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
             // 
             // DatosPasajeForm
             // 
@@ -65,7 +66,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(451, 257);
             this.Controls.Add(this.acceptButton);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.butacaComboBox);
             this.Controls.Add(this.label7);
             this.Name = "DatosPasajeForm";
             this.Text = "DatosPasajeForm";
@@ -76,7 +77,7 @@
             this.Controls.SetChildIndex(this.mailTextBox, 0);
             this.Controls.SetChildIndex(this.bornDateTimePicker, 0);
             this.Controls.SetChildIndex(this.label7, 0);
-            this.Controls.SetChildIndex(this.comboBox1, 0);
+            this.Controls.SetChildIndex(this.butacaComboBox, 0);
             this.Controls.SetChildIndex(this.acceptButton, 0);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -86,7 +87,7 @@
         #endregion
 
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox butacaComboBox;
         private System.Windows.Forms.Button acceptButton;
     }
 }

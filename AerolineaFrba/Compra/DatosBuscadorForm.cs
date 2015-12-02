@@ -14,7 +14,7 @@ namespace AerolineaFrba.Compra
 {
     public partial class DatosBuscadorForm : DatosBase
     {
-        string cliCod;
+        public string cliCod;
         public DatosBuscadorForm()
         {
             InitializeComponent();
@@ -37,7 +37,11 @@ namespace AerolineaFrba.Compra
             editClientButton.Enabled = false;
         }
 
-        private void fillInputs() {
+        public virtual void foundCliCod(string cliCod) {
+            
+        }
+
+        public void fillInputs() {
             DbComunicator db = new DbComunicator();
             db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Cliente WHERE Cli_DNI = '" + dniTextBox.Text + "'");
             db.getLector().Read();
@@ -53,10 +57,12 @@ namespace AerolineaFrba.Compra
                 mailTextBox.Text = db.getLector()["Cli_Mail"].ToString();
                 cliCod = db.getLector()["Cli_Cod"].ToString();
                 editClientButton.Enabled = true;
+                this.foundCliCod(this.cliCod);
             }
             else
             {
                 editClientButton.Enabled = false;
+                
             }
 
             db.CerrarConexion();

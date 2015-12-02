@@ -14,12 +14,16 @@ namespace AerolineaFrba.Compra
     {
         private int kgsLibres;
         private int cantidadPasajes;
+        List<int> butacasReservadas;
+        int viajCod;
 
-        public SeleccionItemsForm(int kgsLibres, int cantidadPasajes)
+        public SeleccionItemsForm(int viajCod, int kgsLibres, int cantidadPasajes)
         {
             InitializeComponent();
             this.kgsLibres = kgsLibres;
             this.cantidadPasajes = cantidadPasajes;
+            this.viajCod = viajCod;
+            this.butacasReservadas = new List<int>();
 
             if (this.kgsLibres == 0) {
                 addEncomiendaButton.Enabled = false;
@@ -31,23 +35,25 @@ namespace AerolineaFrba.Compra
                 deletePasajeButton.Enabled = false;
             }
             
-            encomiendaGridView.ColumnCount = 7;
-            encomiendaGridView.Columns[0].Name = "Dni";
-            encomiendaGridView.Columns[1].Name = "Nombre";
-            encomiendaGridView.Columns[2].Name = "Dirección";
-            encomiendaGridView.Columns[3].Name = "Teléfono";
-            encomiendaGridView.Columns[4].Name = "Fecha de Nacimiento";
-            encomiendaGridView.Columns[5].Name = "Mail";
-            encomiendaGridView.Columns[6].Name = "Kgs";
+            encomiendaGridView.ColumnCount = 8;
+            encomiendaGridView.Columns[1].Name = "Cod";
+            encomiendaGridView.Columns[1].Name = "Dni";
+            encomiendaGridView.Columns[2].Name = "Nombre";
+            encomiendaGridView.Columns[3].Name = "Dirección";
+            encomiendaGridView.Columns[4].Name = "Teléfono";
+            encomiendaGridView.Columns[5].Name = "Fecha de Nacimiento";
+            encomiendaGridView.Columns[6].Name = "Mail";
+            encomiendaGridView.Columns[7].Name = "Kgs";
 
-            pasajeGridView.ColumnCount = 7;
-            pasajeGridView.Columns[0].Name = "Dni";
-            pasajeGridView.Columns[1].Name = "Nombre";
-            pasajeGridView.Columns[2].Name = "Dirección";
-            pasajeGridView.Columns[3].Name = "Teléfono";
-            pasajeGridView.Columns[4].Name = "Fecha de Nacimiento";
-            pasajeGridView.Columns[5].Name = "Mail";
-            pasajeGridView.Columns[6].Name = "Butaca";
+            pasajeGridView.ColumnCount = 8;
+            pasajeGridView.Columns[0].Name = "Cod";
+            pasajeGridView.Columns[1].Name = "Dni";
+            pasajeGridView.Columns[2].Name = "Nombre";
+            pasajeGridView.Columns[3].Name = "Dirección";
+            pasajeGridView.Columns[4].Name = "Teléfono";
+            pasajeGridView.Columns[5].Name = "Fecha de Nacimiento";
+            pasajeGridView.Columns[6].Name = "Mail";
+            pasajeGridView.Columns[7].Name = "Butaca";
 
         }
 
@@ -66,14 +72,17 @@ namespace AerolineaFrba.Compra
 
         private void addPasajeButton_Click(object sender, EventArgs e)
         {
-            if (encomiendaGridView.RowCount >= cantidadPasajes)
+            if (encomiendaGridView.RowCount > cantidadPasajes)
             {
                 MessageBox.Show("Usted ha pedido " + this.cantidadPasajes + " pasajes.");
             }
             else
             {
-                DatosPasajeForm dp = new DatosPasajeForm(pasajeGridView);
-                dp.Show();
+                DatosPasajeForm dp = new DatosPasajeForm(viajCod, pasajeGridView, butacasReservadas);
+                dp.ShowDialog();
+                if (dp.butacaReservada != 0) {
+                    this.butacasReservadas.Add(dp.butacaReservada);
+                }
             }
         }
     }

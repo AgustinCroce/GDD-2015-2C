@@ -241,8 +241,8 @@ CREATE TABLE "TS".Butaca
 
 CREATE TABLE "TS".Tarjeta
 (
-  Tar_Numero NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
-  Tar_Fecha_Vencimiento DATE NOT NULL,
+  Tar_Numero NUMERIC(18,0) PRIMARY KEY,
+  Tar_Fecha_Vencimiento NUMERIC(4,0),
   Tar_Codigo_Seguridad NUMERIC(18,0) NOT NULL,
   Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
   TipoTar_Cod NUMERIC(18,0) REFERENCES "TS".Tipo_Tarjeta(TipoTar_Cod)
@@ -264,9 +264,9 @@ CREATE TABLE "TS".Viaje
   Viaj_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
   Viaj_Kgs_Disponibles NUMERIC(18,0) DEFAULT 0,
   Viaj_Butacas_Disponibles NUMERIC(18,0) DEFAULT 0,
-  Fecha_Salida DATE NOT NULL,
-  Fecha_Llegada DATE,
-  Fecha_Llegada_Estimada DATE NOT NULL,
+  Fecha_Salida DATETIME NOT NULL,
+  Fecha_Llegada DATETIME,
+  Fecha_Llegada_Estimada DATETIME NOT NULL,
   Aero_Num NUMERIC(18,0) REFERENCES "TS".Aeronave(Aero_Num),
   Ruta_Cod NUMERIC(18,0) REFERENCES "TS".Ruta(Ruta_Cod)
 );
@@ -276,6 +276,7 @@ CREATE TABLE "TS".Pasaje
   Pas_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
   Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
   Viaj_Cod NUMERIC(18,0) REFERENCES "TS".Viaje(Viaj_Cod),
+  But_Cod NUMERIC(18,0) REFERENCES "TS".Butaca(But_Cod),
   Pas_Fecha_Compra DATE NOT NULL,
   Pas_Precio NUMERIC(18,2) NOT NULL
 );
@@ -306,6 +307,7 @@ CREATE TABLE "TS".Compra
   Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
   Com_Forma_Pago NVARCHAR(255) CHECK (Com_Forma_Pago IN('Tarjeta', 'Efectivo')),
   Tar_Numero NUMERIC(18,0) REFERENCES "TS".Tarjeta(Tar_Numero),
+  Com_Cuotas NUMERIC(18,0) DEFAULT 0,
   Com_Fecha DATE NOT NULL
 );
 
@@ -906,6 +908,51 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID (N'TS.spCrearTarjeta') IS NOT NULL
+   DROP PROCEDURE "TS".spCrearTarjeta
+GO
+
+CREATE PROCEDURE "TS".spCrearTarjeta
+  @Cli_Cod NUMERIC(18,0),
+  @Tar_Numero NUMERIC(18,0),
+  @Tar_Fecha_Vencimiento NUMERIC(4,0),
+  @Tar_Codigo_Seguridad NUMERIC(18,0),
+  @TipoTar_Cod NUMERIC(18,0)
+AS
+BEGIN
+	DECLARE @CantTar INT
+	SET @CantTar = (SELECT COUNT(*) FROM TS.Tarjeta WHERE Tar_Numero = @Tar_Numero)
+
+	IF @CantTar > 0 
+	BEGIN
+		RETURN -1
+	END
+
+	INSERT INTO TS.Tarjeta(Cli_Cod, Tar_Numero, Tar_Codigo_Seguridad, Tar_Fecha_Vencimiento, TipoTar_Cod)
+	VALUES(@Cli_Cod, @Tar_Numero, @Tar_Codigo_Seguridad, @Tar_Fecha_Vencimiento, @TipoTar_Cod)
+
+	RETURN 0
+END
+GO
+
+IF OBJECT_ID (N'TS.spEditarTarjeta') IS NOT NULL
+   DROP PROCEDURE "TS".spEditarTarjeta
+GO
+
+CREATE PROCEDURE "TS".spEditarTarjeta
+  @Tar_Numero NUMERIC(18,0),
+  @Tar_Fecha_Vencimiento NUMERIC(4,0),
+  @Tar_Codigo_Seguridad NUMERIC(18,0),
+  @TipoTar_Cod NUMERIC(18,0)
+AS
+BEGIN
+	UPDATE TS.Tarjeta
+	SET Tar_Codigo_Seguridad = @Tar_Codigo_Seguridad, Tar_Fecha_Vencimiento = @Tar_Fecha_Vencimiento, TipoTar_Cod = @TipoTar_Cod
+	WHERE Tar_Numero = @Tar_Numero
+
+	RETURN 0
+END
+GO
 /******************************* MIGRACION *********************************************/
 
 SET IDENTITY_INSERT "TS".Funcionalidad ON
@@ -992,8 +1039,7 @@ WHERE Ruta_Ciudad_Origen IS NOT NULL;
 INSERT INTO "TS".Butaca(Aero_Num, But_Numero, But_Piso, But_Tipo)
 SELECT DISTINCT Aero_Num, Butaca_Nro, Butaca_Piso, Butaca_Tipo
 FROM GD2C2015.gd_esquema.Maestra, "TS".Aeronave
-WHERE Aero_Matricula=Aeronave_Matricula
-AND Butaca_Nro IS NOT NULL;
+WHERE Aero_Matricula=Aeronave_Matricula AND Butaca_Tipo != '0';
 
 SELECT DISTINCT Ruta_Codigo, Ruta_Precio_BaseKG, Ruta_Ciudad_Origen, 
 				  Ruta_Ciudad_Destino, Tipo_Servicio
@@ -1024,22 +1070,17 @@ AND M.Ruta_Codigo IS NOT NULL
 
 SET IDENTITY_INSERT "TS".Pasaje ON;
 
-INSERT INTO "TS".Pasaje(Pas_Cod, Pas_Fecha_Compra, Pas_Precio, Viaj_Cod, Cli_Cod)
-SELECT DISTINCT M.Pasaje_Codigo, M.Pasaje_FechaCompra, M.Pasaje_Precio, R.Ruta_Cod, Cli.Cli_Cod
-FROM GD2C2015.gd_esquema.Maestra as M, "TS".Aeronave, "TS".Ruta as R, "TS".Cliente as Cli
+INSERT INTO "TS".Pasaje(Pas_Cod, Pas_Fecha_Compra, Pas_Precio, Viaj_Cod, Cli_Cod, But_Cod)
+SELECT DISTINCT M.Pasaje_Codigo, M.Pasaje_FechaCompra, M.Pasaje_Precio ,V.Viaj_Cod, Cli.Cli_Cod, B.But_Cod
+FROM GD2C2015.gd_esquema.Maestra as M, "TS".Ruta as R, "TS".Cliente as Cli, TS.Viaje as V, "TS".Aeronave as A, "TS".Butaca as B
 WHERE Pasaje_Codigo > 0
-AND Aero_Matricula=Aeronave_Matricula
+AND A.Aero_Matricula = M.Aeronave_Matricula
 AND R.Ruta_Codigo = M.Ruta_Codigo AND R.Ruta_Servicio = M.Tipo_Servicio AND R.Ruta_Ciudad_Destino = M.Ruta_Ciudad_Destino AND R.Ruta_Ciudad_Origen = M.Ruta_Ciudad_Origen
-AND Cli.Cli_Nombre = M.Cli_Apellido + ', ' + M.Cli_Nombre AND Cli.Cli_DNI = M.Cli_Dni
+AND Cli.Cli_Nombre = M.Cli_Apellido + ', ' + M.Cli_Nombre AND Cli.Cli_DNI = M.Cli_Dni 
+AND V.Ruta_Cod = R.Ruta_Cod AND V.Fecha_Salida = M.FechaSalida AND V.Fecha_Llegada_Estimada = M.Fecha_LLegada_Estimada AND V.Aero_Num = A.Aero_Num AND V.Fecha_Llegada = M.FechaLLegada
+AND M.Butaca_Nro = B.But_Numero AND M.Butaca_Piso = B.But_Piso AND M.Butaca_Tipo = B.But_Tipo AND V.Aero_Num = B.Aero_Num
 
 SET IDENTITY_INSERT "TS".Pasaje OFF;
-
-INSERT INTO "TS".Butaca_Pasaje(Pas_Cod, But_Cod)
-SELECT DISTINCT P.Pas_Cod, B.But_Cod
-FROM GD2C2015.gd_esquema.Maestra as M, "TS".Butaca as B, "TS".Pasaje as P
-WHERE Pasaje_Codigo > 0
-AND B.But_Piso=M.Butaca_Piso AND B.But_Numero=M.Butaca_Nro
-AND P.Pas_Cod = M.Pasaje_Codigo
 
 SET IDENTITY_INSERT "TS".Encomienda ON;
 
