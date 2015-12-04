@@ -717,6 +717,44 @@ BEGIN
 
 END
 
+IF OBJECT_ID (N'TS.fnButacasDisponibles') IS NOT NULL
+   DROP FUNCTION "TS".fnButacasDisponibles
+GO
+
+CREATE FUNCTION "TS".fnButacasDisponibles(
+  @Viaje_Cod NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	DECLARE @Butacas INT;
+	DECLARE @ButacasCompradas INT;
+	DECLARE @Aeronave NUMERIC(18,0);
+	SET @Aeronave = (SELECT Aero_Num FROM TS.Viaje WHERE Viaj_Cod = @Viaje_Cod)
+	SET @Butacas = (SELECT COUNT(*) FROM TS.Butaca WHERE Aero_Num = @Aeronave)
+	SET @ButacasCompradas = (SELECT COUNT(*) FROM TS.Pasaje_Compra AS PC, TS.Pasaje AS P WHERE P.Viaj_Cod = @Viaje_Cod AND PC.Pas_Cod = P.Pas_Cod)
+	RETURN (@Butacas - @ButacasCompradas)
+END
+GO
+
+IF OBJECT_ID (N'TS.fnKGsDisponibles') IS NOT NULL
+   DROP FUNCTION "TS".fnKGsDisponibles
+GO
+
+CREATE FUNCTION "TS".fnKGsDisponibles(
+  @Viaje_Cod NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	DECLARE @KGDisponibles INT;
+	DECLARE @KgComprados INT;
+	DECLARE @Aeronave NUMERIC(18,0);
+	SET @Aeronave = (SELECT Aero_Num FROM TS.Viaje WHERE Viaj_Cod = @Viaje_Cod)
+	SET @KGDisponibles = (SELECT Aero_Cantidad_Kg_Disponibles FROM TS.Aeronave WHERE Aero_Num = @Aeronave)
+	SET @KgComprados = (SELECT ISNULL(SUM(E.Enc_Kg),0) FROM TS.Encomienda_Compra AS EC, TS.Encomienda AS E WHERE E.Viaj_Cod = @Viaje_Cod AND EC.Enc_Cod = E.Enc_Cod)
+	RETURN (@KGDisponibles - @KgComprados)
+END
+GO
+
 IF OBJECT_ID (N'TS.fnConsultarSaldoMillas') IS NOT NULL
    DROP FUNCTION "TS".fnConsultarSaldoMillas
 GO
@@ -910,6 +948,28 @@ BEGIN
 	VALUES(@Cli_DNI, @Cli_Direccion, @Cli_Nombre, @Cli_Tel, @Cli_Mail, @Cli_Fecha_Nacimiento)
 
 	RETURN 0
+END
+GO
+
+IF OBJECT_ID (N'TS.spAltaViaje') IS NOT NULL
+  DROP PROCEDURE "TS".spAltaViaje
+GO
+
+CREATE PROCEDURE "TS".spAltaViaje
+  @Aero NUMERIC(18, 0),
+  @Ruta NUMERIC(18, 0),
+  @Fecha_salida DATETIME,
+  @Fecha_estimada DATETIME
+AS
+BEGIN
+  DECLARE @Status INT
+  DECLARE @Butacas INT;
+  DECLARE @KGDisponibles INT;
+  SET @Butacas = (SELECT COUNT(*) FROM TS.Butaca WHERE Aero_Num = @Aero)
+  SET @KGDisponibles = (SELECT Aero_Cantidad_Kg_Disponibles FROM TS.Aeronave WHERE Aero_Num = @Aero)
+  INSERT INTO "TS".Viaje(Fecha_Salida, Fecha_Llegada, Fecha_Llegada_Estimada, Aero_Num, Ruta_Cod, Viaj_Butacas_Disponibles, Viaj_Kgs_Disponibles) 
+	VALUES (@Fecha_salida, NULL, @Fecha_estimada, @Aero, @Ruta, @Butacas, @KGDisponibles)
+  RETURN @Status
 END
 GO
 
@@ -1251,6 +1311,92 @@ BEGIN
 END
 GO
 
+/* o Top 5 de los destinos con más pasajes comprados. */
+IF OBJECT_ID (N'TS.vsDestinoConMasPasajesComprados') IS NOT NULL
+   DROP VIEW "TS".vsDestinoConMasPasajesComprados
+GO
+
+CREATE VIEW "TS".vsDestinoConMasPasajesComprados
+   AS
+	SELECT TOP 5 C.Ciudad_Nombre Nombre, COUNT(*) Cantidad
+	FROM TS.Pasaje_Compra AS PC, TS.Pasaje AS P, TS.Viaje AS V, TS.Ruta AS R, TS.Ciudad AS C
+	WHERE PC.Pas_Cod=P.Pas_Cod AND P.Viaj_Cod=V.Viaj_Cod AND V.Ruta_Cod=R.Ruta_Cod AND R.Ruta_Ciudad_Destino=C.Ciudad_Cod
+	GROUP BY C.Ciudad_Nombre
+	ORDER BY Cantidad DESC
+GO
+
+/* o Top 5 de los destinos con aeronaves más vacías.*/
+IF OBJECT_ID (N'TS.vsDestinoAernovesMasVacias') IS NOT NULL
+   DROP VIEW "TS".vsDestinoAernovesMasVacias
+GO
+
+CREATE VIEW "TS".vsDestinoAernovesMasVacias
+   AS
+	SELECT TOP 5 C.Ciudad_Nombre Nombre, SUM(TS.fnButacasDisponibles(AE.Aero_Num)) Cantidad
+	FROM TS.Pasaje_Compra AS PC, TS.Pasaje AS P, TS.Viaje AS V, TS.Ruta AS R, TS.Ciudad AS C, TS.Aeronave AS AE
+	WHERE PC.Pas_Cod=P.Pas_Cod AND P.Viaj_Cod=V.Viaj_Cod AND V.Ruta_Cod=R.Ruta_Cod AND R.Ruta_Ciudad_Destino=C.Ciudad_Cod AND AE.Aero_Num=V.Aero_Num
+	GROUP BY C.Ciudad_Nombre
+	ORDER BY Cantidad DESC
+GO
+
+/* o Top 5 de los Clientes con más puntos acumulados a la fecha*/
+IF OBJECT_ID (N'TS.vsClientesConMasMillas') IS NOT NULL
+   DROP VIEW "TS".vsClientesConMasMillas
+GO
+
+CREATE VIEW "TS".vsClientesConMasMillas
+   AS
+	SELECT TOP 5 C.Cli_Nombre Nombre, SUM(ISNULL(TS.fnConsultarSaldoMillas(GETDATE(), C.Cli_Cod),0)) Cantidad
+	FROM TS.Cliente AS C
+	GROUP BY C.Cli_Nombre
+	ORDER BY Cantidad DESC
+GO
+
+/* o Top 5 de los destinos con pasajes cancelados.*/
+IF OBJECT_ID (N'TS.vsDestinosConMasPasajesCancelados') IS NOT NULL
+   DROP VIEW "TS".vsDestinosConMasPasajesCancelados
+GO
+
+CREATE VIEW "TS".vsDestinosConMasPasajesCancelados
+   AS
+	SELECT TOP 5 C.Ciudad_Nombre Nombre, COUNT(*) Cantidad
+	FROM TS.Pasaje_Cancelacion AS PC, TS.Pasaje AS P, TS.Viaje AS V, TS.Ruta AS R, TS.Ciudad AS C
+	WHERE PC.Pas_Cod=P.Pas_Cod AND P.Viaj_Cod=V.Viaj_Cod AND V.Ruta_Cod=R.Ruta_Cod AND R.Ruta_Ciudad_Destino=C.Ciudad_Cod
+	GROUP BY C.Ciudad_Nombre
+	ORDER BY Cantidad DESC
+GO
+
+/* o Top 5 de las aeronaves con mayor cantidad de días fuera de servicio.*/
+IF OBJECT_ID (N'TS.fnDiasFueraServicio') IS NOT NULL
+   DROP FUNCTION "TS".fnDiasFueraServicio
+GO
+
+CREATE FUNCTION "TS".fnDiasFueraServicio(@Aero NUMERIC(18,0)) RETURNS INT
+AS
+BEGIN
+	DECLARE @DiasFueraServicio INT
+	SET @DiasFueraServicio = (
+		SELECT SUM(ISNULL(DATEDIFF(day, AFS.AudFS_Fecha_Inicio, AFS.AudFS_Fecha_Fin),0))
+		FROM TS.Auditoria_Fuera_De_Servicio AS AFS 
+		WHERE AFS.Aero_Num=@Aero
+		GROUP BY AFS.Aero_Num
+	) 
+	RETURN @DiasFueraServicio
+END
+GO
+
+IF OBJECT_ID (N'TS.vsAeronaveMasFueraDeServicio') IS NOT NULL
+   DROP VIEW "TS".vsAeronaveMasFueraDeServicio
+GO
+
+CREATE VIEW "TS".vsAeronaveMasFueraDeServicio
+   AS
+	SELECT TOP 5 AE.Aero_Matricula Matricula, SUM(ISNULL("TS".fnDiasFueraServicio(AE.Aero_Num), 0)) Cantidad
+	FROM TS.Aeronave AS AE
+	GROUP BY AE.Aero_Matricula
+	ORDER BY Cantidad DESC
+GO
+
 /******************************* MIGRACION *********************************************/
 
 SET IDENTITY_INSERT "TS".Funcionalidad ON
@@ -1421,3 +1567,8 @@ FROM GD2C2015.gd_esquema.Maestra as M, "TS".Compra AS C, "TS".Encomienda AS E
 WHERE Paquete_Codigo > 0
 AND E.Enc_Cod = M.Paquete_Codigo
 /*** AND COMPRA ***/
+
+/*** ACTUALIZACIÓN DE VIAJES CON BUTACAS Y KGS ***/
+UPDATE TS.Viaje
+SET Viaj_Butacas_Disponibles = TS.fnButacasDisponibles(Viaj_Cod),
+	Viaj_Kgs_Disponibles = TS.fnKGsDisponibles(Viaj_Cod)
