@@ -1147,6 +1147,53 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID (N'TS.spBorrarRolFuncionalidad') IS NOT NULL
+  DROP PROCEDURE "TS".spBorrarRolFuncionalidad
+GO
+
+CREATE PROCEDURE "TS".spBorrarRolFuncionalidad
+  @rol VARCHAR(255),
+  @funcionalidad NUMERIC(18,0)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  DECLARE @CantRolFucionalidad INT
+  SET @CantRolFucionalidad = (SELECT COUNT(*) FROM [GD2C2015].[TS].[Rol_Funcionalidad] WHERE Rol_Nombre=@rol AND Func_Cod=@funcionalidad)
+
+  IF @CantRolFucionalidad < 1
+  BEGIN
+    RETURN -1
+  END
+
+  DELETE FROM [GD2C2015].[TS].[Rol_Funcionalidad] WHERE Rol_Nombre=@rol AND Func_Cod=@funcionalidad
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spAltaRolFuncionalidad') IS NOT NULL
+  DROP PROCEDURE "TS".spAltaRolFuncionalidad
+GO
+
+CREATE PROCEDURE "TS".spAltaRolFuncionalidad
+  @rol VARCHAR(255),
+  @funcionalidad NUMERIC(18,0)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  DECLARE @CantRolFucionalidad INT
+  SET @CantRolFucionalidad = (SELECT COUNT(*) FROM [GD2C2015].[TS].[Rol_Funcionalidad] WHERE Rol_Nombre=@rol AND Func_Cod=@funcionalidad)
+  IF @CantRolFucionalidad > 0
+  BEGIN
+    RETURN -1
+  END
+  INSERT INTO [GD2C2015].[TS].[Rol_Funcionalidad](Rol_Nombre, Func_Cod)
+  VALUES (@rol, @funcionalidad)
+  RETURN @Status
+END
+GO
+
 IF OBJECT_ID (N'TS.spHabilitarRol') IS NOT NULL
   DROP PROCEDURE "TS".spHabilitarRol
 GO
