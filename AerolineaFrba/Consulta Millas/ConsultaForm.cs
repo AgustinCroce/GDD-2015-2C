@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AerolineaFrba.Commons;
+using System.Data.SqlClient;
 
 namespace AerolineaFrba.Consulta_Millas
 {
@@ -16,6 +17,11 @@ namespace AerolineaFrba.Consulta_Millas
         public ConsultaForm()
         {
             InitializeComponent();
+            string queryCiudades = "SELECT Cli_Nombre + ' DNI: ' + Cli_DNI Cli_Detalle, Cli_Cod FROM TS.Cliente ";
+            DbComunicator db = new DbComunicator();
+            clienteComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "Cli_Detalle", "Cli_Cod"), null);
+            clienteComboBox.DisplayMember = "Key";
+            clienteComboBox.ValueMember = "Value";
         }
 
         private void searchButton_Click(object sender, EventArgs e)
@@ -26,16 +32,26 @@ namespace AerolineaFrba.Consulta_Millas
                 string hoy = Properties.Settings.Default.FechaSistema.ToString();
                 
                 string queryMillas = "SELECT M.Mil_Fecha Fecha, M.Mil_Cantidad Cantidad";
-                queryMillas = queryMillas + "FROM TS.Milla as M, TS.Cliente as C WHERE Cli.Cli_DNI = " + dniTextBox.Text;
-                queryMillas = queryMillas + " AND M.Cli_Cod = C.Cli_Cod";
+                queryMillas = queryMillas + " FROM TS.Milla as M, WHERE M.Cli_Cod = " + clienteComboBox.SelectedValue.ToString();
+                queryMillas = queryMillas + " AND DATEDIFF(DAY, C.Canje_Fecha, " + hoy + ") <= 365";
                 queryMillas = queryMillas + " ORDER BY Deposito_Fecha DESC";
                 millasGridView.DataSource = db.GetDataAdapter(queryMillas).Tables[0];
 
                 string queryCompras = "SELECT C.Canje_Fecha Fecha, P.Prod_Nombre Producto, C.Canje_Cantidad_Prod Cantidad, C.Canje_Total Total ";
-                queryCompras = queryCompras + "FROM TS.Canje as C, TS.Cliente as Cli, TS.Producto as P WHERE Cli.Cli_DNI = " + dniTextBox.Text;
-                queryCompras = queryCompras + " AND C.Cli_Cod = Cli.Cli_Cod AND C.Prod_Cod = P.Prod_Cod AND AND DATEDIFF(DAY, C.Canje_Fecha, "+ hoy +") <= 365";
+                queryCompras = queryCompras + " FROM TS.Canje as C, TS.Producto as P WHERE C.Cli_Cod = " + clienteComboBox.SelectedValue.ToString();
+                queryCompras = queryCompras + " AND C.Prod_Cod = P.Prod_Cod AND DATEDIFF(DAY, C.Canje_Fecha, "+ hoy +") <= 365";
                 queryCompras = queryCompras + " ORDER BY C.Canje_Fecha DESC";
                 comprasGridView.DataSource = db.GetDataAdapter(queryCompras).Tables[0];
+
+                SqlCommand storeProcedure = db.GetStoreProcedure("TS.fnConsultarSaldoMillas");
+                SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Int);
+                returnParameter.Direction = ParameterDirection.ReturnValue;
+                storeProcedure.Parameters.Add(new SqlParameter("@Hoy", hoy));
+                storeProcedure.Parameters.Add(new SqlParameter("@Cli_Cod", clienteComboBox.SelectedValue.ToString()));
+                storeProcedure.ExecuteNonQuery();
+                db.CerrarConexion();
+
+                saldoLabel.Text = "Su saldo es de: " + (int)returnParameter.Value;
             }
             catch (System.InvalidOperationException ex)
             {

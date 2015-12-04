@@ -17,6 +17,16 @@ namespace AerolineaFrba.Canje_Millas
         public CanjeForm()
         {
             InitializeComponent();
+            string queryCiudades = "SELECT Cli_Nombre + ' DNI: ' + Cli_DNI Cli_Detalle, Cli_Cod FROM TS.Cliente ";
+            DbComunicator db = new DbComunicator();
+            clienteComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "Cli_Detalle", "Cli_Cod"), null);
+            clienteComboBox.DisplayMember = "Key";
+            clienteComboBox.ValueMember = "Value";
+            string queryProductos = "SELECT Prod_Nombre + ' (' + CAST (Prod_Stock AS nvarchar(255)) + ')' Prod_Detalle, Prod_Cod FROM TS.Producto";
+            productoComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryProductos, "Prod_Detalle", "Prod_Cod"), null);
+            productoComboBox.DisplayMember = "Key";
+            productoComboBox.ValueMember = "Value";
+            db.CerrarConexion();
         }
 
         private void changeButton_Click(object sender, EventArgs e)

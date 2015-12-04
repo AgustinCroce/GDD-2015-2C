@@ -34,15 +34,6 @@ namespace AerolineaFrba.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("localhost\\SQLSERVER2012")]
-        public string DbSource {
-            get {
-                return ((string)(this["DbSource"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("gd")]
         public string DbUser {
             get {
@@ -65,6 +56,24 @@ namespace AerolineaFrba.Properties {
         public string FechaSistema {
             get {
                 return ((string)(this["FechaSistema"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("IE8WIN7\\SQLSERVER2012")]
+        public string DbSource {
+            get {
+                return ((string)(this["DbSource"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Kiosko")]
+        public string Modo {
+            get {
+                return ((string)(this["Modo"]));
             }
         }
     }

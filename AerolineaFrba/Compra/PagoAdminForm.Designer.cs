@@ -32,6 +32,10 @@
             this.creditCardGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
+            // acceptButton
+            // 
+            this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
+            // 
             // cardCheckBox
             // 
             this.cardCheckBox.AutoSize = true;

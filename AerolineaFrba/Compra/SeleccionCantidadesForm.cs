@@ -15,6 +15,11 @@ namespace AerolineaFrba.Compra
     public partial class SeleccionCantidadesForm : Form
     {
         private DataGridViewRow vueloSeleccionado;
+        private bool pasajeHabilitado = true;
+        private bool encomiendaHabilitada = true;
+        public bool habilitado = false;
+        public double kgsHabilitados = 0;
+        public int pasajesHabilitados = 0;
 
         public SeleccionCantidadesForm(DataGridViewRow vueloSeleccionado)
         {
@@ -51,9 +56,12 @@ namespace AerolineaFrba.Compra
                 funcionEncomienda.Parameters.Add(new SqlParameter("@Kgs", Convert.ToInt32(encomiendaInput.Text)));
                 funcionEncomienda.ExecuteNonQuery();
 
+
                 if ((int)returnFuncionEncomienda.Value != 0)
                 {
                     MessageBox.Show("No hay suficientes kgs disponibles para responder a su pedido");
+                    this.encomiendaHabilitada = false;
+
                 }
 
             }
@@ -71,12 +79,26 @@ namespace AerolineaFrba.Compra
                 if ((int)returnFuncionButacas.Value != 0)
                 {
                     MessageBox.Show("No hay suficientes butacas disponibles para responder a su pedido");
+                    this.pasajeHabilitado = false;
                 }
             }
             
             dbStoreProcedure.CerrarConexion();
-            
-            
+
+            this.habilitado = this.pasajeHabilitado && this.encomiendaHabilitada;
+
+            if (this.habilitado) { 
+                if (pasajeCheckBox.Checked){
+                    this.pasajesHabilitados = Convert.ToInt32(pasajesInput.Text);
+                }
+
+                if (encomiendaCheckBox.Checked) {
+                    this.kgsHabilitados = Convert.ToDouble(encomiendaInput.Text);
+                }
+                
+            }
+
+
         }
     }
 }

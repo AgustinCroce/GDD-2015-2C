@@ -14,6 +14,11 @@ namespace AerolineaFrba.Compra
     public partial class PagoKioskoForm : DatosBuscadorForm
     {
         int cardTypeCode;
+        public bool habilitado = false;
+        public double Cli_Cod;
+        public double Tar_Numero;
+        public double Com_Cuotas;
+        public string Com_Forma_Pago;
         public PagoKioskoForm()
         {
             InitializeComponent();
@@ -43,46 +48,51 @@ namespace AerolineaFrba.Compra
             cardNumberTextBox.TextChanged += new EventHandler(cardNumberTextBoxt_textChanged);
             cardNumberTextBox.Enabled = true;
             addCreditCardButton.Enabled = true;
+            this.Cli_Cod = Convert.ToDouble(this.cliCod);
             db.CerrarConexion();
         }
 
         private void fillCardInputs()
         {
-            DbComunicator db = new DbComunicator();
-            db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Tarjeta WHERE Cli_Cod = " + this.cliCod + " AND Tar_Numero = " + cardNumberTextBox.Text + "");
-            db.getLector().Read();
-
-            if (Convert.ToInt16(db.getLector()["Cantidad"].ToString()) > 0)
-            {
-                db.EjecutarQuery("SELECT Tar_Numero, Tar_Fecha_Vencimiento, Tar_Codigo_Seguridad, T.TipoTar_Cod, TipoTar_Nombre FROM TS.Tarjeta as T, TS.Tipo_Tarjeta as TT WHERE T.TipoTar_Cod = TT.TipoTar_cod AND Cli_Cod = " + this.cliCod + " AND Tar_Numero = " + cardNumberTextBox.Text);
+            if (!String.IsNullOrEmpty(cardCodeTextBox.Text)) {
+                DbComunicator db = new DbComunicator();
+                db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Tarjeta WHERE Cli_Cod = " + this.cliCod + " AND Tar_Numero = " + cardNumberTextBox.Text + "");
                 db.getLector().Read();
-                cardNumberTextBox.Text = db.getLector()["Tar_Numero"].ToString();
-                cardCodeTextBox.Text = db.getLector()["Tar_Codigo_Seguridad"].ToString();
-                cardDateTextBox.Text = db.getLector()["Tar_Fecha_Vencimiento"].ToString();
-                cardEmitterTextBox.Text = db.getLector()["TipoTar_Nombre"].ToString();
-                editCreditCardButton.Enabled = true;
 
-                cardNumberDuesComboBox.Enabled = true;
-                string tipoTarCod = db.getLector()["TipoTar_Cod"].ToString();
-                this.cardTypeCode = Convert.ToInt32(tipoTarCod);
-                db.EjecutarQuery("SELECT TipoTar_Cuotas FROM TS.Tipo_Tarjeta WHERE TipoTar_Cod = " + tipoTarCod);
-                db.getLector().Read();
-                cardNumberDuesComboBox.Items.Clear();
-
-                for (int i = 0; Convert.ToInt16(db.getLector()["TipoTar_Cuotas"]) >= i; i++)
+                if (Convert.ToInt16(db.getLector()["Cantidad"].ToString()) > 0)
                 {
-                    cardNumberDuesComboBox.Items.Add(i);
+                    db.EjecutarQuery("SELECT Tar_Numero, Tar_Fecha_Vencimiento, Tar_Codigo_Seguridad, T.TipoTar_Cod, TipoTar_Nombre FROM TS.Tarjeta as T, TS.Tipo_Tarjeta as TT WHERE T.TipoTar_Cod = TT.TipoTar_cod AND Cli_Cod = " + this.cliCod + " AND Tar_Numero = " + cardNumberTextBox.Text);
+                    db.getLector().Read();
+                    cardNumberTextBox.Text = db.getLector()["Tar_Numero"].ToString();
+                    cardCodeTextBox.Text = db.getLector()["Tar_Codigo_Seguridad"].ToString();
+                    cardDateTextBox.Text = db.getLector()["Tar_Fecha_Vencimiento"].ToString();
+                    cardEmitterTextBox.Text = db.getLector()["TipoTar_Nombre"].ToString();
+                    editCreditCardButton.Enabled = true;
+                    acceptButton.Enabled = true;
+
+                    cardNumberDuesComboBox.Enabled = true;
+                    string tipoTarCod = db.getLector()["TipoTar_Cod"].ToString();
+                    this.cardTypeCode = Convert.ToInt32(tipoTarCod);
+                    db.EjecutarQuery("SELECT TipoTar_Cuotas FROM TS.Tipo_Tarjeta WHERE TipoTar_Cod = " + tipoTarCod);
+                    db.getLector().Read();
+                    cardNumberDuesComboBox.Items.Clear();
+
+                    for (int i = 0; Convert.ToInt16(db.getLector()["TipoTar_Cuotas"]) >= i; i++)
+                    {
+                        cardNumberDuesComboBox.Items.Add(i);
+                    }
+
+                    db.CerrarConexion();
+                }
+                else
+                {
+                    editCreditCardButton.Enabled = false;
+                    acceptButton.Enabled = false;
+
                 }
 
                 db.CerrarConexion();
             }
-            else
-            {
-                editCreditCardButton.Enabled = false;
-
-            }
-
-            db.CerrarConexion();
         }
 
         private void addCreditCardButton_Click(object sender, EventArgs e)
@@ -99,6 +109,14 @@ namespace AerolineaFrba.Compra
             TarjetaEditarForm te = new TarjetaEditarForm(this.cliCod, cardNumberTextBox.Text, cardCodeTextBox.Text, cardDateTextBox.Text, this.cardTypeCode - 1);
             te.ShowDialog();
             fillCardInputs();
+        }
+
+        private void acceptButton_Click(object sender, EventArgs e)
+        {
+            this.habilitado = true;
+            this.Tar_Numero = Convert.ToDouble(cardNumberTextBox.Text);
+            this.Com_Cuotas = Convert.ToDouble(cardNumberDuesComboBox.SelectedValue);
+            this.Com_Forma_Pago = "Tarjeta";
         }
     }
 }

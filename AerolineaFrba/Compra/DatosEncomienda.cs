@@ -14,9 +14,9 @@ namespace AerolineaFrba.Compra
     public partial class DatosEncomienda : DatosBuscadorForm
     {
         private DataGridView encomiendaGridView;
-        private int maxKgs;
+        private double maxKgs;
 
-        public DatosEncomienda(DataGridView encomiendaGridView, int maxKgs)
+        public DatosEncomienda(DataGridView encomiendaGridView, double maxKgs)
         {
             InitializeComponent();
             this.encomiendaGridView = encomiendaGridView;

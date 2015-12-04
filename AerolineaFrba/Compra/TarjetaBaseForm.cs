@@ -21,6 +21,7 @@ namespace AerolineaFrba.Compra
             cardEmitterComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "TipoTar_Nombre", "TipoTar_Cod"), null);
             cardEmitterComboBox.DisplayMember = "Key";
             cardEmitterComboBox.ValueMember = "Value";
+            db.CerrarConexion();
         }
 
     }

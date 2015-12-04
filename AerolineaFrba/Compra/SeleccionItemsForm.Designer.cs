@@ -121,6 +121,7 @@
             this.acceptButton.TabIndex = 8;
             this.acceptButton.Text = "Aceptar";
             this.acceptButton.UseVisualStyleBackColor = true;
+            this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
             // 
             // SeleccionItemsForm
             // 

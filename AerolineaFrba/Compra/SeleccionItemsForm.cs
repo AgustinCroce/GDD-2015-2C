@@ -12,12 +12,16 @@ namespace AerolineaFrba.Compra
 {
     public partial class SeleccionItemsForm : Form
     {
-        private int kgsLibres;
+        private double kgsLibres;
         private int cantidadPasajes;
         List<int> butacasReservadas;
         int viajCod;
+        public DataTable Pas_Lista;
+        public double Enc_Cod;
+        public double Enc_Kgs;
+        public bool habilitado;
 
-        public SeleccionItemsForm(int viajCod, int kgsLibres, int cantidadPasajes)
+        public SeleccionItemsForm(int viajCod, double kgsLibres, int cantidadPasajes)
         {
             InitializeComponent();
             this.kgsLibres = kgsLibres;
@@ -84,6 +88,27 @@ namespace AerolineaFrba.Compra
                     this.butacasReservadas.Add(dp.butacaReservada);
                 }
             }
+        }
+
+        private void acceptButton_Click(object sender, EventArgs e)
+        {
+            this.habilitado = encomiendaGridView.RowCount > 1 || pasajeGridView.RowCount > 1;
+            if(this.habilitado){
+                DataTable pasajes = new DataTable();
+                pasajes.Columns.Add("Cli_Cod", typeof(double));
+                pasajes.Columns.Add("But_Cod", typeof(double));
+
+                foreach (DataGridViewRow row in pasajeGridView.Rows)
+                {
+                    pasajes.Rows.Add(row.Cells[0].Value, row.Cells[7].Value);
+                }
+
+                this.Enc_Cod = Convert.ToDouble(encomiendaGridView.Rows[0].Cells[0].Value);
+                this.Enc_Kgs = Convert.ToDouble(encomiendaGridView.Rows[0].Cells[7].Value);
+
+                this.Close();
+            }      
+
         }
     }
 }

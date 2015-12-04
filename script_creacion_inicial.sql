@@ -304,6 +304,7 @@ CREATE TABLE "TS".Milla
   Enc_Cod NUMERIC(18,0) REFERENCES "TS".Encomienda(Enc_Cod),
   Pas_Cod NUMERIC(18,0) REFERENCES "TS".Pasaje(Pas_Cod),
   Mil_Fecha DATE NOT NULL,
+  Mil_Valida BIT DEFAULT 0,
   Mil_Cantidad NUMERIC(18,0) NOT NULL
 );
 
@@ -313,7 +314,8 @@ CREATE TABLE "TS".Compra
   Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
   Com_Forma_Pago NVARCHAR(255) CHECK (Com_Forma_Pago IN('Tarjeta', 'Efectivo')),
   Tar_Numero NUMERIC(18,0) REFERENCES "TS".Tarjeta(Tar_Numero),
-  Com_Fecha DATE NOT NULL
+  Com_Fecha DATE NOT NULL,
+  Com_Cuotas NUMERIC(18,0)
 );
 
 CREATE TABLE "TS".Cancelacion_Compra
@@ -598,6 +600,18 @@ BEGIN
 	UPDATE TS.Viaje
 	SET Fecha_Llegada = @Llegada
 	WHERE Viaj_Cod = @ViajeCod
+
+	UPDATE TS.Milla
+	SET Mil_Valida = 1
+	WHERE Mil_Cod IN (SELECT M.Mil_Cod
+						FROM TS.Milla AS M, TS.Encomienda as E
+						WHERE M.Enc_Cod IS NOT NULL AND E.Enc_Cod = M.Enc_Cod AND E.Viaj_Cod = @ViajeCod)
+
+	UPDATE TS.Milla
+	SET Mil_Valida = 1
+	WHERE Mil_Cod IN (SELECT M.Mil_Cod
+						FROM TS.Milla AS M, TS.Pasaje as P
+						WHERE M.Pas_Cod IS NOT NULL AND P.Pas_Cod = M.Pas_Cod AND P.Viaj_Cod = @ViajeCod)
 END
 GO
 
@@ -634,6 +648,11 @@ BEGIN
 		SELECT P.Cli_Cod, P.Pas_Cod, P.Pas_Fecha_Compra, P.Pas_Precio / 10
 		FROM "TS".Pasaje as P , inserted as I
 		WHERE P.Pas_Cod = I.Pas_Cod
+
+		UPDATE TS.Viaje
+		SET Viaj_Butacas_Disponibles = Viaj_Butacas_Disponibles - (SELECT COUNT(*) FROM TS.Viaje as V, TS.Pasaje as P, inserted as I WHERE V.Viaj_Cod = P.Pas_Cod AND I.Pas_Cod = P.Pas_Cod)
+		WHERE Viaj_Cod IN (SELECT V.Viaj_Cod FROM TS.Viaje as V, TS.Pasaje as P, inserted as I WHERE V.Viaj_Cod = P.Pas_Cod AND I.Pas_Cod = P.Pas_Cod)
+
 	END
 
 	IF (SELECT COUNT(*) FROM deleted) >= 1
@@ -658,6 +677,10 @@ BEGIN
 		SELECT E.Cli_Cod, E.Enc_Cod, E.Enc_Fecha_Compra, E.Enc_Precio / 10
 		FROM "TS".Encomienda as E , inserted as I
 		WHERE E.Enc_Cod = I.Enc_Cod
+
+		UPDATE TS.Viaje
+		SET Viaj_Kgs_Disponibles = Viaj_Kgs_Disponibles - (SELECT SUM(Enc_Kg) FROM TS.Viaje as V, TS.Encomienda as E, inserted as I WHERE V.Viaj_Cod = E.Viaj_Cod AND I.Enc_Cod = E.Enc_Cod)
+		WHERE Viaj_Cod IN (SELECT V.Viaj_Cod FROM TS.Viaje as V, TS.Encomienda as E, inserted as I WHERE V.Viaj_Cod = E.Viaj_Cod AND I.Enc_Cod = E.Enc_Cod)
 	END
 
 	IF (SELECT COUNT(*) FROM deleted) >= 1
@@ -681,6 +704,10 @@ BEGIN
 		DELETE
 		FROM "TS".Milla
 		WHERE Pas_Cod IN (SELECT I.Pas_Cod FROM inserted as I)
+
+		UPDATE TS.Viaje
+		SET Viaj_Butacas_Disponibles = Viaj_Butacas_Disponibles + (SELECT COUNT(*) FROM TS.Viaje as V, TS.Pasaje as P, inserted as I WHERE V.Viaj_Cod = P.Pas_Cod AND I.Pas_Cod = P.Pas_Cod)
+		WHERE Viaj_Cod IN (SELECT V.Viaj_Cod FROM TS.Viaje as V, TS.Pasaje as P, inserted as I WHERE V.Viaj_Cod = P.Pas_Cod AND I.Pas_Cod = P.Pas_Cod)
 	END
 
 	IF (SELECT COUNT(*) FROM deleted) >= 1
@@ -705,6 +732,10 @@ BEGIN
 		DELETE
 		FROM "TS".Milla
 		WHERE Enc_Cod IN (SELECT I.Enc_Cod FROM inserted as I)
+
+		UPDATE TS.Viaje
+		SET Viaj_Kgs_Disponibles = Viaj_Kgs_Disponibles + (SELECT SUM(Enc_Kg) FROM TS.Viaje as V, TS.Encomienda as E, inserted as I WHERE V.Viaj_Cod = E.Viaj_Cod AND I.Enc_Cod = E.Enc_Cod)
+		WHERE Viaj_Cod IN (SELECT V.Viaj_Cod FROM TS.Viaje as V, TS.Encomienda as E, inserted as I WHERE V.Viaj_Cod = E.Viaj_Cod AND I.Enc_Cod = E.Enc_Cod)
 	END
 
 	IF (SELECT COUNT(*) FROM deleted) >= 1
@@ -717,7 +748,11 @@ BEGIN
 
 END
 
-IF OBJECT_ID (N'TS.fnConsultarSaldoMillas') IS NOT NULL
+IF EXISTS (
+  SELECT * 
+    FROM INFORMATION_SCHEMA.ROUTINES 
+   WHERE SPECIFIC_NAME = N'fnConsultarSaldoMillas' 
+)
    DROP FUNCTION "TS".fnConsultarSaldoMillas
 GO
 
@@ -740,7 +775,7 @@ BEGIN
 
 		SET @Millas= (SELECT SUM(Mil_Cantidad)
 						FROM "TS".Milla
-						WHERE Cli_Cod = @Cli_Cod AND DATEDIFF(DAY, Mil_Fecha, @Hoy) <= 365
+						WHERE Cli_Cod = @Cli_Cod AND DATEDIFF(DAY, Mil_Fecha, @Hoy) <= 365 AND Mil_Valida = 1
 						GROUP BY Cli_Cod);
 		SET @Canjes = (SELECT SUM(Canje_Total)
 						FROM "TS".Canje
@@ -1251,6 +1286,152 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID (N'TS.spCrearCompra') IS NOT NULL
+   DROP PROCEDURE "TS".spCrearCompra
+GO
+
+IF EXISTS (
+	SELECT * 
+	FROM sys.types 
+	WHERE is_table_type = 1 AND name = 'ListaPasaje'
+)
+	DROP TYPE TS.ListaPasaje
+GO
+
+CREATE TYPE TS.ListaPasaje AS Table (
+	Cli_Cod NUMERIC(18,0),
+	But_Cod NUMERIC(18,0)
+);
+GO
+
+CREATE PROCEDURE "TS".spCrearCompra
+  @Viaj_Cod NUMERIC(18,0),
+  @Com_Fecha DATE,
+  @Com_Cli NUMERIC(18,0),
+  @Tar_Numero NUMERIC(18,0),
+  @Com_Forma_Pago NVARCHAR(255),
+  @Com_Cuotas NUMERIC(18,0),
+  @Enc_Cli NUMERIC(18,0),
+  @Enc_Kgs NUMERIC(18,0),
+  @Pas_Lista ListaPasaje READONLY
+AS
+BEGIN
+	DECLARE @Com_PNR TABLE
+	(
+		Com_PNR NUMERIC(18,0)
+	);
+
+	DECLARE @Enc_Cod TABLE
+	(
+		Enc_Cod NUMERIC(18,0)
+	);
+
+	DECLARE @Pas_Cod TABLE
+	(
+		Pas_Cod NUMERIC(18,0)
+	);
+
+	IF (@Com_Forma_Pago = 'Tarjeta')
+	BEGIN
+		INSERT INTO TS.Compra(Cli_Cod, Com_Fecha, Tar_Numero, Com_Forma_Pago, Com_Cuotas)
+		OUTPUT INSERTED.Com_PNR INTO @Com_PNR
+		VALUES(@Com_Cli, @Com_Fecha, @Tar_Numero, @Com_Forma_Pago, @Com_Cuotas)
+	END
+	ELSE
+	BEGIN
+		INSERT INTO TS.Compra(Cli_Cod, Com_Fecha, Com_Forma_Pago)
+		OUTPUT INSERTED.Com_PNR INTO @Com_PNR
+		VALUES(@Com_Cli, @Com_Fecha, @Com_Forma_Pago)
+	END
+	
+
+	DECLARE @Enc_Precio INT = @Enc_Kgs * (SELECT R.Ruta_Precio_Base_Kg 
+											FROM TS.Ruta as R, TS.Viaje as V 
+											WHERE R.Ruta_Cod = V.Ruta_Cod AND V.Viaj_Cod = @Viaj_Cod)
+
+	IF @Enc_Cli > 0 AND @Enc_Kgs > 0
+	BEGIN
+		INSERT INTO TS.Encomienda(Cli_Cod, Enc_Fecha_Compra, Enc_Kg, Viaj_Cod, Enc_Precio)
+		OUTPUT INSERTED.Enc_Cod INTO @Enc_Cod
+		VALUES(@Enc_Cli, @Com_Fecha, @Enc_Kgs, @Viaj_Cod, @Enc_Precio)
+	
+		INSERT INTO TS.Encomienda_Compra(Com_PNR, Enc_Cod)
+		SELECT Com_PNR, Enc_Cod
+		FROM @Com_PNR, @Enc_Cod
+	END
+	
+
+	INSERT INTO TS.Pasaje(Cli_Cod, Pas_Fecha_Compra, But_Cod, Viaj_Cod, Pas_Precio)
+	OUTPUT INSERTED.Pas_Cod INTO @Pas_Cod
+	SELECT Cli_Cod, @Com_Fecha, But_Cod, @Viaj_Cod, (SELECT R.Ruta_Precio_Base_Pasaje 
+														FROM TS.Ruta as R, TS.Viaje as V
+														WHERE R.Ruta_Cod = V.Ruta_Cod AND V.Viaj_Cod= @Viaj_Cod)
+	FROM @Pas_Lista
+
+	INSERT TS.Pasaje_Compra(Com_PNR, Pas_Cod)
+	SELECT Com_PNR, Pas_Cod
+	FROM @Com_PNR, @Pas_Cod
+
+	RETURN SELECT TOP 1 Com_PNR FROM @Com_PNR
+END
+GO
+
+IF OBJECT_ID (N'TS.spCancelarCompra') IS NOT NULL
+   DROP PROCEDURE "TS".spCancelarCompra
+GO
+
+IF EXISTS (
+	SELECT * 
+	FROM sys.types 
+	WHERE is_table_type = 1 AND name = 'ListaPasajeCod'
+)
+	DROP TYPE TS.ListaPasajeCod
+GO
+
+CREATE TYPE TS.ListaPasajeCod AS Table (
+	Pas_Cod NUMERIC(18,0)
+);
+GO
+
+CREATE PROCEDURE "TS".spCancelarCompra
+	@Can_Fecha DATETIME,
+	@Com_PNR NUMERIC(18,0),
+	@Can_Motivo NVARCHAR(255),
+	@Enc_Cod NUMERIC(18,0),
+	@ListaPasajes ListaPasajeCod READONLY
+AS
+BEGIN
+	DECLARE @Can_Cod TABLE
+	(
+		Can_Cod NUMERIC(18,0)
+	);
+	
+	INSERT INTO Cancelacion_Compra(Can_Fecha, Can_Motivo, Com_PNR)
+	OUTPUT inserted.Can_Cod INTO @Can_Cod
+	VALUES(@Can_Fecha, @Can_Motivo, @Com_PNR)
+
+	IF @Enc_Cod > 0
+	BEGIN
+		DELETE
+		FROM TS.Encomienda
+		WHERE Enc_Cod = @Enc_Cod
+
+		INSERT INTO TS.Encomienda_Cancelacion(Enc_Cod, Can_Cod)
+		SELECT @Enc_Cod, Can_Cod
+		FROM @Can_Cod
+	END
+
+	DELETE
+	FROM TS.Pasaje
+	WHERE Pas_Cod IN (SELECT L.Pas_Cod FROM @ListaPasajes as L)
+
+	INSERT INTO TS.Pasaje_Cancelacion(Can_Cod, Pas_Cod)
+	SELECT Can_Cod, Pas_Cod
+	FROM @Can_Cod, @ListaPasajes
+
+	RETURN 0
+END
+GO
 /******************************* MIGRACION *********************************************/
 
 SET IDENTITY_INSERT "TS".Funcionalidad ON
