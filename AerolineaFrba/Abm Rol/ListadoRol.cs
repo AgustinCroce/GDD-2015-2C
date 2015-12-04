@@ -38,6 +38,8 @@ namespace AerolineaFrba.Abm_Rol
                 this.BT_modificar.Enabled = true;
                 this.BT_Habilitar.Enabled = true;
                 this.BT_Deshabilitar.Enabled = true;
+                this.BT_eliminar_funcionalidad.Enabled = true;
+                this.BT_agregar_funcionalidad.Enabled = true;
                 DGV_rol.SelectionChanged += this.DesactivarAcciones;
             }
             else this.DesactivarAcciones(sender, e);
@@ -49,6 +51,8 @@ namespace AerolineaFrba.Abm_Rol
             this.BT_modificar.Enabled = false;
             this.BT_Habilitar.Enabled = false;
             this.BT_Deshabilitar.Enabled = false;
+            this.BT_eliminar_funcionalidad.Enabled = false;
+            this.BT_agregar_funcionalidad.Enabled = false;
             DGV_rol.SelectionChanged -= this.DesactivarAcciones;
         }
 
@@ -103,6 +107,20 @@ namespace AerolineaFrba.Abm_Rol
             spDeshabilitarRol.Parameters.Add(new SqlParameter("@nombre", DGV_rol.SelectedRows[0].Cells["Nombre"].Value));
             spDeshabilitarRol.ExecuteNonQuery();
             this.ListadoRol_Load(sender, e);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            Funcionalidades re = new Funcionalidades(DGV_rol.SelectedRows[0], "Agregar");
+            re.FormClosed += new FormClosedEventHandler(ListadoRol_Load);
+            re.Show();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Funcionalidades re = new Funcionalidades(DGV_rol.SelectedRows[0], "Eliminar");
+            re.FormClosed += new FormClosedEventHandler(ListadoRol_Load);
+            re.Show();
         }
 
 
