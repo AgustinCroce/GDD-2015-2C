@@ -32,7 +32,7 @@ namespace AerolineaFrba.Generacion_Viaje
             CB_ruta.DisplayMember = "Value";
             CB_ruta.ValueMember = "Key";
             CB_ruta.SelectedValueChanged += this.onChangeRuta;
-            DateTime Hoy = DateTime.Now;
+            DateTime Hoy = Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema);
             DTP_fecha_estimada_llegada.MinDate = Hoy;
             DTP_fecha_salida.MinDate = Hoy;
         }
@@ -71,16 +71,18 @@ namespace AerolineaFrba.Generacion_Viaje
             int differenceInDays = ts.Days;
             if (differenceInDays >= 0 && differenceInDays <= 1){
                 SqlCommand spALtaViaje = this.db.GetStoreProcedure("TS.spAltaViaje");
+                MessageBox.Show(DTP_fecha_salida.Value.ToString() + " "+ CB_aeronave.SelectedValue.ToString());
                 spALtaViaje.Parameters.Add(new SqlParameter("@Fecha_salida", DTP_fecha_salida.Value));
                 spALtaViaje.Parameters.Add(new SqlParameter("@Fecha_estimada", DTP_fecha_estimada_llegada.Value));
                 spALtaViaje.Parameters.Add(new SqlParameter("@Aero", Convert.ToInt64(CB_aeronave.SelectedValue)));
                 spALtaViaje.Parameters.Add(new SqlParameter("@Ruta", Convert.ToInt64(CB_ruta.SelectedValue)));
+                SqlParameter returnParameter = spALtaViaje.Parameters.Add("@ReturnVal", SqlDbType.Int);
+                returnParameter.Direction = ParameterDirection.ReturnValue;
                 spALtaViaje.ExecuteNonQuery();
-                MessageBox.Show("Ya esta guardado el nuevo Viaje");
+                if ((int)returnParameter.Value == -1) MessageBox.Show("La aeronave ya tiene un viaje para ese dia, por favor seleccione otra");
+                else MessageBox.Show("Ya esta guardado el nuevo Viaje");
             }
-            else{
-                MessageBox.Show("La diferencia entre la salida y la llegada tiene que ser de menor aun dia");
-            }
+            else MessageBox.Show("La diferencia entre la salida y la llegada tiene que ser de menor aun dia");
         }
         
     }

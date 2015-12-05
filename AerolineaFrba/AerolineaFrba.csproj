@@ -44,6 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abm Aeronave\AgregarAeronaveRemplazo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Aeronave\AgregarAeronaveRemplazo.Designer.cs">
+      <DependentUpon>AgregarAeronaveRemplazo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Abm Aeronave\AltaAeronave.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -55,6 +61,12 @@
     </Compile>
     <Compile Include="Abm Aeronave\BaseAeronave.Designer.cs">
       <DependentUpon>BaseAeronave.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abm Aeronave\FueraDeServicio.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Aeronave\FueraDeServicio.Designer.cs">
+      <DependentUpon>FueraDeServicio.cs</DependentUpon>
     </Compile>
     <Compile Include="Abm Aeronave\ListadoAeronave.cs">
       <SubType>Form</SubType>
@@ -290,11 +302,17 @@
     <Compile Include="Registro Llegada Destino\SeleccionarViajeForm.Designer.cs">
       <DependentUpon>SeleccionarViajeForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Abm Aeronave\AgregarAeronaveRemplazo.resx">
+      <DependentUpon>AgregarAeronaveRemplazo.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Abm Aeronave\AltaAeronave.resx">
       <DependentUpon>AltaAeronave.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Aeronave\BaseAeronave.resx">
       <DependentUpon>BaseAeronave.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Aeronave\FueraDeServicio.resx">
+      <DependentUpon>FueraDeServicio.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Aeronave\ListadoAeronave.resx">
       <DependentUpon>ListadoAeronave.cs</DependentUpon>

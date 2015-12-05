@@ -631,13 +631,13 @@ BEGIN
 	SET Mil_Valida = 1
 	WHERE Mil_Cod IN (SELECT M.Mil_Cod
 						FROM TS.Milla AS M, TS.Encomienda as E
-						WHERE M.Enc_Cod IS NOT NULL AND E.Enc_Cod = M.Enc_Cod AND E.Viaj_Cod = @Viaj_Cod)
+						WHERE M.Enc_Cod IS NOT NULL AND E.Enc_Cod = M.Enc_Cod AND E.Viaj_Cod = @ViajeCod)
 
 	UPDATE TS.Milla
 	SET Mil_Valida = 1
 	WHERE Mil_Cod IN (SELECT M.Mil_Cod
 						FROM TS.Milla AS M, TS.Pasaje as P
-						WHERE M.Pas_Cod IS NOT NULL AND P.Pas_Cod = M.Pas_Cod AND P.Viaj_Cod = @Viaj_Cod)
+						WHERE M.Pas_Cod IS NOT NULL AND P.Pas_Cod = M.Pas_Cod AND P.Viaj_Cod = @ViajeCod)
 END
 GO
 
@@ -681,7 +681,6 @@ BEGIN
 
 	END
 END
-GO
 
 IF OBJECT_ID (N'TS.trCompraEncomienda') IS NOT NULL
    DROP TRIGGER "TS".trCompraEncomienda
@@ -741,6 +740,103 @@ BEGIN
 		SET Viaj_Kgs_Disponibles = Viaj_Kgs_Disponibles + (SELECT SUM(Enc_Kg) FROM TS.Viaje as V, TS.Encomienda as E, inserted as I WHERE V.Viaj_Cod = E.Viaj_Cod AND I.Enc_Cod = E.Enc_Cod)
 		WHERE Viaj_Cod IN (SELECT V.Viaj_Cod FROM TS.Viaje as V, TS.Encomienda as E, inserted as I WHERE V.Viaj_Cod = E.Viaj_Cod AND I.Enc_Cod = E.Enc_Cod)
 	END
+END
+GO
+
+IF OBJECT_ID (N'TS.fnViajesPendientes') IS NOT NULL
+   DROP FUNCTION "TS".fnViajesPendientes
+GO
+
+CREATE FUNCTION "TS".fnViajesPendientes(@Aero NUMERIC(18,0), @HOY DATETIME)
+RETURNS INT
+AS
+BEGIN
+	RETURN (SELECT COUNT(*)
+	FROM TS.Viaje AS V, TS.Pasaje AS P, TS.Encomienda AS E, TS.Pasaje_Compra AS PC, TS.Encomienda_Compra AS EC
+	WHERE V.Aero_Num = @Aero AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0 AND ((P.Viaj_Cod=V.Viaj_Cod AND PC.Pas_Cod=P.Pas_Cod) OR (E.Viaj_Cod=V.Viaj_Cod AND EC.Enc_Cod=E.Enc_Cod)))
+END
+GO
+
+IF OBJECT_ID (N'TS.spRemplazarAeroEnDesdeHasta') IS NOT NULL
+   DROP PROCEDURE "TS".spRemplazarAeroEnDesdeHasta
+GO
+
+CREATE PROCEDURE "TS".spRemplazarAeroEnDesdeHasta
+  @Aero NUMERIC(18,0),
+  @AeroFutura NUMERIC(18,0),
+  @Desde DATETIME,
+  @Hasta DATETIME
+AS
+BEGIN
+DECLARE @Viaj_cods TABLE(Viaj_cod NUMERIC(18,0))
+  INSERT INTO @Viaj_cods(Viaj_cod)
+	SELECT DISTINCT V.Viaj_cod
+	FROM TS.Viaje AS V, TS.Pasaje AS P, TS.Pasaje_Compra AS PC
+	WHERE V.Aero_Num = @Aero AND DATEDIFF(minute, @Desde, V.Fecha_Salida)>0 AND DATEDIFF(minute, @Hasta, V.Fecha_Salida)<0 AND P.Viaj_Cod=V.Viaj_Cod AND PC.Pas_Cod=P.Pas_Cod
+	UNION
+	SELECT DISTINCT V.Viaj_cod
+	FROM TS.Viaje AS V, TS.Encomienda AS E, TS.Encomienda_Compra AS EC
+	WHERE V.Aero_Num = @Aero AND DATEDIFF(minute, @Desde, V.Fecha_Salida)>0 AND DATEDIFF(minute, @Hasta, V.Fecha_Salida)<0 AND E.Viaj_Cod=V.Viaj_Cod AND EC.Enc_Cod=E.Enc_Cod
+
+  DECLARE @Viaj_Cod NUMERIC(18,0)
+  DECLARE tscursor CURSOR FOR SELECT * FROM @Viaj_cods
+  OPEN tscursor
+  FETCH NEXT FROM tscursor
+  INTO @Viaj_Cod
+  WHILE @@FETCH_STATUS = 0
+	BEGIN
+		UPDATE TS.Viaje SET Aero_Num=@AeroFutura WHERE Viaj_Cod=@Viaj_Cod
+		FETCH NEXT FROM tscursor
+		INTO @Viaj_Cod
+	END
+  CLOSE tscursor
+  DEALLOCATE tscursoR
+  RETURN 0
+END
+GO
+
+IF OBJECT_ID (N'TS.fnViajesPendientesDesdeHasta') IS NOT NULL
+   DROP FUNCTION "TS".fnViajesPendientesDesdeHasta
+GO
+
+CREATE FUNCTION "TS".fnViajesPendientesDesdeHasta(@Aero NUMERIC(18,0), @Desde DATETIME, @Hasta DATETIME)
+RETURNS INT
+AS
+BEGIN
+	RETURN (SELECT COUNT(*)
+	FROM TS.Viaje AS V, TS.Pasaje AS P, TS.Encomienda AS E, TS.Pasaje_Compra AS PC, TS.Encomienda_Compra AS EC
+	WHERE V.Aero_Num = @Aero AND DATEDIFF(minute, @Desde, V.Fecha_Salida)>0 AND DATEDIFF(minute, @Hasta, V.Fecha_Salida)<0 AND ((P.Viaj_Cod=V.Viaj_Cod AND PC.Pas_Cod=P.Pas_Cod) OR (E.Viaj_Cod=V.Viaj_Cod AND EC.Enc_Cod=E.Enc_Cod)))
+END
+GO
+
+IF OBJECT_ID (N'TS.fnAeronavesParaRemplazarA') IS NOT NULL
+   DROP FUNCTION "TS".fnAeronavesParaRemplazarA
+GO
+
+CREATE FUNCTION "TS".fnAeronavesParaRemplazarA(@Aero NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	RETURN (SELECT COUNT(*)
+	FROM TS.Aeronave AS A, TS.Aeronave AS A2
+	WHERE A.Aero_Num=@Aero AND A.Aero_Num!=A2.Aero_Num AND A2.Aero_Fabricante=A.Aero_Fabricante AND A.Aero_Servicio=A2.Aero_Servicio AND A.Aero_Modelo=A2.Aero_Modelo)
+END
+GO
+
+IF OBJECT_ID (N'TS.fnAeronavesParaRemplazarAEn') IS NOT NULL
+   DROP FUNCTION "TS".fnAeronavesParaRemplazarAEn
+GO
+
+CREATE FUNCTION "TS".fnAeronavesParaRemplazarAEn(@Aero NUMERIC(18,0), @Viaj_Cod NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	RETURN (SELECT COUNT(*)
+	FROM TS.Aeronave AS A, TS.Aeronave AS A2, TS.Viaje AS V
+	WHERE A.Aero_Num=@Aero AND A.Aero_Num!=A2.Aero_Num AND A2.Aero_Fabricante=A.Aero_Fabricante AND A.Aero_Servicio=A2.Aero_Servicio AND A.Aero_Modelo=A2.Aero_Modelo
+	AND V.Viaj_Cod=@Viaj_Cod
+	AND A2.Aero_Cantidad_Kg_Disponibles>=A.Aero_Cantidad_Kg_Disponibles-V.Viaj_Kgs_Disponibles
+	AND TS.fnButacasTotales(A2.Aero_Num)>=TS.fnButacasTotales(A.Aero_Num)-V.Viaj_Butacas_Disponibles)
 END
 GO
 
@@ -878,6 +974,8 @@ BEGIN
 END
 GO
 
+
+
 IF EXISTS (
   SELECT * 
     FROM INFORMATION_SCHEMA.ROUTINES 
@@ -898,6 +996,21 @@ BEGIN
 	SET @Butacas = (SELECT COUNT(*) FROM TS.Butaca WHERE Aero_Num = @Aeronave)
 	SET @ButacasCompradas = (SELECT COUNT(*) FROM TS.Pasaje_Compra AS PC, TS.Pasaje AS P WHERE P.Viaj_Cod = @Viaje_Cod AND PC.Pas_Cod = P.Pas_Cod)
 	RETURN (@Butacas - @ButacasCompradas)
+END
+GO
+
+IF OBJECT_ID (N'TS.fnButacasTotales') IS NOT NULL
+   DROP FUNCTION "TS".fnButacasTotales
+GO
+
+CREATE FUNCTION "TS".fnButacasTotales(
+  @Aero NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	DECLARE @Butacas INT;
+	SET @Butacas = (SELECT COUNT(*) FROM TS.Butaca WHERE Aero_Num = @Aero)
+	RETURN (@Butacas)
 END
 GO
 
@@ -1120,6 +1233,43 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID (N'TS.spRemplazarAeroEn') IS NOT NULL
+   DROP PROCEDURE "TS".spRemplazarAeroEn
+GO
+
+CREATE PROCEDURE "TS".spRemplazarAeroEn
+  @Aero NUMERIC(18,0),
+  @AeroFutura NUMERIC(18,0),
+  @HOY DATETIME
+AS
+BEGIN
+DECLARE @Viaj_cods TABLE(Viaj_cod NUMERIC(18,0))
+  INSERT INTO @Viaj_cods(Viaj_cod)
+	SELECT DISTINCT V.Viaj_cod
+	FROM TS.Viaje AS V, TS.Pasaje AS P, TS.Pasaje_Compra AS PC
+	WHERE V.Aero_Num = @Aero AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0 AND P.Viaj_Cod=V.Viaj_Cod AND PC.Pas_Cod=P.Pas_Cod
+	UNION
+	SELECT DISTINCT V.Viaj_cod
+	FROM TS.Viaje AS V, TS.Encomienda AS E, TS.Encomienda_Compra AS EC
+	WHERE V.Aero_Num = @Aero AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0 AND E.Viaj_Cod=V.Viaj_Cod AND EC.Enc_Cod=E.Enc_Cod
+
+  DECLARE @Viaj_Cod NUMERIC(18,0)
+  DECLARE tscursor CURSOR FOR SELECT * FROM @Viaj_cods
+  OPEN tscursor
+  FETCH NEXT FROM tscursor
+  INTO @Viaj_Cod
+  WHILE @@FETCH_STATUS = 0
+	BEGIN
+		UPDATE TS.Viaje SET Aero_Num=@AeroFutura WHERE Viaj_Cod=@Viaj_Cod
+		FETCH NEXT FROM tscursor
+		INTO @Viaj_Cod
+	END
+  CLOSE tscursor
+  DEALLOCATE tscursoR
+  RETURN 0
+END
+GO
+
 IF OBJECT_ID (N'TS.spAltaViaje') IS NOT NULL
   DROP PROCEDURE "TS".spAltaViaje
 GO
@@ -1134,11 +1284,19 @@ BEGIN
   DECLARE @Status INT
   DECLARE @Butacas INT;
   DECLARE @KGDisponibles INT;
+
+  DECLARE @OtroViaje INT;
+  SET @OtroViaje = (SELECT COUNT(*) FROM TS.Viaje WHERE Aero_Num=@Aero AND DATEDIFF(day, @Fecha_salida, Fecha_Salida)=0)
+
+  IF (@OtroViaje>0)
+	BEGIN
+		RETURN -1
+	END
   SET @Butacas = (SELECT COUNT(*) FROM TS.Butaca WHERE Aero_Num = @Aero)
   SET @KGDisponibles = (SELECT Aero_Cantidad_Kg_Disponibles FROM TS.Aeronave WHERE Aero_Num = @Aero)
   INSERT INTO "TS".Viaje(Fecha_Salida, Fecha_Llegada, Fecha_Llegada_Estimada, Aero_Num, Ruta_Cod, Viaj_Butacas_Disponibles, Viaj_Kgs_Disponibles) 
 	VALUES (@Fecha_salida, NULL, @Fecha_estimada, @Aero, @Ruta, @Butacas, @KGDisponibles)
-  RETURN @Status
+  RETURN 0
 END
 GO
 
@@ -1176,15 +1334,25 @@ CREATE PROCEDURE "TS".spAltaAeronave
   @matricula VARCHAR(255),
   @fabricante VARCHAR(255),
   @kg_disponibles NUMERIC(18,0),
-  @servicio VARCHAR(255)
+  @servicio VARCHAR(255),
+  @HOY DATETIME
 AS
 BEGIN
   DECLARE @Status INT
   DECLARE @StatusButacasV INT
   DECLARE @StatusButacasP INT
   SET @Status = 0
+  DECLARE @Matriculas INT
+  SET @Matriculas = (SELECT COUNT(*) FROM [GD2C2015].[TS].[Aeronave] WHERE Aero_Matricula = @matricula)
+
+  IF (@Matriculas>0)
+	BEGIN
+		SET @Status = -1
+		RETURN @Status
+	END
+
   INSERT INTO "TS".Aeronave(Aero_Matricula, Aero_Modelo, Aero_Cantidad_Kg_Disponibles, Aero_Fabricante, Aero_Servicio, Aero_Fecha_Fuera_De_Servicio, Aero_Fecha_Reinicio_De_Servicio, Aero_Fecha_Baja_Definitiva, Aero_Fecha_De_Alta)
-  VALUES (@matricula, @modelo, @kg_disponibles, @fabricante, @servicio, NULL, NULL, NULL, GETDATE())
+  VALUES (@matricula, @modelo, @kg_disponibles, @fabricante, @servicio, NULL, NULL, NULL, @HOY)
   DECLARE @AeronaveNum NUMERIC(18, 0)
   SET @AeronaveNum = (SELECT Aero_Num FROM [GD2C2015].[TS].[Aeronave] WHERE Aero_Matricula = @matricula AND Aero_Modelo = @modelo)
   EXEC "TS".spGenerarButacas @AeronaveNum, @butacas_p, 'Pasillo'
@@ -1209,6 +1377,39 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID (N'TS.spFinVidaUtilAeronave') IS NOT NULL
+  DROP PROCEDURE "TS".spFinVidaUtilAeronave
+GO
+
+CREATE PROCEDURE "TS".spFinVidaUtilAeronave
+  @numero NUMERIC(18,0),
+  @hoy DATETIME
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  UPDATE [GD2C2015].[TS].[Aeronave] SET Aero_Fecha_Baja_Definitiva=@hoy, Aero_Baja_Vida_Util = 1  WHERE Aero_Num = @numero
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spFueraDeServicioAeronave') IS NOT NULL
+  DROP PROCEDURE "TS".spFueraDeServicioAeronave
+GO
+
+CREATE PROCEDURE "TS".spFueraDeServicioAeronave
+  @numero NUMERIC(18,0),
+  @Desde DATETIME,
+  @Hasta DATETIME
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  UPDATE [GD2C2015].[TS].[Aeronave] SET Aero_Baja_Fuera_De_Servicio = 1, Aero_Fecha_Fuera_De_Servicio=@Desde, Aero_Fecha_Reinicio_De_Servicio=@Hasta WHERE Aero_Num = @numero
+  RETURN @Status
+END
+GO
+
 IF OBJECT_ID (N'TS.spModificarAeronave') IS NOT NULL
   DROP PROCEDURE "TS".spModificarAeronave
 GO
@@ -1224,6 +1425,15 @@ AS
 BEGIN
   DECLARE @Status INT
   SET @Status = 0
+  DECLARE @Matriculas INT
+  SET @Matriculas = (SELECT COUNT(*) FROM [GD2C2015].[TS].[Aeronave] WHERE Aero_Matricula = @matricula)
+
+  IF (@Matriculas>0)
+	BEGIN
+		SET @Status = -1
+		RETURN @Status
+	END
+
   UPDATE [GD2C2015].[TS].[Aeronave]
   SET
     Aero_Modelo = @modelo,
@@ -1442,12 +1652,37 @@ IF OBJECT_ID (N'TS.spBorrarRuta') IS NOT NULL
 GO
 
 CREATE PROCEDURE "TS".spBorrarRuta
+  @HOY DATETIME,
   @Codigo NUMERIC(18,0)
 AS
 BEGIN
   DECLARE @Status INT
   SET @Status = 0
   UPDATE [GD2C2015].[TS].[Ruta] SET Ruta_Borrada = 1  WHERE Ruta_Cod = @Codigo
+ 
+  DECLARE @Com_PNRs TABLE(Com_PNR NUMERIC(18,0))
+  INSERT INTO @Com_PNRs(Com_PNR)
+	SELECT DISTINCT PC.Com_PNR
+	FROM TS.Pasaje AS P, TS.Viaje AS V, TS.Pasaje_Compra AS PC
+	WHERE P.Viaj_cod = V.Viaj_cod AND PC.Pas_Cod = P.Pas_Cod AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0
+	UNION
+	SELECT DISTINCT EC.Com_PNR
+	FROM TS.Encomienda AS E, TS.Viaje AS V, TS.Encomienda_Compra AS EC
+	WHERE E.Viaj_cod = V.Viaj_cod AND EC.Enc_Cod = E.Enc_Cod AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0
+
+  DECLARE @Com_PNR NUMERIC(18,0)
+  DECLARE tscursor CURSOR FOR SELECT * FROM @Com_PNRs
+  OPEN tscursor
+  FETCH NEXT FROM tscursor
+  INTO @Com_PNR
+  WHILE @@FETCH_STATUS = 0
+	BEGIN
+		EXEC "TS".spCancelarCompraPorRuta @HOY, @Com_PNR, 'Cancelado por borrado de ruta'
+		FETCH NEXT FROM tscursor
+		INTO @Com_PNR
+	END
+  CLOSE tscursor
+  DEALLOCATE tscursor
   RETURN @Status
 END
 GO
@@ -1457,6 +1692,7 @@ IF OBJECT_ID (N'TS.spModificarRuta') IS NOT NULL
 GO
 
 CREATE PROCEDURE "TS".spModificarRuta
+  @HOY DATETIME,
   @origen NUMERIC(18,0),
   @destino NUMERIC(18,0),
   @servicio VARCHAR(255),
@@ -1477,6 +1713,29 @@ BEGIN
     Ruta_Precio_Base_Pasaje = @precio_pasaje,
     Ruta_Servicio = @servicio
   WHERE Ruta_Cod = @codigo_unico
+  DECLARE @Com_PNRs TABLE(Com_PNR NUMERIC(18,0))
+  INSERT INTO @Com_PNRs(Com_PNR)
+	SELECT DISTINCT PC.Com_PNR
+	FROM TS.Pasaje AS P, TS.Viaje AS V, TS.Pasaje_Compra AS PC
+	WHERE P.Viaj_cod = V.Viaj_cod AND PC.Pas_Cod = P.Pas_Cod AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0
+	UNION
+	SELECT DISTINCT EC.Com_PNR
+	FROM TS.Encomienda AS E, TS.Viaje AS V, TS.Encomienda_Compra AS EC
+	WHERE E.Viaj_cod = V.Viaj_cod AND EC.Enc_Cod = E.Enc_Cod AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0
+
+  DECLARE @Com_PNR NUMERIC(18,0)
+  DECLARE tscursor CURSOR FOR SELECT * FROM @Com_PNRs
+  OPEN tscursor
+  FETCH NEXT FROM tscursor
+  INTO @Com_PNR
+  WHILE @@FETCH_STATUS = 0
+	BEGIN
+		EXEC "TS".spCancelarCompraPorRuta @HOY, @Com_PNR, 'Cancelado por modificacion de ruta'
+		FETCH NEXT FROM tscursor
+		INTO @Com_PNR
+	END
+  CLOSE tscursor
+  DEALLOCATE tscursor
   RETURN @Status
 END
 GO
@@ -1575,15 +1834,14 @@ BEGIN
 	BEGIN
 		INSERT INTO TS.Compra(Cli_Cod, Com_Fecha, Tar_Numero, Com_Forma_Pago, Com_Cuotas)
 		OUTPUT INSERTED.Com_PNR INTO @Com_PNR
-		VALUES(@Com_Cli, @Com_Fecha, @Tar_Numero, 'Tarjeta', @Com_Cuotas)
+		VALUES(@Com_Cli, @Com_Fecha, @Tar_Numero, @Com_Forma_Pago, @Com_Cuotas)
 	END
-	/*
 	ELSE
 	BEGIN
 		INSERT INTO TS.Compra(Cli_Cod, Com_Fecha, Com_Forma_Pago)
 		OUTPUT INSERTED.Com_PNR INTO @Com_PNR
 		VALUES(@Com_Cli, @Com_Fecha, @Com_Forma_Pago)
-	END*/
+	END
 	
 
 	DECLARE @Enc_Precio INT = @Enc_Kgs * (SELECT R.Ruta_Precio_Base_Kg 
@@ -1614,7 +1872,7 @@ BEGIN
 	FROM @Com_PNR, @Pas_Cod
 
 	DECLARE @PNR NUMERIC(18,0)
-	SET @PNR = (SELECT TOP 1 Com_PNR FROM @Com_PNR ORDER BY Com_PNR DESC)
+	SET @PNR = (SELECT TOP 1 Com_PNR FROM @Com_PNR)
 	
 	RETURN @PNR
 END
@@ -1914,6 +2172,7 @@ SELECT DISTINCT Aero_Num, Butaca_Nro, Butaca_Piso, Butaca_Tipo
 FROM GD2C2015.gd_esquema.Maestra, "TS".Aeronave
 WHERE Aero_Matricula=Aeronave_Matricula AND Butaca_Tipo != '0';
 
+ 
 INSERT INTO "TS".Ruta(Ruta_Codigo, Ruta_Precio_Base_Kg, Ruta_Precio_Base_Pasaje, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Ruta_Servicio)
 SELECT e.Ruta_Codigo, e.Ruta_Precio_BaseKG, p.Ruta_Precio_BasePasaje, C1.Ciudad_Cod, C2.Ciudad_Cod, e.Tipo_Servicio
 FROM (SELECT DISTINCT Ruta_Codigo, Ruta_Precio_BaseKG, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Tipo_Servicio
@@ -1956,6 +2215,8 @@ INSERT INTO "TS".Encomienda(Enc_Cod, Enc_Fecha_Compra, Enc_Kg, Enc_Precio, Viaj_
 SELECT DISTINCT Paquete_Codigo, Paquete_FechaCompra, Paquete_KG, Paquete_Precio, "TS".fnGetViaje(M.Ruta_Ciudad_Destino, M.Ruta_Ciudad_Origen, M.Ruta_Codigo, M.Tipo_Servicio, M.Aeronave_Matricula, M.FechaSalida, M.FechaLLegada, M.Fecha_LLegada_Estimada) Viaj_Cod, Cli.Cli_Cod
 FROM GD2C2015.gd_esquema.Maestra as M, "TS".Ruta as R, "TS".Butaca as B, "TS".Cliente as Cli, TS.Ciudad as C1, TS.Ciudad as C2
 WHERE Paquete_Codigo > 0
+AND C2.Ciudad_Nombre = M.Ruta_Ciudad_Destino AND C1.Ciudad_Nombre = M.Ruta_Ciudad_Origen
+AND R.Ruta_Codigo = M.Ruta_Codigo AND R.Ruta_Servicio = M.Tipo_Servicio AND R.Ruta_Ciudad_Destino = C2.Ciudad_Cod AND R.Ruta_Ciudad_Origen = C1.Ciudad_Cod
 AND Cli.Cli_Nombre = M.Cli_Apellido + ', ' + M.Cli_Nombre AND Cli.Cli_DNI = M.Cli_Dni
 
 SET IDENTITY_INSERT "TS".Encomienda OFF;

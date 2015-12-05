@@ -1,6 +1,6 @@
 ﻿namespace AerolineaFrba.Abm_Aeronave
 {
-    partial class ModificacionAeronave
+    partial class AgregarAeronaveRemplazo
     {
         /// <summary>
         /// Required designer variable.
@@ -36,22 +36,29 @@
             // 
             this.BT_guardar.Click += new System.EventHandler(this.BT_guardar_Click);
             // 
-            // TB_butacas_pasillo
+            // CB_servicio
             // 
-            this.TB_butacas_pasillo.Enabled = false;
+            this.CB_servicio.Enabled = false;
             // 
-            // TB_butacas_ventanilla
+            // TB_modelo
             // 
-            this.TB_butacas_ventanilla.Enabled = false;
+            this.TB_modelo.Enabled = false;
             // 
-            // ModificacionAeronave
+            // TB_matricula
+            // 
+            this.TB_matricula.Enabled = false;
+            // 
+            // TB_fabricante
+            // 
+            this.TB_fabricante.Enabled = false;
+            // 
+            // AgregarAeronaveRemplazo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(282, 327);
-            this.Name = "ModificacionAeronave";
-            this.Text = "ModificacionAeronave";
-            this.Load += new System.EventHandler(this.ModificacionAeronave_Load);
+            this.Name = "AgregarAeronaveRemplazo";
+            this.Text = "AgregarAeronaveRemplazo";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);

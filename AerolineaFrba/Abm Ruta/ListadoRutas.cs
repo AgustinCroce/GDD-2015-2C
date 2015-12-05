@@ -74,10 +74,11 @@ namespace AerolineaFrba.Abm_Ruta
 
         private void BT_eliminar_Click(object sender, EventArgs e)
         {
-            DialogResult dialogResult = MessageBox.Show("¿Usted esta seguro de borrar esta ruta?", "Confirmación", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show("¿Usted esta seguro de borrar esta ruta? (en caso de borrarla se cancelaran todos los pasajes y encomiendas que pasen por esa ruta)", "Confirmación", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 SqlCommand spBorrarRuta = this.db.GetStoreProcedure("TS.spBorrarRuta");
+                spBorrarRuta.Parameters.Add(new SqlParameter("@HOY", Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema)));
                 spBorrarRuta.Parameters.Add(new SqlParameter("@Codigo", Convert.ToInt64(DGV_rutas.SelectedRows[0].Cells["Codigo Unico"].Value)));
                 spBorrarRuta.ExecuteNonQuery();
             }

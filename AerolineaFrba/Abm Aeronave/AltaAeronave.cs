@@ -29,14 +29,24 @@ namespace AerolineaFrba.Abm_Aeronave
         {
             SqlCommand spALtaAeronave = this.db.GetStoreProcedure("TS.spAltaAeronave");
             spALtaAeronave.Parameters.Add(new SqlParameter("@modelo", TB_modelo.Text));
+            spALtaAeronave.Parameters.Add(new SqlParameter("@HOY", Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema)));
             spALtaAeronave.Parameters.Add(new SqlParameter("@matricula", TB_matricula.Text));
             spALtaAeronave.Parameters.Add(new SqlParameter("@fabricante", TB_fabricante.Text));
             spALtaAeronave.Parameters.Add(new SqlParameter("@servicio", CB_servicio.SelectedValue));
             spALtaAeronave.Parameters.Add(new SqlParameter("@butacas_v", Convert.ToInt64(TB_butacas_ventanilla.Text)));
             spALtaAeronave.Parameters.Add(new SqlParameter("@butacas_p", Convert.ToInt64(TB_butacas_pasillo.Text)));
             spALtaAeronave.Parameters.Add(new SqlParameter("@kg_disponibles", Convert.ToInt64(TB_kg_disponibles.Text)));
+            SqlParameter returnParameter = spALtaAeronave.Parameters.Add("Status", SqlDbType.Int);
+            returnParameter.Direction = ParameterDirection.ReturnValue;
             spALtaAeronave.ExecuteNonQuery();
-            this.Close();
+            if ((int)returnParameter.Value == -1)
+            {
+                MessageBox.Show("La matricula no es unica, por favor use otra");
+            }
+            else
+            {
+                this.Close();
+            }
         }
     }
 }
