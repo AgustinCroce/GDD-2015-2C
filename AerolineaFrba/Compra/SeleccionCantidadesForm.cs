@@ -27,16 +27,19 @@ namespace AerolineaFrba.Compra
             this.vueloSeleccionado = vueloSeleccionado;
             pasajeCheckBox.CheckedChanged += new EventHandler(pasajeCheckBox_CheckedChanged);
             encomiendaCheckBox.CheckedChanged += new EventHandler(encomiendaCheckBox_CheckedChanged);
+            acceptButton.Enabled = false;
         }
 
         private void encomiendaCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             encomiendaInput.Enabled = this.encomiendaCheckBox.Checked;
+            acceptButton.Enabled = this.encomiendaCheckBox.Checked || this.pasajeCheckBox.Checked;
         }
 
         private void pasajeCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             pasajesInput.Enabled = this.pasajeCheckBox.Checked;
+            acceptButton.Enabled = this.encomiendaCheckBox.Checked || this.pasajeCheckBox.Checked;
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
@@ -63,6 +66,9 @@ namespace AerolineaFrba.Compra
                     this.encomiendaHabilitada = false;
 
                 }
+                else {
+                    this.encomiendaHabilitada = true;
+                }
 
             }
 
@@ -80,6 +86,9 @@ namespace AerolineaFrba.Compra
                 {
                     MessageBox.Show("No hay suficientes butacas disponibles para responder a su pedido");
                     this.pasajeHabilitado = false;
+                }
+                else {
+                    this.pasajeHabilitado = true;
                 }
             }
             

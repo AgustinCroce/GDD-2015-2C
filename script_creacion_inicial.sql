@@ -62,6 +62,10 @@ IF OBJECT_ID('TS.Viaje', 'U') IS NOT NULL
   DROP TABLE "TS".Viaje
 GO
 
+IF OBJECT_ID('TS.Tipo_Servicio', 'U') IS NOT NULL
+  DROP TABLE "TS".Tipo_Servicio
+GO
+
 IF OBJECT_ID('TS.Ruta', 'U') IS NOT NULL
   DROP TABLE "TS".Ruta
 GO
@@ -121,9 +125,6 @@ GO
 IF OBJECT_ID('TS.Producto', 'U') IS NOT NULL
   DROP TABLE "TS".Producto
 GO
-
-DROP TABLE #RutasxEncomienda
-DROP TABLE #RutasxPasaje
 
 /********************************** CREACIÓN DE TABLAS **************************************/
 
@@ -210,6 +211,12 @@ CREATE TABLE "TS".Aeronave
   Aero_Fecha_Baja_Definitiva DATE,
   Aero_Cantidad_Kg_Disponibles NUMERIC(18,0) NOT NULL,
   Aero_Borrado BIT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE "TS".Tipo_Servicio
+(
+	TipoSer_Nombre NVARCHAR(255) PRIMARY KEY,
+	TipoSer_Porcentaje NUMERIC(2,2)
 );
 
 CREATE TABLE "TS".Tipo_Tarjeta
@@ -315,7 +322,7 @@ CREATE TABLE "TS".Compra
   Com_Forma_Pago NVARCHAR(255) CHECK (Com_Forma_Pago IN('Tarjeta', 'Efectivo')),
   Tar_Numero NUMERIC(18,0) REFERENCES "TS".Tarjeta(Tar_Numero),
   Com_Fecha DATE NOT NULL,
-  Com_Cuotas NUMERIC(18,0)
+  Com_Cuotas NUMERIC(18,0) DEFAULT 0
 );
 
 CREATE TABLE "TS".Cancelacion_Compra
@@ -574,16 +581,28 @@ IF OBJECT_ID (N'TS.spConsultarViaje') IS NOT NULL
 GO
 
 CREATE PROCEDURE "TS".spConsultarViaje
-	@CiudadOrigen varchar(255),
-	@CiudadDestino varchar(255),
-	@AeroNum Numeric(18,0)
+	@CiudadOrigen NUMERIC(18,0),
+	@CiudadDestino NUMERIC(18,0),
+	@Aero_Matricula NUMERIC(18,0),
+	@Fecha_Salida DATETIME
 AS
 BEGIN
 	DECLARE @Cantidad INT
 	SET @Cantidad = (SELECT COUNT(*)
-						FROM TS.Viaje as V, TS.Ruta as R
-						WHERE V.Ruta_Cod = R.Ruta_Cod AND R.Ruta_Ciudad_Origen = @CiudadOrigen
-						AND R.Ruta_Ciudad_Destino = @CiudadDestino AND V.Aero_Num = @AeroNum AND V.Fecha_Llegada = NULL)
+						FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
+						WHERE R.Ruta_Ciudad_Destino = @CiudadDestino AND R.Ruta_Ciudad_Origen = @CiudadOrigen
+							AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
+	IF @Cantidad = 0
+	BEGIN
+		IF ((SELECT COUNT(*)
+				FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
+				WHERE R.Ruta_Ciudad_Origen = @CiudadOrigen
+				AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL) = 1)
+		BEGIN
+			SET @Cantidad = -1
+		END
+	END
+	
 	RETURN @Cantidad
 END
 GO
@@ -593,25 +612,32 @@ IF OBJECT_ID (N'TS.spRegistrarLlegada') IS NOT NULL
 GO
 
 CREATE PROCEDURE "TS".spRegistrarLlegada
-	@ViajeCod Numeric(18,0),
-	@Llegada Datetime
+	@CiudadOrigen NUMERIC(18,0),
+	@CiudadDestino NUMERIC(18,0),
+	@Aero_Matricula NUMERIC(18,0),
+	@Fecha_Salida DATETIME,
+	@Llegada DATETIME
 AS
 BEGIN
+	DECLARE @Viaj_Cod NUMERIC(18,0) = (SELECT V.Viaj_Cod
+						FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
+						WHERE R.Ruta_Ciudad_Destino = @CiudadDestino AND R.Ruta_Ciudad_Origen = @CiudadOrigen
+							AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
 	UPDATE TS.Viaje
 	SET Fecha_Llegada = @Llegada
-	WHERE Viaj_Cod = @ViajeCod
+	WHERE Viaj_Cod = @Viaj_Cod
 
 	UPDATE TS.Milla
 	SET Mil_Valida = 1
 	WHERE Mil_Cod IN (SELECT M.Mil_Cod
 						FROM TS.Milla AS M, TS.Encomienda as E
-						WHERE M.Enc_Cod IS NOT NULL AND E.Enc_Cod = M.Enc_Cod AND E.Viaj_Cod = @ViajeCod)
+						WHERE M.Enc_Cod IS NOT NULL AND E.Enc_Cod = M.Enc_Cod AND E.Viaj_Cod = @Viaj_Cod)
 
 	UPDATE TS.Milla
 	SET Mil_Valida = 1
 	WHERE Mil_Cod IN (SELECT M.Mil_Cod
 						FROM TS.Milla AS M, TS.Pasaje as P
-						WHERE M.Pas_Cod IS NOT NULL AND P.Pas_Cod = M.Pas_Cod AND P.Viaj_Cod = @ViajeCod)
+						WHERE M.Pas_Cod IS NOT NULL AND P.Pas_Cod = M.Pas_Cod AND P.Viaj_Cod = @Viaj_Cod)
 END
 GO
 
@@ -655,6 +681,7 @@ BEGIN
 
 	END
 END
+GO
 
 IF OBJECT_ID (N'TS.trCompraEncomienda') IS NOT NULL
    DROP TRIGGER "TS".trCompraEncomienda
@@ -675,6 +702,7 @@ BEGIN
 		WHERE Viaj_Cod IN (SELECT V.Viaj_Cod FROM TS.Viaje as V, TS.Encomienda as E, inserted as I WHERE V.Viaj_Cod = E.Viaj_Cod AND I.Enc_Cod = E.Enc_Cod)
 	END
 END
+GO
 
 IF OBJECT_ID (N'TS.trCancelacionPasaje') IS NOT NULL
    DROP TRIGGER "TS".CancelacionPasaje
@@ -694,6 +722,7 @@ BEGIN
 		WHERE Viaj_Cod IN (SELECT V.Viaj_Cod FROM TS.Viaje as V, TS.Pasaje as P, inserted as I WHERE V.Viaj_Cod = P.Pas_Cod AND I.Pas_Cod = P.Pas_Cod)
 	END
 END
+GO
 
 IF OBJECT_ID (N'TS.trCancelacionEncomienda') IS NOT NULL
    DROP TRIGGER "TS".CancelacionEncomienda
@@ -713,8 +742,147 @@ BEGIN
 		WHERE Viaj_Cod IN (SELECT V.Viaj_Cod FROM TS.Viaje as V, TS.Encomienda as E, inserted as I WHERE V.Viaj_Cod = E.Viaj_Cod AND I.Enc_Cod = E.Enc_Cod)
 	END
 END
+GO
 
-IF OBJECT_ID (N'TS.fnButacasDisponibles') IS NOT NULL
+/*
+IF OBJECT_ID (N'TS.trCreacionEncomienda') IS NOT NULL
+   DROP TRIGGER "TS".trCreacionEncomienda
+GO
+
+CREATE TRIGGER "TS".trCreacionEncomienda ON "TS".Encomienda AFTER INSERT
+AS
+BEGIN
+	DECLARE @Com_PNR TABLE
+	(
+		Com_PNR NUMERIC(18,0)
+	);
+
+	INSERT INTO TS.Compra(Cli_Cod, Com_Fecha, Com_Forma_Pago)
+	OUTPUT inserted.Com_PNR INTO @Com_PNR
+	SELECT Cli_Cod, Enc_Fecha_Compra, 'Efectivo'
+	FROM inserted
+
+	INSERT INTO TS.Encomienda_Compra(Com_PNR, Enc_Cod)
+	SELECT C.Com_PNR, E.Enc_Cod
+	FROM (SELECT Com_PNR, ROW_NUMBER() OVER(ORDER BY Com_PNR ASC) Col_Num FROM @Com_PNR) as C, (SELECT Enc_Cod, ROW_NUMBER() OVER(ORDER BY Enc_Cod ASC) Col_Num FROM inserted) as E
+	WHERE C.Col_Num = E.Col_Num
+
+END
+GO
+
+IF OBJECT_ID (N'TS.trCreacionPasaje') IS NOT NULL
+   DROP TRIGGER "TS".trCreacionPasaje
+GO
+
+CREATE TRIGGER "TS".trCreacionPasaje ON "TS".Pasaje AFTER INSERT
+AS
+BEGIN
+	DECLARE @Com_PNR TABLE
+	(
+		Com_PNR NUMERIC(18,0)
+	);
+
+	INSERT INTO TS.Compra(Cli_Cod, Com_Fecha, Com_Forma_Pago)
+	OUTPUT inserted.Com_PNR INTO @Com_PNR
+	SELECT Cli_Cod, Pas_Fecha_Compra, 'Efectivo'
+	FROM inserted
+
+	INSERT INTO TS.Pasaje_Compra(Com_PNR, Pas_Cod)
+	SELECT C.Com_PNR, E.Pas_Cod
+	FROM (SELECT Com_PNR, ROW_NUMBER() OVER(ORDER BY Com_PNR ASC) Col_Num FROM @Com_PNR) as C, (SELECT Pas_Cod, ROW_NUMBER() OVER(ORDER BY Pas_Cod ASC) Col_Num FROM inserted) as E
+	WHERE C.Col_Num = E.Col_Num
+
+END
+GO
+*/
+IF OBJECT_ID (N'TS.spMigrarCompraEncomienda') IS NOT NULL
+   DROP PROCEDURE "TS".spMigrarCompraEncomienda
+GO
+
+CREATE PROCEDURE "TS".spMigrarCompraEncomienda
+AS
+BEGIN
+	DECLARE TrEncCursor CURSOR FOR
+	SELECT Enc_Cod, Enc_Fecha_Compra, Cli_Cod
+	FROM TS.Encomienda
+
+	DECLARE @Enc_Cod NUMERIC(18,0)
+	DECLARE @Cli_Cod NUMERIC(18,0)
+	DECLARE @Enc_Fecha_Compra DATETIME
+
+	OPEN TrEncCursor
+	FETCH NEXT FROM TrEncCursor
+	INTO @Enc_Cod, @Enc_Fecha_Compra, @Cli_Cod
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		DECLARE @Com_PNR TABLE
+		(
+		Com_PNR NUMERIC(18,0)
+		);
+
+		INSERT INTO TS.Compra(Com_Fecha, Cli_Cod, Com_Forma_Pago)
+		OUTPUT inserted.Com_PNR INTO @Com_PNR
+		VALUES(@Enc_Fecha_Compra, @Cli_Cod, 'Efectivo')
+		
+		INSERT INTO TS.Encomienda_Compra(Enc_Cod, Com_PNR)
+		VALUES(@Enc_Cod, (SELECT TOP 1 Com_PNR FROM @Com_PNR))
+
+
+		DELETE FROM @Com_PNR
+		FETCH NEXT FROM TrEncCursor
+		INTO @Enc_Cod, @Enc_Fecha_Compra, @Cli_Cod
+	END
+	CLOSE TrEncCursor
+	DEALLOCATE TrEncCursor
+END
+GO
+
+IF OBJECT_ID (N'TS.spMigrarCompraPasaje') IS NOT NULL
+   DROP PROCEDURE "TS".spMigrarCompraPasaje
+GO
+
+CREATE PROCEDURE "TS".spMigrarCompraPasaje
+AS
+BEGIN
+	DECLARE TrPasCursor CURSOR FOR
+	SELECT Pas_Cod, Pas_Fecha_Compra, Cli_Cod
+	FROM TS.Pasaje
+
+	DECLARE @Pas_Cod NUMERIC(18,0)
+	DECLARE @Cli_Cod NUMERIC(18,0)
+	DECLARE @Pas_Fecha_Compra DATETIME
+
+	OPEN TrPasCursor
+	FETCH NEXT FROM TrPasCursor
+	INTO @Pas_Cod, @Pas_Fecha_Compra, @Cli_Cod
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		DECLARE @Com_PNR TABLE
+		(
+		Com_PNR NUMERIC(18,0)
+		);
+
+		INSERT INTO TS.Compra(Com_Fecha, Cli_Cod, Com_Forma_Pago)
+		OUTPUT inserted.Com_PNR INTO @Com_PNR
+		VALUES(@Pas_Fecha_Compra, @Cli_Cod, 'Efectivo')
+		
+		INSERT INTO TS.Pasaje_Compra(Pas_Cod, Com_PNR)
+		VALUES(@Pas_Cod, (SELECT TOP 1 Com_PNR FROM @Com_PNR))
+
+		DELETE FROM @Com_PNR
+		FETCH NEXT FROM TrPasCursor
+		INTO @Pas_Cod, @Pas_Fecha_Compra, @Cli_Cod
+	END
+	CLOSE TrPasCursor
+	DEALLOCATE TrPasCursor
+END
+GO
+
+IF EXISTS (
+  SELECT * 
+    FROM INFORMATION_SCHEMA.ROUTINES 
+   WHERE SPECIFIC_NAME = N'fnButacasDisponibles' 
+)
    DROP FUNCTION "TS".fnButacasDisponibles
 GO
 
@@ -1407,14 +1575,15 @@ BEGIN
 	BEGIN
 		INSERT INTO TS.Compra(Cli_Cod, Com_Fecha, Tar_Numero, Com_Forma_Pago, Com_Cuotas)
 		OUTPUT INSERTED.Com_PNR INTO @Com_PNR
-		VALUES(@Com_Cli, @Com_Fecha, @Tar_Numero, @Com_Forma_Pago, @Com_Cuotas)
+		VALUES(@Com_Cli, @Com_Fecha, @Tar_Numero, 'Tarjeta', @Com_Cuotas)
 	END
+	/*
 	ELSE
 	BEGIN
 		INSERT INTO TS.Compra(Cli_Cod, Com_Fecha, Com_Forma_Pago)
 		OUTPUT INSERTED.Com_PNR INTO @Com_PNR
 		VALUES(@Com_Cli, @Com_Fecha, @Com_Forma_Pago)
-	END
+	END*/
 	
 
 	DECLARE @Enc_Precio INT = @Enc_Kgs * (SELECT R.Ruta_Precio_Base_Kg 
@@ -1445,7 +1614,7 @@ BEGIN
 	FROM @Com_PNR, @Pas_Cod
 
 	DECLARE @PNR NUMERIC(18,0)
-	SET @PNR = (SELECT TOP 1 Com_PNR FROM @Com_PNR)
+	SET @PNR = (SELECT TOP 1 Com_PNR FROM @Com_PNR ORDER BY Com_PNR DESC)
 	
 	RETURN @PNR
 END
@@ -1594,6 +1763,64 @@ CREATE VIEW "TS".vsAeronaveMasFueraDeServicio
 	ORDER BY Cantidad DESC
 GO
 
+IF OBJECT_ID (N'TS.fnGetViaje') IS NOT NULL
+   DROP FUNCTION "TS".fnGetViaje
+GO
+
+CREATE FUNCTION "TS".fnGetViaje(
+  @Ruta_Destino NVARCHAR(255),
+  @Ruta_Origen NVARCHAR(255),
+  @Ruta_Codigo NUMERIC(18,0),
+  @Ruta_Servicio NVARCHAR(255),
+  @Aero_Matricula NVARCHAR(255),
+  @Fecha_Salida DATETIME,
+  @Fecha_Llegada DATETIME,
+  @Fecha_Llegada_Estimada DATETIME
+  )
+RETURNS NUMERIC(18,0)
+AS
+BEGIN
+	DECLARE @Viaj_Cod NUMERIC(18,0)
+	DECLARE @Aero_Num NUMERIC(18,0)
+	DECLARE @Ruta_Cod NUMERIC(18,0)
+
+	SET @Aero_Num = (SELECT TOP 1 Aero_Num FROM TS.Aeronave WHERE Aero_Matricula = @Aero_Matricula)
+	SET @Ruta_Cod = (SELECT TOP 1 R.Ruta_Cod FROM TS.Ruta as R, TS.Ciudad as C1, Ts.Ciudad as C2 
+						WHERE C2.Ciudad_Nombre =  @Ruta_Destino AND C1.Ciudad_Nombre = @Ruta_Origen
+						AND R.Ruta_Codigo = @Ruta_Codigo AND R.Ruta_Servicio = @Ruta_Servicio 
+						AND R.Ruta_Ciudad_Destino = C2.Ciudad_Cod AND R.Ruta_Ciudad_Origen = C1.Ciudad_Cod)
+	SET @Viaj_Cod = (SELECT TOP 1 V.Viaj_Cod
+	FROM TS.Viaje as V, "TS".Ruta as R , TS.Ciudad as C1, TS.Ciudad as C2
+		WHERE V.Aero_Num = @Aero_Num
+			AND V.Ruta_Cod = @Ruta_Cod
+			AND V.Fecha_Llegada = @Fecha_Llegada AND V.Fecha_Salida = @Fecha_Salida AND V.Fecha_Llegada_Estimada = @Fecha_Llegada_Estimada)
+
+	RETURN @Viaj_Cod
+END
+GO
+
+IF OBJECT_ID (N'TS.fnGetButaca') IS NOT NULL
+   DROP FUNCTION "TS".fnGetButaca
+GO
+
+CREATE FUNCTION "TS".fnGetButaca(
+  @But_Numero NUMERIC(18,0),
+  @But_Piso NUMERIC(18,0),
+  @But_Tipo NVARCHAR(255),
+  @Aero_Matricula NVARCHAR(255)
+)
+RETURNS NUMERIC(18,0)
+AS
+BEGIN
+	DECLARE @But_Cod NUMERIC(18,0)
+	DECLARE @Aero_Num NUMERIC(18,0)
+
+	SET @Aero_Num = (SELECT TOP 1 Aero_Num FROM TS.Aeronave WHERE Aero_Matricula = @Aero_Matricula)
+	SET @But_Cod = (SELECT TOP 1 But_Cod FROM TS.Butaca WHERE Aero_Num = @Aero_Num AND But_Numero = @But_Numero AND But_Tipo = @But_Tipo AND But_Piso = @But_Piso)
+
+	RETURN @But_Cod
+END
+GO
 /******************************* MIGRACION *********************************************/
 
 SET IDENTITY_INSERT "TS".Funcionalidad ON
@@ -1646,6 +1873,11 @@ INSERT INTO "TS".Tipo_Tarjeta(TipoTar_Nombre, TipoTar_Cuotas) VALUES
   ('ICBC', 1),
   ('FRBA PLUS', 120);
 
+INSERT INTO "TS".Tipo_Servicio(TipoSer_Nombre, TipoSer_Porcentaje) VALUES
+  ('Primera Clase', 0.8),
+  ('Ejecutivo', 0.4),
+  ('Turista', 0.2);
+
 /*********** INSERTO 3 USUARIOS ADMIN, ADMIN2 Y ADMIN3 CON PASSWORD w23e **********************/
 INSERT INTO "TS".Usuario(Usr_Username, Usr_Password, Usr_Intentos_Login, Usr_Borrado) VALUES
   ('admin1', 'e6b87050bfcb8143fcb8db0170a4dc9ed00d904ddd3e2a4ad1b1e8dc0fdc9be7', 0, 0),
@@ -1682,21 +1914,14 @@ SELECT DISTINCT Aero_Num, Butaca_Nro, Butaca_Piso, Butaca_Tipo
 FROM GD2C2015.gd_esquema.Maestra, "TS".Aeronave
 WHERE Aero_Matricula=Aeronave_Matricula AND Butaca_Tipo != '0';
 
-SELECT DISTINCT Ruta_Codigo, Ruta_Precio_BaseKG, Ruta_Ciudad_Origen, 
-				  Ruta_Ciudad_Destino, Tipo_Servicio
-INTO #RutasXEncomienda
-FROM GD2C2015.gd_esquema.Maestra
-WHERE Ruta_Precio_BaseKG > 0
-
-SELECT DISTINCT Ruta_Codigo, Ruta_Precio_BasePasaje, Ruta_Ciudad_Origen, 
-				  Ruta_Ciudad_Destino, Tipo_Servicio
-INTO #RutasXPasaje
-FROM GD2C2015.gd_esquema.Maestra
-WHERE Ruta_Precio_BasePasaje > 0
-  
 INSERT INTO "TS".Ruta(Ruta_Codigo, Ruta_Precio_Base_Kg, Ruta_Precio_Base_Pasaje, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Ruta_Servicio)
 SELECT e.Ruta_Codigo, e.Ruta_Precio_BaseKG, p.Ruta_Precio_BasePasaje, C1.Ciudad_Cod, C2.Ciudad_Cod, e.Tipo_Servicio
-FROM #RutasXEncomienda as e, #RutasXPasaje as p, TS.Ciudad as C1, TS.Ciudad as C2
+FROM (SELECT DISTINCT Ruta_Codigo, Ruta_Precio_BaseKG, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Tipo_Servicio
+		FROM GD2C2015.gd_esquema.Maestra
+		WHERE Ruta_Precio_BaseKG > 0) as e,
+	(SELECT DISTINCT Ruta_Codigo, Ruta_Precio_BasePasaje, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino, Tipo_Servicio
+		FROM GD2C2015.gd_esquema.Maestra
+		WHERE Ruta_Precio_BasePasaje > 0) as p, TS.Ciudad as C1, TS.Ciudad as C2
 WHERE e.Ruta_Codigo = p.Ruta_Codigo AND e.Ruta_Ciudad_Origen = p.Ruta_Ciudad_Origen 
       AND e.Ruta_Ciudad_Destino = p.Ruta_Ciudad_Destino 
       AND e.Tipo_Servicio = p.Tipo_Servicio
@@ -1705,9 +1930,9 @@ WHERE e.Ruta_Codigo = p.Ruta_Codigo AND e.Ruta_Ciudad_Origen = p.Ruta_Ciudad_Ori
 
 INSERT INTO "TS".Viaje(Fecha_Salida, Fecha_Llegada, Fecha_Llegada_Estimada, Aero_Num, Ruta_Cod)
 SELECT DISTINCT M.FechaSalida, M.FechaLLegada, M.Fecha_LLegada_Estimada, Aero_Num, R.Ruta_Cod
-FROM GD2C2015.gd_esquema.Maestra as M, "TS".Aeronave, "TS".Ruta as R
+FROM GD2C2015.gd_esquema.Maestra as M, "TS".Aeronave, "TS".Ruta as R, "TS".Ciudad as C1, "TS".Ciudad as C2
 WHERE Aero_Matricula=Aeronave_Matricula
-AND R.Ruta_Codigo=M.Ruta_Codigo
+AND R.Ruta_Codigo = M.Ruta_Codigo AND R.Ruta_Servicio = M.Tipo_Servicio AND R.Ruta_Ciudad_Destino = C2.Ciudad_Cod AND R.Ruta_Ciudad_Origen = C1.Ciudad_Cod
 AND M.Ruta_Codigo IS NOT NULL
 
 SET IDENTITY_INSERT "TS".Pasaje ON;
@@ -1728,42 +1953,12 @@ SET IDENTITY_INSERT "TS".Pasaje OFF;
 SET IDENTITY_INSERT "TS".Encomienda ON;
 
 INSERT INTO "TS".Encomienda(Enc_Cod, Enc_Fecha_Compra, Enc_Kg, Enc_Precio, Viaj_Cod, Cli_Cod)
-SELECT DISTINCT Paquete_Codigo, Paquete_FechaCompra, Paquete_KG, Paquete_Precio, R.Ruta_Cod, Cli.Cli_Cod
+SELECT DISTINCT Paquete_Codigo, Paquete_FechaCompra, Paquete_KG, Paquete_Precio, "TS".fnGetViaje(M.Ruta_Ciudad_Destino, M.Ruta_Ciudad_Origen, M.Ruta_Codigo, M.Tipo_Servicio, M.Aeronave_Matricula, M.FechaSalida, M.FechaLLegada, M.Fecha_LLegada_Estimada) Viaj_Cod, Cli.Cli_Cod
 FROM GD2C2015.gd_esquema.Maestra as M, "TS".Ruta as R, "TS".Butaca as B, "TS".Cliente as Cli, TS.Ciudad as C1, TS.Ciudad as C2
 WHERE Paquete_Codigo > 0
-AND C2.Ciudad_Nombre = M.Ruta_Ciudad_Destino AND C1.Ciudad_Nombre = M.Ruta_Ciudad_Origen
-AND R.Ruta_Codigo = M.Ruta_Codigo AND R.Ruta_Servicio = M.Tipo_Servicio AND R.Ruta_Ciudad_Destino = C2.Ciudad_Cod AND R.Ruta_Ciudad_Origen = C1.Ciudad_Cod
 AND Cli.Cli_Nombre = M.Cli_Apellido + ', ' + M.Cli_Nombre AND Cli.Cli_DNI = M.Cli_Dni
 
 SET IDENTITY_INSERT "TS".Encomienda OFF;
-
-INSERT INTO "TS".Pasaje_Compra(Pas_Cod, Com_PNR)
-SELECT DISTINCT P.Pas_Cod, C.Com_PNR
-FROM GD2C2015.gd_esquema.Maestra as M, "TS".Compra AS C, "TS".Pasaje AS P
-WHERE Pasaje_Codigo > 0
-AND P.Pas_Cod = M.Pasaje_Codigo
-/*** AND COMPRA ***/
-
-INSERT INTO "TS".Pasaje_Cancelacion(Can_Cod, Pas_Cod)
-SELECT DISTINCT Can_Cod, Pas_Cod
-FROM GD2C2015.gd_esquema.Maestra as M, "TS".Pasaje AS P, "TS".Cancelacion_Compra AS C
-WHERE Pasaje_Codigo > 0
-AND P.Pas_Cod = M.Pasaje_Codigo
-/*** AND CANCELACION ***/
-
-INSERT INTO "TS".Encomienda_Cancelacion(Can_Cod, Enc_Cod)
-SELECT DISTINCT Can_Cod, Enc_Cod
-FROM GD2C2015.gd_esquema.Maestra as M, "TS".Encomienda AS E, "TS".Cancelacion_Compra AS C
-WHERE Paquete_Codigo > 0
-AND E.Enc_Cod = M.Paquete_Codigo
-/*** AND CANCELACION ***/
-
-INSERT INTO "TS".Encomienda_Compra(Com_PNR, Enc_Cod)
-SELECT DISTINCT Com_PNR, Enc_Cod
-FROM GD2C2015.gd_esquema.Maestra as M, "TS".Compra AS C, "TS".Encomienda AS E
-WHERE Paquete_Codigo > 0
-AND E.Enc_Cod = M.Paquete_Codigo
-/*** AND COMPRA ***/
 
 /*** ACTUALIZACIÓN DE VIAJES CON BUTACAS Y KGS ***/
 UPDATE TS.Viaje

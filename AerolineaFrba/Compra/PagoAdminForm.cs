@@ -18,13 +18,15 @@ namespace AerolineaFrba.Compra
             cardCheckBox.CheckedChanged += new EventHandler(cardCheckBox_CheckedChanged);
             cardCheckBox.Checked = false;
             creditCardGroupBox.Enabled = false;
+            acceptButton.Enabled = true;
         }
 
         public void cardCheckBox_CheckedChanged(object sender, EventArgs e) {
-            creditCardGroupBox.Enabled = cardCheckBox.Checked; 
+            creditCardGroupBox.Enabled = cardCheckBox.Checked;
+            acceptButton.Enabled = false;
         }
 
-        private void acceptButton_Click(object sender, EventArgs e)
+        private void aceptarButton_Click(object sender, EventArgs e)
         {
             this.habilitado = true;
             if (cardCheckBox.Checked)
@@ -33,7 +35,8 @@ namespace AerolineaFrba.Compra
                 this.Com_Cuotas = Convert.ToDouble(cardNumberDuesComboBox.SelectedValue);
                 this.Com_Forma_Pago = "Tarjeta";
             }
-            else {
+            else
+            {
                 this.Tar_Numero = 0;
                 this.Com_Cuotas = 0;
                 this.Com_Forma_Pago = "Efectivo";

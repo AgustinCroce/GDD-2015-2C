@@ -51,6 +51,7 @@ namespace AerolineaFrba.Devolucion
                     encomiendaGroupBox.Enabled = false;
                 }
 
+                db = new DbComunicator();
                 db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Pasaje_Compra WHERE Com_PNR = " + pnrTextBox.Text);
                 db.getLector().Read();
 

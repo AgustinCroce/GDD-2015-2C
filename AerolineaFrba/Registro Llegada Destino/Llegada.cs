@@ -25,8 +25,6 @@ namespace AerolineaFrba.Registro_Llegada_Destino
             origenComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "Ciudad_Nombre", "Ciudad_Nombre"), null);
             origenComboBox.DisplayMember = "Key";
             origenComboBox.ValueMember = "Value";
-            string queryAeronaves = "SELECT Aero_Num FROM TS.Aeronave";
-            aeronaveComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryAeronaves, "Aero_Num", "Aero_Num"), null);
         }
 
         private void acceptButton_Click(object sender, EventArgs e)
@@ -37,36 +35,39 @@ namespace AerolineaFrba.Registro_Llegada_Destino
             cantidadDeViajes.Direction = ParameterDirection.ReturnValue;
             storeConsulta.Parameters.Add(new SqlParameter("@CiudadOrigen", origenComboBox.SelectedValue));
             storeConsulta.Parameters.Add(new SqlParameter("@CiudadLlegada", llegadaComboBox.SelectedValue));
-            storeConsulta.Parameters.Add(new SqlParameter("@AeroNum", aeronaveComboBox.SelectedValue));
+            storeConsulta.Parameters.Add(new SqlParameter("@AeroMatricula", matriculaTextBox.Text));
+            storeConsulta.Parameters.Add(new SqlParameter("@FechaSalida", salidaTimePicker.Value));
             storeConsulta.ExecuteNonQuery();
 
-            if ((int)cantidadDeViajes.Value == 1){
+            if ((int)cantidadDeViajes.Value == 1)
+            {
                 SqlCommand storeProcedure = dbStoreProcedure.GetStoreProcedure("TS.spRegistrarLlegadaUnica");
                 SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Int);
                 returnParameter.Direction = ParameterDirection.ReturnValue;
                 storeProcedure.Parameters.Add(new SqlParameter("@CiudadOrigen", origenComboBox.SelectedValue));
                 storeProcedure.Parameters.Add(new SqlParameter("@CiudadLlegada", llegadaComboBox.SelectedValue));
-                storeProcedure.Parameters.Add(new SqlParameter("@AeroNum", aeronaveComboBox.SelectedValue));
+                storeProcedure.Parameters.Add(new SqlParameter("@AeroMatricula", matriculaTextBox.Text));
+                storeProcedure.Parameters.Add(new SqlParameter("@FechaSalida", salidaTimePicker.Value));
                 storeProcedure.Parameters.Add(new SqlParameter("@HorarioLlegada", llegadaTimePicker.Value));
                 storeProcedure.ExecuteNonQuery();
                 MessageBox.Show("Registro de llegada realizado");
-                this.refreshValues();
             }
+
 
             if ((int)cantidadDeViajes.Value == 0)
             {
                 MessageBox.Show("No hay ningun viaje que cumpla con los parametros especificados");
             }
 
-            if ((int)cantidadDeViajes.Value > 1)
+            if ((int)cantidadDeViajes.Value == -1)
             {
-                //Levantar nueva 
+                MessageBox.Show("La ciudad de llegada seleccionada no concuerda con la establecida para el viaje"); 
             }
         }
 
-        private void refreshValues()
+        private void Llegada_Load(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            llegadaTimePicker.MinDate = Properties.Settings.Default.FechaSistema;
         }
 
     }

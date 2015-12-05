@@ -25,6 +25,7 @@ namespace AerolineaFrba.Compra
             destinoComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "Ciudad_Cod", "Ciudad_Nombre"), null);
             destinoComboBox.DisplayMember = "Value";
             destinoComboBox.ValueMember = "Key";
+            
         }
 
         private void searchButton_Click(object sender, EventArgs e)
@@ -85,14 +86,14 @@ namespace AerolineaFrba.Compra
                                 storeProcedure.Parameters.Add(new SqlParameter("@Com_Cuotas", Com_Cuotas));
                             }
                             else {
-                                storeProcedure.Parameters.Add(new SqlParameter("@Tar_Numero", 0));
+                                storeProcedure.Parameters.Add(new SqlParameter("@Tar_Numero", 23));
                                 storeProcedure.Parameters.Add(new SqlParameter("@Com_Cuotas", 1));
                             }
                             
                             storeProcedure.ExecuteNonQuery();
                             dbStoreProcedure.CerrarConexion();
 
-                            MessageBox.Show("Se ha creado su compra con PNR: " + (double)returnParameter.Value);
+                            MessageBox.Show("Se ha creado su compra con PNR: " + (int)returnParameter.Value);
                         }
                     }
 
