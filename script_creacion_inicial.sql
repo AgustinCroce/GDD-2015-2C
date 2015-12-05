@@ -654,14 +654,6 @@ BEGIN
 		WHERE Viaj_Cod IN (SELECT V.Viaj_Cod FROM TS.Viaje as V, TS.Pasaje as P, inserted as I WHERE V.Viaj_Cod = P.Pas_Cod AND I.Pas_Cod = P.Pas_Cod)
 
 	END
-
-	IF (SELECT COUNT(*) FROM deleted) >= 1
-	BEGIN
-		DELETE
-		FROM "TS".Milla
-		WHERE Pas_Cod IN (SELECT D.Pas_Cod FROM deleted as D)
-	END
-
 END
 
 IF OBJECT_ID (N'TS.trCompraEncomienda') IS NOT NULL
@@ -682,14 +674,6 @@ BEGIN
 		SET Viaj_Kgs_Disponibles = Viaj_Kgs_Disponibles - (SELECT SUM(Enc_Kg) FROM TS.Viaje as V, TS.Encomienda as E, inserted as I WHERE V.Viaj_Cod = E.Viaj_Cod AND I.Enc_Cod = E.Enc_Cod)
 		WHERE Viaj_Cod IN (SELECT V.Viaj_Cod FROM TS.Viaje as V, TS.Encomienda as E, inserted as I WHERE V.Viaj_Cod = E.Viaj_Cod AND I.Enc_Cod = E.Enc_Cod)
 	END
-
-	IF (SELECT COUNT(*) FROM deleted) >= 1
-	BEGIN
-		DELETE
-		FROM "TS".Milla
-		WHERE Enc_Cod IN (SELECT D.Enc_Cod FROM deleted as D)
-	END
-
 END
 
 IF OBJECT_ID (N'TS.trCancelacionPasaje') IS NOT NULL
@@ -709,15 +693,6 @@ BEGIN
 		SET Viaj_Butacas_Disponibles = Viaj_Butacas_Disponibles + (SELECT COUNT(*) FROM TS.Viaje as V, TS.Pasaje as P, inserted as I WHERE V.Viaj_Cod = P.Pas_Cod AND I.Pas_Cod = P.Pas_Cod)
 		WHERE Viaj_Cod IN (SELECT V.Viaj_Cod FROM TS.Viaje as V, TS.Pasaje as P, inserted as I WHERE V.Viaj_Cod = P.Pas_Cod AND I.Pas_Cod = P.Pas_Cod)
 	END
-
-	IF (SELECT COUNT(*) FROM deleted) >= 1
-	BEGIN
-		INSERT INTO "TS".Milla(Cli_Cod, Pas_Cod, Mil_Fecha, Mil_Cantidad)
-		SELECT P.Cli_Cod, P.Pas_Cod, P.Pas_Fecha_Compra, P.Pas_Precio / 10
-		FROM "TS".Pasaje as P , deleted as D
-		WHERE P.Pas_Cod = D.Pas_Cod
-	END
-
 END
 
 IF OBJECT_ID (N'TS.trCancelacionEncomienda') IS NOT NULL
@@ -737,15 +712,6 @@ BEGIN
 		SET Viaj_Kgs_Disponibles = Viaj_Kgs_Disponibles + (SELECT SUM(Enc_Kg) FROM TS.Viaje as V, TS.Encomienda as E, inserted as I WHERE V.Viaj_Cod = E.Viaj_Cod AND I.Enc_Cod = E.Enc_Cod)
 		WHERE Viaj_Cod IN (SELECT V.Viaj_Cod FROM TS.Viaje as V, TS.Encomienda as E, inserted as I WHERE V.Viaj_Cod = E.Viaj_Cod AND I.Enc_Cod = E.Enc_Cod)
 	END
-
-	IF (SELECT COUNT(*) FROM deleted) >= 1
-	BEGIN
-		INSERT INTO "TS".Milla(Cli_Cod, Enc_Cod, Mil_Fecha, Mil_Cantidad)
-		SELECT E.Cli_Cod, E.Enc_Cod, E.Enc_Fecha_Compra, E.Enc_Precio / 10
-		FROM "TS".Encomienda as E , deleted as D
-		WHERE E.Enc_Cod = D.Enc_Cod
-	END
-
 END
 
 IF OBJECT_ID (N'TS.fnButacasDisponibles') IS NOT NULL
@@ -1478,7 +1444,10 @@ BEGIN
 	SELECT Com_PNR, Pas_Cod
 	FROM @Com_PNR, @Pas_Cod
 
-	RETURN SELECT TOP 1 Com_PNR FROM @Com_PNR
+	DECLARE @PNR NUMERIC(18,0)
+	SET @PNR = (SELECT TOP 1 Com_PNR FROM @Com_PNR)
+	
+	RETURN @PNR
 END
 GO
 
@@ -1519,7 +1488,7 @@ BEGIN
 	IF @Enc_Cod > 0
 	BEGIN
 		DELETE
-		FROM TS.Encomienda
+		FROM TS.Encomienda_Compra
 		WHERE Enc_Cod = @Enc_Cod
 
 		INSERT INTO TS.Encomienda_Cancelacion(Enc_Cod, Can_Cod)
@@ -1528,7 +1497,7 @@ BEGIN
 	END
 
 	DELETE
-	FROM TS.Pasaje
+	FROM TS.Pasaje_Compra
 	WHERE Pas_Cod IN (SELECT L.Pas_Cod FROM @ListaPasajes as L)
 
 	INSERT INTO TS.Pasaje_Cancelacion(Can_Cod, Pas_Cod)
