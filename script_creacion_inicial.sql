@@ -631,13 +631,13 @@ BEGIN
 	SET Mil_Valida = 1
 	WHERE Mil_Cod IN (SELECT M.Mil_Cod
 						FROM TS.Milla AS M, TS.Encomienda as E
-						WHERE M.Enc_Cod IS NOT NULL AND E.Enc_Cod = M.Enc_Cod AND E.Viaj_Cod = @ViajeCod)
+						WHERE M.Enc_Cod IS NOT NULL AND E.Enc_Cod = M.Enc_Cod AND E.Viaj_Cod = @Viaj_Cod)
 
 	UPDATE TS.Milla
 	SET Mil_Valida = 1
 	WHERE Mil_Cod IN (SELECT M.Mil_Cod
 						FROM TS.Milla AS M, TS.Pasaje as P
-						WHERE M.Pas_Cod IS NOT NULL AND P.Pas_Cod = M.Pas_Cod AND P.Viaj_Cod = @ViajeCod)
+						WHERE M.Pas_Cod IS NOT NULL AND P.Pas_Cod = M.Pas_Cod AND P.Viaj_Cod = @Viaj_Cod)
 END
 GO
 
@@ -1930,6 +1930,37 @@ BEGIN
 	INSERT INTO TS.Pasaje_Cancelacion(Can_Cod, Pas_Cod)
 	SELECT Can_Cod, Pas_Cod
 	FROM @Can_Cod, @ListaPasajes
+
+	RETURN 0
+END
+GO
+
+IF OBJECT_ID (N'TS.spCancelarCompraPorRuta') IS NOT NULL
+   DROP PROCEDURE "TS".spCancelarCompraPorRuta
+GO
+
+CREATE PROCEDURE "TS".spCancelarCompraPorRuta
+	@Can_Fecha DATETIME,
+	@Com_PNR NUMERIC(18,0),
+	@Can_Motivo NVARCHAR(255)
+AS
+BEGIN
+	DECLARE @Can_Cod TABLE
+	(
+		Can_Cod NUMERIC(18,0)
+	);
+	
+	INSERT INTO Cancelacion_Compra(Can_Fecha, Can_Motivo, Com_PNR)
+	OUTPUT inserted.Can_Cod INTO @Can_Cod
+	VALUES(@Can_Fecha, @Can_Motivo, @Com_PNR)
+
+	DECLARE @Enc_Cod NUMERIC(18, 0)
+	SET @Enc_Cod = (SELECT Enc_Cod FROM TS.Encomienda_Compra WHERE Com_PNR=@Com_PNR)
+	IF (@Enc_Cod != NULL)
+		INSERT INTO TS.Encomienda_Cancelacion(Enc_Cod, Can_Cod) SELECT @Enc_Cod, Can_Cod FROM @Can_Cod
+	DELETE FROM TS.Encomienda_Compra WHERE Enc_Cod=@Enc_cod
+	INSERT INTO TS.Pasaje_Cancelacion(Can_Cod, Pas_Cod) SELECT Can_Cod, P.Pas_Cod FROM @Can_Cod, (SELECT Pas_Cod FROM TS.Pasaje_Compra WHERE Com_PNR=@Com_PNR) AS P
+	DELETE FROM TS.Pasaje_Compra WHERE Com_PNR=@Com_PNR
 
 	RETURN 0
 END
