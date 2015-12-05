@@ -32,16 +32,21 @@ namespace AerolineaFrba.Abm_Ruta
 
         private void BT_guardar_Click(object sender, EventArgs e)
         {
-            SqlCommand spModificarRuta = this.db.GetStoreProcedure("TS.spModificarRuta");
-            spModificarRuta.Parameters.Add(new SqlParameter("@origen", Convert.ToInt64(CB_origen.SelectedValue)));
-            spModificarRuta.Parameters.Add(new SqlParameter("@destino", Convert.ToInt64(CB_destino.SelectedValue)));
-            spModificarRuta.Parameters.Add(new SqlParameter("@servicio", CB_servicio.SelectedValue));
-            spModificarRuta.Parameters.Add(new SqlParameter("@codigo_unico", Convert.ToInt64(TB_codigo_unico.Text)));
-            spModificarRuta.Parameters.Add(new SqlParameter("@codigo", Convert.ToInt64(TB_codigo.Text)));
-            spModificarRuta.Parameters.Add(new SqlParameter("@precio_kg", Convert.ToDouble(TB_precio_kg.Text)));
-            spModificarRuta.Parameters.Add(new SqlParameter("@precio_pasaje", Convert.ToDouble(TB_precio_pasaje.Text)));
-            spModificarRuta.ExecuteNonQuery();
-            this.Close();
+            DialogResult dialogResult = MessageBox.Show("¿Usted esta seguro de modificar esta ruta? (en caso de modificarla se cancelaran todos los pasajes y encomiendas que pasen por esa ruta)", "Confirmación", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                SqlCommand spModificarRuta = this.db.GetStoreProcedure("TS.spModificarRuta");
+                spModificarRuta.Parameters.Add(new SqlParameter("@HOY", Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema)));
+                spModificarRuta.Parameters.Add(new SqlParameter("@origen", Convert.ToInt64(CB_origen.SelectedValue)));
+                spModificarRuta.Parameters.Add(new SqlParameter("@destino", Convert.ToInt64(CB_destino.SelectedValue)));
+                spModificarRuta.Parameters.Add(new SqlParameter("@servicio", CB_servicio.SelectedValue));
+                spModificarRuta.Parameters.Add(new SqlParameter("@codigo_unico", Convert.ToInt64(TB_codigo_unico.Text)));
+                spModificarRuta.Parameters.Add(new SqlParameter("@codigo", Convert.ToInt64(TB_codigo.Text)));
+                spModificarRuta.Parameters.Add(new SqlParameter("@precio_kg", Convert.ToDouble(TB_precio_kg.Text)));
+                spModificarRuta.Parameters.Add(new SqlParameter("@precio_pasaje", Convert.ToDouble(TB_precio_pasaje.Text)));
+                spModificarRuta.ExecuteNonQuery();
+                this.Close();
+            }
         }
 
         private void ModificacionRuta_Load(object sender, EventArgs e)
