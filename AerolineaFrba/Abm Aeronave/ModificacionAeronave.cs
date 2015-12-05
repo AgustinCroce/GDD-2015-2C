@@ -26,6 +26,11 @@ namespace AerolineaFrba.Abm_Aeronave
             CB_servicio.Text = selected.Cells["Servicio"].Value.ToString();
         }
 
+        public ModificacionAeronave()
+        {
+            InitializeComponent();
+        }
+
         private void BT_guardar_Click(object sender, EventArgs e)
         {
             SqlCommand spModificarAeronave = this.db.GetStoreProcedure("TS.spModificarAeronave");
@@ -35,8 +40,22 @@ namespace AerolineaFrba.Abm_Aeronave
             spModificarAeronave.Parameters.Add(new SqlParameter("@servicio", CB_servicio.SelectedValue));
             spModificarAeronave.Parameters.Add(new SqlParameter("@numero", Convert.ToInt64(TB_numero.Text)));
             spModificarAeronave.Parameters.Add(new SqlParameter("@kg_disponibles", Convert.ToInt64(TB_kg_disponibles.Text)));
+            SqlParameter returnParameter = spModificarAeronave.Parameters.Add("Status", SqlDbType.Int);
+            returnParameter.Direction = ParameterDirection.ReturnValue;
             spModificarAeronave.ExecuteNonQuery();
-            this.Close();
+            if ((int)returnParameter.Value == -1)
+            {
+                MessageBox.Show("La matricula no es unica, por favor use otra");
+            }
+            else
+            {
+                this.Close();
+            }
+        }
+
+        private void ModificacionAeronave_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

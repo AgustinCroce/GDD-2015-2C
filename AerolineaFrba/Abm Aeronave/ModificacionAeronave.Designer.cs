@@ -51,6 +51,7 @@
             this.ClientSize = new System.Drawing.Size(282, 327);
             this.Name = "ModificacionAeronave";
             this.Text = "ModificacionAeronave";
+            this.Load += new System.EventHandler(this.ModificacionAeronave_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
