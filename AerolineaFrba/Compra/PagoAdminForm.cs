@@ -38,7 +38,7 @@ namespace AerolineaFrba.Compra
                 this.Com_Cuotas = 0;
                 this.Com_Forma_Pago = "Efectivo";
             }
-            
+            this.Close();
         }
     }
 }

@@ -34,10 +34,10 @@
             this.origenComboBox = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.destinoComboBox = new System.Windows.Forms.ComboBox();
-            this.vuelosGridView = new System.Windows.Forms.DataGridView();
             this.searchButton = new System.Windows.Forms.Button();
             this.cleanButton = new System.Windows.Forms.Button();
             this.selectButton = new System.Windows.Forms.Button();
+            this.vuelosGridView = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.vuelosGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -91,14 +91,6 @@
             this.destinoComboBox.Size = new System.Drawing.Size(166, 21);
             this.destinoComboBox.TabIndex = 5;
             // 
-            // vuelosGridView
-            // 
-            this.vuelosGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.vuelosGridView.Location = new System.Drawing.Point(12, 116);
-            this.vuelosGridView.Name = "vuelosGridView";
-            this.vuelosGridView.Size = new System.Drawing.Size(422, 150);
-            this.vuelosGridView.TabIndex = 6;
-            // 
             // searchButton
             // 
             this.searchButton.Location = new System.Drawing.Point(325, 75);
@@ -129,15 +121,33 @@
             this.selectButton.UseVisualStyleBackColor = true;
             this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
             // 
+            // vuelosGridView
+            // 
+            this.vuelosGridView.AllowUserToAddRows = false;
+            this.vuelosGridView.AllowUserToDeleteRows = false;
+            this.vuelosGridView.AllowUserToResizeColumns = false;
+            this.vuelosGridView.AllowUserToResizeRows = false;
+            this.vuelosGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.vuelosGridView.Location = new System.Drawing.Point(12, 104);
+            this.vuelosGridView.MultiSelect = false;
+            this.vuelosGridView.Name = "vuelosGridView";
+            this.vuelosGridView.ReadOnly = true;
+            this.vuelosGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.vuelosGridView.ShowCellToolTips = false;
+            this.vuelosGridView.ShowEditingIcon = false;
+            this.vuelosGridView.ShowRowErrors = false;
+            this.vuelosGridView.Size = new System.Drawing.Size(422, 175);
+            this.vuelosGridView.TabIndex = 18;
+            // 
             // SeleccionVueloForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(453, 330);
+            this.Controls.Add(this.vuelosGridView);
             this.Controls.Add(this.selectButton);
             this.Controls.Add(this.cleanButton);
             this.Controls.Add(this.searchButton);
-            this.Controls.Add(this.vuelosGridView);
             this.Controls.Add(this.destinoComboBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.origenComboBox);
@@ -146,6 +156,7 @@
             this.Controls.Add(this.despegueTimePicker);
             this.Name = "SeleccionVueloForm";
             this.Text = "Compra de pasaje y/o encomienda";
+            this.Load += new System.EventHandler(this.SeleccionVueloForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.vuelosGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -160,9 +171,9 @@
         private System.Windows.Forms.ComboBox origenComboBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox destinoComboBox;
-        private System.Windows.Forms.DataGridView vuelosGridView;
         private System.Windows.Forms.Button searchButton;
         private System.Windows.Forms.Button cleanButton;
         private System.Windows.Forms.Button selectButton;
+        private System.Windows.Forms.DataGridView vuelosGridView;
     }
 }

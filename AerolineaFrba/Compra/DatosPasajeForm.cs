@@ -32,7 +32,7 @@ namespace AerolineaFrba.Compra
             }
             
             string queryButacas = "SELECT B.But_Cod, CAST (B.But_Piso AS nvarchar(255)) + ' ' + CAST (B.But_Numero AS nvarchar(255)) + ' ' + B.But_Tipo But_Label FROM TS.Butaca as B, TS.Viaje as V ";
-            queryButacas += "WHERE B.But_Cod NOT IN (SELECT But_Cod FROM TS.Pasaje as P WHERE P.Viaj_Cod = "+ viajCod + ") ";
+            queryButacas += "WHERE B.But_Cod NOT IN (SELECT But_Cod FROM TS.Pasaje_Compra as PC, TS.Pasaje as P WHERE P.Pas_Cod = PC.Pas_Cod AND P.Viaj_Cod = "+ viajCod + ") ";
             queryButacas += "AND B.Aero_Num = V.Aero_Num AND V.Viaj_Cod = " + viajCod + " " + butacasR;
             queryButacas += "ORDER BY B.But_Piso ASC, B.But_Numero ASC";
             DbComunicator db = new DbComunicator();
@@ -51,7 +51,7 @@ namespace AerolineaFrba.Compra
                 clienteDuplicado = clienteDuplicado || (row.Cells[1].Value != null && (row.Cells[1].Value.ToString() == dniTextBox.Text));
             }
 
-            db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Pasaje as P WHERE P.Viaj_Cod = "+ viajCod + " AND P.Cli_Cod = " + this.cliCod);
+            db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Pasaje_Compra as PC, TS.Pasaje as P WHERE P.Pas_Cod = Pc.Pas_Cod AND P.Viaj_Cod = "+ viajCod + " AND P.Cli_Cod = " + this.cliCod);
             db.getLector().Read();
 
             clienteDuplicado = clienteDuplicado || (Convert.ToInt32(db.getLector()["Cantidad"]) >= 1);

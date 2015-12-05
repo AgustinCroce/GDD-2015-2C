@@ -17,23 +17,24 @@ namespace AerolineaFrba.Compra
         public SeleccionVueloForm()
         {
             InitializeComponent();
-            string queryCiudades = "SELECT Ciudad_Nombre FROM TS.Ciudad";
+            string queryCiudades = "SELECT Ciudad_Cod, Ciudad_Nombre FROM TS.Ciudad";
             DbComunicator db = new DbComunicator();
-            origenComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "Ciudad_Nombre", "Ciudad_Nombre"), null);
-            origenComboBox.DisplayMember = "Key";
-            origenComboBox.ValueMember = "Value";
-            destinoComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "Ciudad_Nombre", "Ciudad_Nombre"), null);
-            destinoComboBox.DisplayMember = "Key";
-            destinoComboBox.ValueMember = "Value";
+            origenComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "Ciudad_Cod", "Ciudad_Nombre"), null);
+            origenComboBox.DisplayMember = "Value";
+            origenComboBox.ValueMember = "Key";
+            destinoComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "Ciudad_Cod", "Ciudad_Nombre"), null);
+            destinoComboBox.DisplayMember = "Value";
+            destinoComboBox.ValueMember = "Key";
         }
 
         private void searchButton_Click(object sender, EventArgs e)
         {
             DbComunicator db = new DbComunicator();
-            string queryVuelos = "SELECT Viaj_Cod, Fecha_Salida, R.Ruta_Ciudad_Origen, R.Ruta_Ciudad_Destino ,Fecha_Llegada_Estimada, Ruta_Servicio, Viaj_Kgs_Disponibles, Viaj_Butacas_Disponibles ";
-            queryVuelos += "FROM TS.Ruta as R, TS.Viaje as V, TS.Aeronave as A ";
-            queryVuelos += "WHERE R.Ruta_Cod = V.Ruta_Cod AND R.Ruta_Ciudad_Origen = '" + origenComboBox.SelectedValue.ToString() +"' AND R.Ruta_Ciudad_Destino = '"+ destinoComboBox.SelectedValue.ToString() +"' AND Fecha_Salida ='"+ despegueTimePicker.Value.ToShortDateString() +"' ";
-            queryVuelos += "AND V.Aero_Num = A.Aero_Num AND A.Aero_Baja_Fuera_De_Servicio = 0 AND A.Aero_Baja_Vida_Util = 0";
+            string queryVuelos = "SELECT Viaj_Cod Codigo, Fecha_Salida, C2.Ciudad_Nombre Salida, C1.Ciudad_Nombre Destino ,Fecha_Llegada_Estimada Fecha_Llegada, Ruta_Servicio Servicio, Viaj_Kgs_Disponibles Kgs_Libres, Viaj_Butacas_Disponibles Butacas_Libres";
+            queryVuelos += " FROM TS.Ruta as R, TS.Viaje as V, TS.Aeronave as A, TS.Ciudad as C1, TS.Ciudad as C2";
+            queryVuelos += " WHERE R.Ruta_Cod = V.Ruta_Cod AND V.Ruta_Cod = R.Ruta_Cod AND C1.Ciudad_Cod = R.Ruta_Ciudad_Destino AND C2.Ciudad_Cod = R.Ruta_Ciudad_Origen";
+            queryVuelos += " AND A.Aero_Num = V.Aero_Num AND A.Aero_Borrado = 0 AND A.Aero_Baja_Vida_Util = 0 AND A.Aero_Baja_Fuera_De_Servicio = 0";
+            queryVuelos += " AND C2.Ciudad_Cod = ' " + origenComboBox.SelectedValue +"' AND C1.Ciudad_Cod = ' " + destinoComboBox.SelectedValue + "' AND convert(date, V.Fecha_Salida) = convert(date, '" + despegueTimePicker.Value +"')";
             vuelosGridView.DataSource = db.GetDataAdapter(queryVuelos).Tables[0];
         }
 
@@ -121,13 +122,18 @@ namespace AerolineaFrba.Compra
                             storeProcedure.ExecuteNonQuery();
                             dbStoreProcedure.CerrarConexion();
 
-                            MessageBox.Show("Se ha creado su compra con PNR: " + (double)returnParameter.Value);
+                            MessageBox.Show("Se ha creado su compra con PNR: " + (int)returnParameter.Value);
                         }
                     }
                     
                 }
             }
 
+        }
+
+        private void SeleccionVueloForm_Load(object sender, EventArgs e)
+        {
+            despegueTimePicker.MinDate = Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema);
         }
     }
 }

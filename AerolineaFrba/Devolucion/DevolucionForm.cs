@@ -47,7 +47,7 @@ namespace AerolineaFrba.Devolucion
                 }
                 else
                 {
-                    encomiendaGridView.Rows.Clear();
+                    encomiendaGridView = new DataGridView();
                     encomiendaGroupBox.Enabled = false;
                 }
 
@@ -64,7 +64,7 @@ namespace AerolineaFrba.Devolucion
                 }
                 else
                 {
-                    pasajeGridView.Rows.Clear();
+                    pasajeGridView = new DataGridView();
                     pasajesGroupBox.Enabled = false;
                 }
 
@@ -91,7 +91,7 @@ namespace AerolineaFrba.Devolucion
             pasajes.Columns.Add("Pas_Cod", typeof(double));
 
             if (pasajesGroupBox.Enabled) {
-                foreach (DataGridViewRow row in pasajeGridView.Rows)
+                foreach (DataGridViewRow row in pasajeGridView.SelectedRows)
                 {
                     pasajes.Rows.Add(row.Cells[0].Value);
                 }

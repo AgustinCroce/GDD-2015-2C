@@ -54,7 +54,7 @@ namespace AerolineaFrba.Compra
 
         private void fillCardInputs()
         {
-            if (!String.IsNullOrEmpty(cardCodeTextBox.Text)) {
+            if (!String.IsNullOrEmpty(cardNumberTextBox.Text)) {
                 DbComunicator db = new DbComunicator();
                 db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Tarjeta WHERE Cli_Cod = " + this.cliCod + " AND Tar_Numero = " + cardNumberTextBox.Text + "");
                 db.getLector().Read();
@@ -75,12 +75,16 @@ namespace AerolineaFrba.Compra
                     this.cardTypeCode = Convert.ToInt32(tipoTarCod);
                     db.EjecutarQuery("SELECT TipoTar_Cuotas FROM TS.Tipo_Tarjeta WHERE TipoTar_Cod = " + tipoTarCod);
                     db.getLector().Read();
-                    cardNumberDuesComboBox.Items.Clear();
+                    Dictionary<object, object> duesDictionary = new Dictionary<object, object>();
 
                     for (int i = 0; Convert.ToInt16(db.getLector()["TipoTar_Cuotas"]) >= i; i++)
                     {
-                        cardNumberDuesComboBox.Items.Add(i);
+                        duesDictionary.Add(i, i);
                     }
+
+                    cardNumberDuesComboBox.DataSource = new BindingSource(duesDictionary, null);
+                    cardNumberDuesComboBox.DisplayMember = "Value";
+                    cardNumberDuesComboBox.ValueMember = "Key";
 
                     db.CerrarConexion();
                 }
@@ -100,8 +104,8 @@ namespace AerolineaFrba.Compra
             TarjetaAgregarForm ta = new TarjetaAgregarForm(this.cliCod);
             ta.ShowDialog();
             cardNumberTextBox.Text = ta.tarjetaNumero;
-            fillCardInputs();
             foundCliCod(this.cliCod);
+            fillCardInputs();
         }
 
         private void editCreditCardButton_Click(object sender, EventArgs e)
@@ -115,8 +119,10 @@ namespace AerolineaFrba.Compra
         {
             this.habilitado = true;
             this.Tar_Numero = Convert.ToDouble(cardNumberTextBox.Text);
-            this.Com_Cuotas = Convert.ToDouble(cardNumberDuesComboBox.SelectedValue);
+            
+            this.Com_Cuotas = Convert.ToInt16(cardNumberDuesComboBox.SelectedValue);
             this.Com_Forma_Pago = "Tarjeta";
+            this.Close();
         }
     }
 }

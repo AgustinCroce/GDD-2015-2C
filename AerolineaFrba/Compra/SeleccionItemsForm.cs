@@ -28,6 +28,8 @@ namespace AerolineaFrba.Compra
             this.cantidadPasajes = cantidadPasajes;
             this.viajCod = viajCod;
             this.butacasReservadas = new List<int>();
+            this.Enc_Cod = 0;
+            this.Enc_Kgs = 0;
 
             if (this.kgsLibres == 0) {
                 addEncomiendaButton.Enabled = false;
@@ -76,7 +78,7 @@ namespace AerolineaFrba.Compra
 
         private void addPasajeButton_Click(object sender, EventArgs e)
         {
-            if (encomiendaGridView.RowCount > cantidadPasajes)
+            if (pasajeGridView.RowCount >= cantidadPasajes)
             {
                 MessageBox.Show("Usted ha pedido " + this.cantidadPasajes + " pasajes.");
             }
@@ -92,7 +94,7 @@ namespace AerolineaFrba.Compra
 
         private void acceptButton_Click(object sender, EventArgs e)
         {
-            this.habilitado = encomiendaGridView.RowCount > 1 || pasajeGridView.RowCount > 1;
+            this.habilitado = encomiendaGridView.RowCount >= 1 || pasajeGridView.RowCount >= 1;
             if(this.habilitado){
                 DataTable pasajes = new DataTable();
                 pasajes.Columns.Add("Cli_Cod", typeof(double));
@@ -103,12 +105,26 @@ namespace AerolineaFrba.Compra
                     pasajes.Rows.Add(row.Cells[0].Value, row.Cells[7].Value);
                 }
 
-                this.Enc_Cod = Convert.ToDouble(encomiendaGridView.Rows[0].Cells[0].Value);
-                this.Enc_Kgs = Convert.ToDouble(encomiendaGridView.Rows[0].Cells[7].Value);
+                if (encomiendaGridView.RowCount >= 1) {
+                    this.Enc_Cod = Convert.ToDouble(encomiendaGridView.Rows[0].Cells[0].Value);
+                    this.Enc_Kgs = Convert.ToDouble(encomiendaGridView.Rows[0].Cells[7].Value);
+                }
+                
+                this.Pas_Lista = pasajes;
 
                 this.Close();
             }      
 
+        }
+
+        private void deleteEncomiendaButton_Click(object sender, EventArgs e)
+        {
+            encomiendaGridView.Rows.RemoveAt(this.encomiendaGridView.SelectedRows[0].Index);
+        }
+
+        private void deletePasajeButton_Click(object sender, EventArgs e)
+        {
+            pasajeGridView.Rows.RemoveAt(this.pasajeGridView.SelectedRows[0].Index);
         }
     }
 }

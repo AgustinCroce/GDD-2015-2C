@@ -35,13 +35,13 @@
             this.motivoTextBox = new System.Windows.Forms.RichTextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.encomiendaGroupBox = new System.Windows.Forms.GroupBox();
-            this.encomiendaGridView = new System.Windows.Forms.DataGridView();
             this.pasajesGroupBox = new System.Windows.Forms.GroupBox();
-            this.pasajeGridView = new System.Windows.Forms.DataGridView();
             this.acceptButton = new System.Windows.Forms.Button();
+            this.encomiendaGridView = new System.Windows.Forms.DataGridView();
+            this.pasajeGridView = new System.Windows.Forms.DataGridView();
             this.encomiendaGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.encomiendaGridView)).BeginInit();
             this.pasajesGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.encomiendaGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pasajeGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -104,14 +104,6 @@
             this.encomiendaGroupBox.TabStop = false;
             this.encomiendaGroupBox.Text = "Encomienda";
             // 
-            // encomiendaGridView
-            // 
-            this.encomiendaGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.encomiendaGridView.Location = new System.Drawing.Point(6, 19);
-            this.encomiendaGridView.Name = "encomiendaGridView";
-            this.encomiendaGridView.Size = new System.Drawing.Size(371, 75);
-            this.encomiendaGridView.TabIndex = 0;
-            // 
             // pasajesGroupBox
             // 
             this.pasajesGroupBox.Controls.Add(this.pasajeGridView);
@@ -122,14 +114,6 @@
             this.pasajesGroupBox.TabStop = false;
             this.pasajesGroupBox.Text = "Pasajes";
             // 
-            // pasajeGridView
-            // 
-            this.pasajeGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.pasajeGridView.Location = new System.Drawing.Point(6, 19);
-            this.pasajeGridView.Name = "pasajeGridView";
-            this.pasajeGridView.Size = new System.Drawing.Size(371, 128);
-            this.pasajeGridView.TabIndex = 0;
-            // 
             // acceptButton
             // 
             this.acceptButton.Location = new System.Drawing.Point(285, 461);
@@ -139,6 +123,42 @@
             this.acceptButton.Text = "Cancelar Items";
             this.acceptButton.UseVisualStyleBackColor = true;
             this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
+            // 
+            // encomiendaGridView
+            // 
+            this.encomiendaGridView.AllowUserToAddRows = false;
+            this.encomiendaGridView.AllowUserToDeleteRows = false;
+            this.encomiendaGridView.AllowUserToResizeColumns = false;
+            this.encomiendaGridView.AllowUserToResizeRows = false;
+            this.encomiendaGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.encomiendaGridView.Location = new System.Drawing.Point(8, 19);
+            this.encomiendaGridView.MultiSelect = false;
+            this.encomiendaGridView.Name = "encomiendaGridView";
+            this.encomiendaGridView.ReadOnly = true;
+            this.encomiendaGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.encomiendaGridView.ShowCellToolTips = false;
+            this.encomiendaGridView.ShowEditingIcon = false;
+            this.encomiendaGridView.ShowRowErrors = false;
+            this.encomiendaGridView.Size = new System.Drawing.Size(371, 75);
+            this.encomiendaGridView.TabIndex = 19;
+            // 
+            // pasajeGridView
+            // 
+            this.pasajeGridView.AllowUserToAddRows = false;
+            this.pasajeGridView.AllowUserToDeleteRows = false;
+            this.pasajeGridView.AllowUserToResizeColumns = false;
+            this.pasajeGridView.AllowUserToResizeRows = false;
+            this.pasajeGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.pasajeGridView.Location = new System.Drawing.Point(6, 19);
+            this.pasajeGridView.MultiSelect = false;
+            this.pasajeGridView.Name = "pasajeGridView";
+            this.pasajeGridView.ReadOnly = true;
+            this.pasajeGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.pasajeGridView.ShowCellToolTips = false;
+            this.pasajeGridView.ShowEditingIcon = false;
+            this.pasajeGridView.ShowRowErrors = false;
+            this.pasajeGridView.Size = new System.Drawing.Size(371, 128);
+            this.pasajeGridView.TabIndex = 20;
             // 
             // DevolucionForm
             // 
@@ -157,8 +177,8 @@
             this.Name = "DevolucionForm";
             this.Text = "Devolucion";
             this.encomiendaGroupBox.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.encomiendaGridView)).EndInit();
             this.pasajesGroupBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.encomiendaGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pasajeGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -174,9 +194,9 @@
         private System.Windows.Forms.RichTextBox motivoTextBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox encomiendaGroupBox;
-        private System.Windows.Forms.DataGridView encomiendaGridView;
         private System.Windows.Forms.GroupBox pasajesGroupBox;
-        private System.Windows.Forms.DataGridView pasajeGridView;
         private System.Windows.Forms.Button acceptButton;
+        private System.Windows.Forms.DataGridView encomiendaGridView;
+        private System.Windows.Forms.DataGridView pasajeGridView;
     }
 }

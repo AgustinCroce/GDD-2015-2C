@@ -95,6 +95,8 @@ namespace AerolineaFrba.Compra
                 if (encomiendaCheckBox.Checked) {
                     this.kgsHabilitados = Convert.ToDouble(encomiendaInput.Text);
                 }
+
+                this.Close();
                 
             }
 
