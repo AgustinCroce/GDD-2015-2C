@@ -30,6 +30,8 @@
         {
             this.button4 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.BT_baja_serivicio = new System.Windows.Forms.Button();
+            this.BT_fuera_servicio = new System.Windows.Forms.Button();
             this.BT_eliminar = new System.Windows.Forms.Button();
             this.BT_modificar = new System.Windows.Forms.Button();
             this.BT_agregar = new System.Windows.Forms.Button();
@@ -55,22 +57,46 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.BT_baja_serivicio);
+            this.groupBox2.Controls.Add(this.BT_fuera_servicio);
             this.groupBox2.Controls.Add(this.BT_eliminar);
             this.groupBox2.Controls.Add(this.BT_modificar);
             this.groupBox2.Controls.Add(this.BT_agregar);
             this.groupBox2.Location = new System.Drawing.Point(989, 81);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(89, 227);
+            this.groupBox2.Size = new System.Drawing.Size(122, 227);
             this.groupBox2.TabIndex = 13;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Acciones";
+            // 
+            // BT_baja_serivicio
+            // 
+            this.BT_baja_serivicio.Enabled = false;
+            this.BT_baja_serivicio.Location = new System.Drawing.Point(8, 135);
+            this.BT_baja_serivicio.Name = "BT_baja_serivicio";
+            this.BT_baja_serivicio.Size = new System.Drawing.Size(108, 23);
+            this.BT_baja_serivicio.TabIndex = 4;
+            this.BT_baja_serivicio.Text = "Baja de Servicio";
+            this.BT_baja_serivicio.UseVisualStyleBackColor = true;
+            this.BT_baja_serivicio.Click += new System.EventHandler(this.BT_baja_serivicio_Click);
+            // 
+            // BT_fuera_servicio
+            // 
+            this.BT_fuera_servicio.Enabled = false;
+            this.BT_fuera_servicio.Location = new System.Drawing.Point(8, 106);
+            this.BT_fuera_servicio.Name = "BT_fuera_servicio";
+            this.BT_fuera_servicio.Size = new System.Drawing.Size(108, 23);
+            this.BT_fuera_servicio.TabIndex = 3;
+            this.BT_fuera_servicio.Text = "Fuera de Servicio";
+            this.BT_fuera_servicio.UseVisualStyleBackColor = true;
+            this.BT_fuera_servicio.Click += new System.EventHandler(this.BT_fuera_servicio_Click);
             // 
             // BT_eliminar
             // 
             this.BT_eliminar.Enabled = false;
             this.BT_eliminar.Location = new System.Drawing.Point(6, 77);
             this.BT_eliminar.Name = "BT_eliminar";
-            this.BT_eliminar.Size = new System.Drawing.Size(75, 23);
+            this.BT_eliminar.Size = new System.Drawing.Size(110, 23);
             this.BT_eliminar.TabIndex = 2;
             this.BT_eliminar.Text = "Eliminar";
             this.BT_eliminar.UseVisualStyleBackColor = true;
@@ -81,7 +107,7 @@
             this.BT_modificar.Enabled = false;
             this.BT_modificar.Location = new System.Drawing.Point(6, 48);
             this.BT_modificar.Name = "BT_modificar";
-            this.BT_modificar.Size = new System.Drawing.Size(75, 23);
+            this.BT_modificar.Size = new System.Drawing.Size(110, 23);
             this.BT_modificar.TabIndex = 1;
             this.BT_modificar.Text = "Modificar";
             this.BT_modificar.UseVisualStyleBackColor = true;
@@ -91,7 +117,7 @@
             // 
             this.BT_agregar.Location = new System.Drawing.Point(6, 19);
             this.BT_agregar.Name = "BT_agregar";
-            this.BT_agregar.Size = new System.Drawing.Size(75, 23);
+            this.BT_agregar.Size = new System.Drawing.Size(110, 23);
             this.BT_agregar.TabIndex = 0;
             this.BT_agregar.Text = "Agregar";
             this.BT_agregar.UseVisualStyleBackColor = true;
@@ -104,7 +130,7 @@
             this.groupBox1.Controls.Add(this.BT_buscar);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1066, 63);
+            this.groupBox1.Size = new System.Drawing.Size(1099, 63);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Busqueda";
@@ -130,7 +156,7 @@
             // 
             this.BT_buscar.Location = new System.Drawing.Point(983, 21);
             this.BT_buscar.Name = "BT_buscar";
-            this.BT_buscar.Size = new System.Drawing.Size(75, 23);
+            this.BT_buscar.Size = new System.Drawing.Size(110, 23);
             this.BT_buscar.TabIndex = 3;
             this.BT_buscar.Text = "Buscar";
             this.BT_buscar.UseVisualStyleBackColor = true;
@@ -158,7 +184,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1090, 348);
+            this.ClientSize = new System.Drawing.Size(1123, 348);
             this.Controls.Add(this.DGV_aeronave);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.groupBox2);
@@ -186,6 +212,8 @@
         private System.Windows.Forms.Button BT_buscar;
         private System.Windows.Forms.DataGridView DGV_aeronave;
         private System.Windows.Forms.ComboBox CB_servicio;
+        private System.Windows.Forms.Button BT_baja_serivicio;
+        private System.Windows.Forms.Button BT_fuera_servicio;
 
     }
 }
