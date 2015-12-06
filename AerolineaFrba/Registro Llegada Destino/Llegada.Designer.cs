@@ -129,6 +129,7 @@
             // matriculaTextBox
             // 
             this.matriculaTextBox.Location = new System.Drawing.Point(151, 13);
+            this.matriculaTextBox.MaxLength = 10;
             this.matriculaTextBox.Name = "matriculaTextBox";
             this.matriculaTextBox.Size = new System.Drawing.Size(200, 20);
             this.matriculaTextBox.TabIndex = 11;
