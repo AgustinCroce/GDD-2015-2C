@@ -13,11 +13,18 @@ namespace AerolineaFrba.Compra
 {
     public partial class DatosBase : Form
     {
+        public Commons.Validator validator;
         public DatosBase()
         {
             InitializeComponent();
+            this.validator = new Commons.Validator();
+            dniTextBox.KeyPress += this.InputNumField_KeyPress;
         }
 
+        public void InputNumField_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            this.validator.KeyPressBinding(this.validator.validateInt, false, e);
+        }
                   
     }
 }
