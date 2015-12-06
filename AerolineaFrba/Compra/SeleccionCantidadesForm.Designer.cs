@@ -62,6 +62,7 @@
             // 
             this.pasajesInput.Enabled = false;
             this.pasajesInput.Location = new System.Drawing.Point(210, 61);
+            this.pasajesInput.MaxLength = 8;
             this.pasajesInput.Name = "pasajesInput";
             this.pasajesInput.Size = new System.Drawing.Size(100, 20);
             this.pasajesInput.TabIndex = 2;
@@ -70,6 +71,7 @@
             // 
             this.encomiendaInput.Enabled = false;
             this.encomiendaInput.Location = new System.Drawing.Point(210, 87);
+            this.encomiendaInput.MaxLength = 8;
             this.encomiendaInput.Name = "encomiendaInput";
             this.encomiendaInput.Size = new System.Drawing.Size(100, 20);
             this.encomiendaInput.TabIndex = 3;

@@ -42,7 +42,7 @@ namespace AerolineaFrba.Compra
             }
             
             encomiendaGridView.ColumnCount = 8;
-            encomiendaGridView.Columns[1].Name = "Cod";
+            encomiendaGridView.Columns[0].Name = "Cod";
             encomiendaGridView.Columns[1].Name = "Dni";
             encomiendaGridView.Columns[2].Name = "Nombre";
             encomiendaGridView.Columns[3].Name = "Dirección";
@@ -125,6 +125,46 @@ namespace AerolineaFrba.Compra
         private void deletePasajeButton_Click(object sender, EventArgs e)
         {
             pasajeGridView.Rows.RemoveAt(this.pasajeGridView.SelectedRows[0].Index);
+        }
+
+        private void ActivarAccionesPasaje(object sender, EventArgs e)
+        {
+            if (!pasajeGridView.SelectedRows[0].Cells["Cod"].Value.ToString().Equals(""))
+            {
+                this.deletePasajeButton.Enabled = true;
+                pasajeGridView.SelectionChanged += this.DesactivarAccionesPasaje;
+            }
+            else this.DesactivarAccionesPasaje(sender, e);
+        }
+
+        private void DesactivarAccionesPasaje(object sender, EventArgs e)
+        {
+            this.deletePasajeButton.Enabled = false;
+            pasajeGridView.SelectionChanged -= this.DesactivarAccionesPasaje;
+        }
+
+        private void ActivarAccionesEncomienda(object sender, EventArgs e)
+        {
+            if (!encomiendaGridView.SelectedRows[0].Cells["Cod"].Value.ToString().Equals(""))
+            {
+                this.deleteEncomiendaButton.Enabled = true;
+                encomiendaGridView.SelectionChanged += this.DesactivarAccionesEncomienda;
+            }
+            else this.DesactivarAccionesEncomienda(sender, e);
+        }
+
+        private void DesactivarAccionesEncomienda(object sender, EventArgs e)
+        {
+            this.deleteEncomiendaButton.Enabled = false;
+            encomiendaGridView.SelectionChanged -= this.DesactivarAccionesEncomienda;
+        }
+
+        private void SeleccionItemsForm_Load(object sender, EventArgs e)
+        {
+            pasajeGridView.CellClick += this.ActivarAccionesPasaje;
+            pasajeGridView.RowHeaderMouseClick += this.ActivarAccionesPasaje;
+            encomiendaGridView.CellClick += this.ActivarAccionesEncomienda;
+            encomiendaGridView.RowHeaderMouseClick += this.ActivarAccionesEncomienda;
         }
     }
 }
