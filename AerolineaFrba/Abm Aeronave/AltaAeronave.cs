@@ -39,14 +39,8 @@ namespace AerolineaFrba.Abm_Aeronave
             SqlParameter returnParameter = spALtaAeronave.Parameters.Add("Status", SqlDbType.Int);
             returnParameter.Direction = ParameterDirection.ReturnValue;
             spALtaAeronave.ExecuteNonQuery();
-            if ((int)returnParameter.Value == -1)
-            {
-                MessageBox.Show("La matricula no es unica, por favor use otra");
-            }
-            else
-            {
-                this.Close();
-            }
+            if ((int)returnParameter.Value == -1) MessageBox.Show("La matricula no es unica, por favor use otra");
+            else this.Close();
         }
     }
 }

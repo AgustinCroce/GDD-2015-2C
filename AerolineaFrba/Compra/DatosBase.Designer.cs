@@ -54,6 +54,7 @@
             // fullNameTextBox
             // 
             this.fullNameTextBox.Location = new System.Drawing.Point(127, 36);
+            this.fullNameTextBox.MaxLength = 50;
             this.fullNameTextBox.Name = "fullNameTextBox";
             this.fullNameTextBox.Size = new System.Drawing.Size(310, 20);
             this.fullNameTextBox.TabIndex = 1;
@@ -106,6 +107,7 @@
             // dniTextBox
             // 
             this.dniTextBox.Location = new System.Drawing.Point(127, 10);
+            this.dniTextBox.MaxLength = 10;
             this.dniTextBox.Name = "dniTextBox";
             this.dniTextBox.Size = new System.Drawing.Size(310, 20);
             this.dniTextBox.TabIndex = 7;
@@ -113,6 +115,7 @@
             // addressTextBox
             // 
             this.addressTextBox.Location = new System.Drawing.Point(127, 62);
+            this.addressTextBox.MaxLength = 50;
             this.addressTextBox.Name = "addressTextBox";
             this.addressTextBox.Size = new System.Drawing.Size(310, 20);
             this.addressTextBox.TabIndex = 8;
@@ -120,6 +123,7 @@
             // phoneTextBox
             // 
             this.phoneTextBox.Location = new System.Drawing.Point(127, 87);
+            this.phoneTextBox.MaxLength = 20;
             this.phoneTextBox.Name = "phoneTextBox";
             this.phoneTextBox.Size = new System.Drawing.Size(310, 20);
             this.phoneTextBox.TabIndex = 9;
@@ -127,6 +131,7 @@
             // mailTextBox
             // 
             this.mailTextBox.Location = new System.Drawing.Point(127, 138);
+            this.mailTextBox.MaxLength = 40;
             this.mailTextBox.Name = "mailTextBox";
             this.mailTextBox.Size = new System.Drawing.Size(310, 20);
             this.mailTextBox.TabIndex = 10;

@@ -20,14 +20,23 @@ namespace AerolineaFrba.Compra
         public bool habilitado = false;
         public double kgsHabilitados = 0;
         public int pasajesHabilitados = 0;
+        private Validator validador; 
 
         public SeleccionCantidadesForm(DataGridViewRow vueloSeleccionado)
         {
             InitializeComponent();
+            this.validador = new Validator();
             this.vueloSeleccionado = vueloSeleccionado;
             pasajeCheckBox.CheckedChanged += new EventHandler(pasajeCheckBox_CheckedChanged);
             encomiendaCheckBox.CheckedChanged += new EventHandler(encomiendaCheckBox_CheckedChanged);
             acceptButton.Enabled = false;
+            pasajesInput.KeyPress += this.InputNumField_KeyPress;
+            encomiendaInput.KeyPress += this.InputNumField_KeyPress;
+        }
+
+        private void InputNumField_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            this.validador.KeyPressBinding(this.validador.validateInt, false, e);
         }
 
         private void encomiendaCheckBox_CheckedChanged(object sender, EventArgs e)

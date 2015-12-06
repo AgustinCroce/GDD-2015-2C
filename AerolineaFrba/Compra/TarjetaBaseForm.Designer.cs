@@ -52,6 +52,7 @@
             // cardDateTextBox
             // 
             this.cardDateTextBox.Location = new System.Drawing.Point(130, 76);
+            this.cardDateTextBox.MaxLength = 4;
             this.cardDateTextBox.Name = "cardDateTextBox";
             this.cardDateTextBox.Size = new System.Drawing.Size(290, 20);
             this.cardDateTextBox.TabIndex = 18;
@@ -68,6 +69,7 @@
             // cardCodeTextBox
             // 
             this.cardCodeTextBox.Location = new System.Drawing.Point(130, 50);
+            this.cardCodeTextBox.MaxLength = 3;
             this.cardCodeTextBox.Name = "cardCodeTextBox";
             this.cardCodeTextBox.Size = new System.Drawing.Size(290, 20);
             this.cardCodeTextBox.TabIndex = 16;
@@ -84,6 +86,7 @@
             // cardNumberTextBoxt
             // 
             this.cardNumberTextBoxt.Location = new System.Drawing.Point(130, 23);
+            this.cardNumberTextBoxt.MaxLength = 16;
             this.cardNumberTextBoxt.Name = "cardNumberTextBoxt";
             this.cardNumberTextBoxt.Size = new System.Drawing.Size(290, 20);
             this.cardNumberTextBoxt.TabIndex = 14;

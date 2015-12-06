@@ -14,10 +14,14 @@ namespace AerolineaFrba.Devolucion
 {
     public partial class DevolucionForm : Form
     {
+        public Commons.Validator validator;
+
         public DevolucionForm()
         {
             InitializeComponent();
+            this.validator = new Commons.Validator();
             pnrTextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            pnrTextBox.KeyPress += this.InputNumField_KeyPress;
             pnrTextBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
             AutoCompleteStringCollection col = new AutoCompleteStringCollection();
             string queryCuentas = "SELECT Com_PNR FROM TS.Compra";
@@ -28,6 +32,31 @@ namespace AerolineaFrba.Devolucion
             encomiendaGroupBox.Enabled = false;
             pasajesGroupBox.Enabled = false;
             db.CerrarConexion();
+            encomiendaGridView.CellClick += this.ActivarAcciones;
+            encomiendaGridView.RowHeaderMouseClick += this.ActivarAcciones;
+            pasajeGridView.CellClick += this.ActivarAcciones;
+            pasajeGridView.RowHeaderMouseClick += this.ActivarAcciones;
+        }
+
+        private void ActivarAcciones(object sender, EventArgs e)
+        {
+            if (true)
+            {
+                pasajeGridView.SelectionChanged += this.DesactivarAcciones;
+                encomiendaGridView.SelectionChanged += this.DesactivarAcciones;
+            }
+            else this.DesactivarAcciones(sender, e);
+        }
+
+        private void DesactivarAcciones(object sender, EventArgs e)
+        {
+            pasajeGridView.SelectionChanged -= this.DesactivarAcciones;
+            encomiendaGridView.SelectionChanged -= this.DesactivarAcciones;
+        }
+
+        private void InputNumField_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            this.validator.KeyPressBinding(this.validator.validateInt, false, e);
         }
 
         private void fillRows()

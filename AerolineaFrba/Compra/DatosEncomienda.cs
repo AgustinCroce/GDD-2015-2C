@@ -15,12 +15,20 @@ namespace AerolineaFrba.Compra
     {
         private DataGridView encomiendaGridView;
         private double maxKgs;
+        public Commons.Validator validator;
 
         public DatosEncomienda(DataGridView encomiendaGridView, double maxKgs)
         {
             InitializeComponent();
+            this.validator = new Commons.Validator();
             this.encomiendaGridView = encomiendaGridView;
             this.maxKgs = maxKgs;
+            kgsTextBox.KeyPress += InputNumField_KeyPress;
+        }
+
+        private void InputNumField_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            this.validator.KeyPressBinding(this.validator.validateInt, false, e);
         }
 
         private void acceptButton_Click(object sender, EventArgs e)

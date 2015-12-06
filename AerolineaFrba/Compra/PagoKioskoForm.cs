@@ -29,6 +29,7 @@ namespace AerolineaFrba.Compra
             cardNumberDuesComboBox.Enabled = false;
             addCreditCardButton.Enabled = false;
             editCreditCardButton.Enabled = false;
+            cardNumberTextBox.KeyPress += this.InputNumField_KeyPress;
         }
 
         private void cardNumberTextBoxt_textChanged(object sender, EventArgs e)

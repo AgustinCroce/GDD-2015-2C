@@ -14,9 +14,13 @@ namespace AerolineaFrba.Canje_Millas
 {
     public partial class CanjeForm : Form
     {
+        public Commons.Validator validator;
+
         public CanjeForm()
         {
             InitializeComponent();
+            this.validator = new Commons.Validator();
+            quantityTextBox.KeyPress += this.InputNumField_KeyPress;
             string queryCiudades = "SELECT Cli_Nombre + ' DNI: ' + Cli_DNI Cli_Detalle, Cli_Cod FROM TS.Cliente ";
             DbComunicator db = new DbComunicator();
             clienteComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "Cli_Detalle", "Cli_Cod"), null);
@@ -27,6 +31,11 @@ namespace AerolineaFrba.Canje_Millas
             productoComboBox.DisplayMember = "Key";
             productoComboBox.ValueMember = "Value";
             db.CerrarConexion();
+        }
+
+        private void InputNumField_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            this.validator.KeyPressBinding(this.validator.validateInt, false, e);
         }
 
         private void changeButton_Click(object sender, EventArgs e)

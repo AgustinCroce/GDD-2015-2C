@@ -112,6 +112,7 @@
             // TB_ciudad
             // 
             this.TB_ciudad.Location = new System.Drawing.Point(64, 21);
+            this.TB_ciudad.MaxLength = 30;
             this.TB_ciudad.Name = "TB_ciudad";
             this.TB_ciudad.Size = new System.Drawing.Size(314, 20);
             this.TB_ciudad.TabIndex = 4;

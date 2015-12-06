@@ -135,6 +135,24 @@ namespace AerolineaFrba.Compra
         private void SeleccionVueloForm_Load(object sender, EventArgs e)
         {
             despegueTimePicker.MinDate = Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema);
+            vuelosGridView.CellClick += this.ActivarAcciones;
+            vuelosGridView.RowHeaderMouseClick += this.ActivarAcciones;
+        }
+
+        private void ActivarAcciones(object sender, EventArgs e)
+        {
+            if (!vuelosGridView.SelectedRows[0].Cells["Codigo"].Value.ToString().Equals(""))
+            {
+                this.selectButton.Enabled = true;
+                vuelosGridView.SelectionChanged += this.DesactivarAcciones;
+            }
+            else this.DesactivarAcciones(sender, e);
+        }
+
+        private void DesactivarAcciones(object sender, EventArgs e)
+        {
+            this.selectButton.Enabled = false;
+            vuelosGridView.SelectionChanged -= this.DesactivarAcciones;
         }
     }
 }

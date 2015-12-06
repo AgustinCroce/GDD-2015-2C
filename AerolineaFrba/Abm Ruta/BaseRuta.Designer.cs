@@ -42,10 +42,10 @@
             this.TB_precio_pasaje = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.TB_codigo_unico = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.TB_codigo = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.TB_codigo_unico = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -136,6 +136,7 @@
             // TB_precio_kg
             // 
             this.TB_precio_kg.Location = new System.Drawing.Point(129, 53);
+            this.TB_precio_kg.MaxLength = 8;
             this.TB_precio_kg.Name = "TB_precio_kg";
             this.TB_precio_kg.Size = new System.Drawing.Size(125, 20);
             this.TB_precio_kg.TabIndex = 17;
@@ -152,6 +153,7 @@
             // TB_precio_pasaje
             // 
             this.TB_precio_pasaje.Location = new System.Drawing.Point(129, 25);
+            this.TB_precio_pasaje.MaxLength = 8;
             this.TB_precio_pasaje.Name = "TB_precio_pasaje";
             this.TB_precio_pasaje.Size = new System.Drawing.Size(125, 20);
             this.TB_precio_pasaje.TabIndex = 16;
@@ -184,6 +186,23 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Ruta";
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(4, 48);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(40, 13);
+            this.label7.TabIndex = 20;
+            this.label7.Text = "Código";
+            // 
+            // TB_codigo
+            // 
+            this.TB_codigo.Location = new System.Drawing.Point(47, 45);
+            this.TB_codigo.MaxLength = 10;
+            this.TB_codigo.Name = "TB_codigo";
+            this.TB_codigo.Size = new System.Drawing.Size(207, 20);
+            this.TB_codigo.TabIndex = 21;
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -200,22 +219,6 @@
             this.TB_codigo_unico.Name = "TB_codigo_unico";
             this.TB_codigo_unico.Size = new System.Drawing.Size(173, 20);
             this.TB_codigo_unico.TabIndex = 19;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(4, 48);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(40, 13);
-            this.label7.TabIndex = 20;
-            this.label7.Text = "Código";
-            // 
-            // TB_codigo
-            // 
-            this.TB_codigo.Location = new System.Drawing.Point(47, 45);
-            this.TB_codigo.Name = "TB_codigo";
-            this.TB_codigo.Size = new System.Drawing.Size(207, 20);
-            this.TB_codigo.TabIndex = 21;
             // 
             // BaseRuta
             // 

@@ -142,6 +142,7 @@
             // TB_rol
             // 
             this.TB_rol.Location = new System.Drawing.Point(65, 21);
+            this.TB_rol.MaxLength = 30;
             this.TB_rol.Name = "TB_rol";
             this.TB_rol.Size = new System.Drawing.Size(329, 20);
             this.TB_rol.TabIndex = 4;

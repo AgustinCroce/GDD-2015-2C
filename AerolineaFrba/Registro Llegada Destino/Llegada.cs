@@ -67,7 +67,7 @@ namespace AerolineaFrba.Registro_Llegada_Destino
 
         private void Llegada_Load(object sender, EventArgs e)
         {
-            llegadaTimePicker.MinDate = Properties.Settings.Default.FechaSistema;
+            llegadaTimePicker.MinDate = Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema);
         }
 
     }

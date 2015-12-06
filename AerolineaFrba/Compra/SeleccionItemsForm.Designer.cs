@@ -71,6 +71,7 @@
             // 
             // deleteEncomiendaButton
             // 
+            this.deleteEncomiendaButton.Enabled = false;
             this.deleteEncomiendaButton.Location = new System.Drawing.Point(217, 4);
             this.deleteEncomiendaButton.Name = "deleteEncomiendaButton";
             this.deleteEncomiendaButton.Size = new System.Drawing.Size(75, 23);
@@ -91,6 +92,7 @@
             // 
             // deletePasajeButton
             // 
+            this.deletePasajeButton.Enabled = false;
             this.deletePasajeButton.Location = new System.Drawing.Point(217, 119);
             this.deletePasajeButton.Name = "deletePasajeButton";
             this.deletePasajeButton.Size = new System.Drawing.Size(75, 23);
@@ -161,6 +163,7 @@
             this.Controls.Add(this.label1);
             this.Name = "SeleccionItemsForm";
             this.Text = "Ingreso de items";
+            this.Load += new System.EventHandler(this.SeleccionItemsForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.encomiendaGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pasajeGridView)).EndInit();
             this.ResumeLayout(false);
