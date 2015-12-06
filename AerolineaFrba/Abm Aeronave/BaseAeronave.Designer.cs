@@ -38,6 +38,8 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label10 = new System.Windows.Forms.Label();
             this.TB_modelo = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.TB_numero = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.TB_matricula = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -46,8 +48,6 @@
             this.TB_kg_disponibles = new System.Windows.Forms.TextBox();
             this.CB_servicio = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.TB_numero = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -87,6 +87,7 @@
             // TB_butacas_pasillo
             // 
             this.TB_butacas_pasillo.Location = new System.Drawing.Point(107, 53);
+            this.TB_butacas_pasillo.MaxLength = 8;
             this.TB_butacas_pasillo.Name = "TB_butacas_pasillo";
             this.TB_butacas_pasillo.Size = new System.Drawing.Size(147, 20);
             this.TB_butacas_pasillo.TabIndex = 17;
@@ -103,6 +104,7 @@
             // TB_butacas_ventanilla
             // 
             this.TB_butacas_ventanilla.Location = new System.Drawing.Point(107, 25);
+            this.TB_butacas_ventanilla.MaxLength = 8;
             this.TB_butacas_ventanilla.Name = "TB_butacas_ventanilla";
             this.TB_butacas_ventanilla.Size = new System.Drawing.Size(147, 20);
             this.TB_butacas_ventanilla.TabIndex = 16;
@@ -149,9 +151,28 @@
             // TB_modelo
             // 
             this.TB_modelo.Location = new System.Drawing.Point(94, 45);
+            this.TB_modelo.MaxLength = 15;
             this.TB_modelo.Name = "TB_modelo";
             this.TB_modelo.Size = new System.Drawing.Size(159, 20);
             this.TB_modelo.TabIndex = 26;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 22);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(44, 13);
+            this.label9.TabIndex = 23;
+            this.label9.Text = "Número";
+            // 
+            // TB_numero
+            // 
+            this.TB_numero.Enabled = false;
+            this.TB_numero.Location = new System.Drawing.Point(94, 19);
+            this.TB_numero.MaxLength = 15;
+            this.TB_numero.Name = "TB_numero";
+            this.TB_numero.Size = new System.Drawing.Size(159, 20);
+            this.TB_numero.TabIndex = 24;
             // 
             // label8
             // 
@@ -165,6 +186,7 @@
             // TB_matricula
             // 
             this.TB_matricula.Location = new System.Drawing.Point(94, 98);
+            this.TB_matricula.MaxLength = 10;
             this.TB_matricula.Name = "TB_matricula";
             this.TB_matricula.Size = new System.Drawing.Size(159, 20);
             this.TB_matricula.TabIndex = 22;
@@ -181,6 +203,7 @@
             // TB_fabricante
             // 
             this.TB_fabricante.Location = new System.Drawing.Point(94, 122);
+            this.TB_fabricante.MaxLength = 10;
             this.TB_fabricante.Name = "TB_fabricante";
             this.TB_fabricante.Size = new System.Drawing.Size(159, 20);
             this.TB_fabricante.TabIndex = 20;
@@ -197,6 +220,7 @@
             // TB_kg_disponibles
             // 
             this.TB_kg_disponibles.Location = new System.Drawing.Point(94, 148);
+            this.TB_kg_disponibles.MaxLength = 10;
             this.TB_kg_disponibles.Name = "TB_kg_disponibles";
             this.TB_kg_disponibles.Size = new System.Drawing.Size(159, 20);
             this.TB_kg_disponibles.TabIndex = 18;
@@ -217,23 +241,6 @@
             this.label3.Size = new System.Drawing.Size(84, 13);
             this.label3.TabIndex = 5;
             this.label3.Text = "Tipo de Servicio";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 22);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(44, 13);
-            this.label9.TabIndex = 23;
-            this.label9.Text = "Número";
-            // 
-            // TB_numero
-            // 
-            this.TB_numero.Enabled = false;
-            this.TB_numero.Location = new System.Drawing.Point(94, 19);
-            this.TB_numero.Name = "TB_numero";
-            this.TB_numero.Size = new System.Drawing.Size(159, 20);
-            this.TB_numero.TabIndex = 24;
             // 
             // BaseAeronave
             // 
