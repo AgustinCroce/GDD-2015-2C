@@ -45,6 +45,7 @@
             // kgsTextBox
             // 
             this.kgsTextBox.Location = new System.Drawing.Point(127, 193);
+            this.kgsTextBox.MaxLength = 8;
             this.kgsTextBox.Name = "kgsTextBox";
             this.kgsTextBox.Size = new System.Drawing.Size(310, 20);
             this.kgsTextBox.TabIndex = 14;
