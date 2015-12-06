@@ -53,6 +53,7 @@
             // dniTextBox
             // 
             this.dniTextBox.Location = new System.Drawing.Point(101, 42);
+            this.dniTextBox.MaxLength = 20;
             this.dniTextBox.Name = "dniTextBox";
             this.dniTextBox.Size = new System.Drawing.Size(202, 20);
             this.dniTextBox.TabIndex = 1;
