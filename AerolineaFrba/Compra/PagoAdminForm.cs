@@ -12,13 +12,15 @@ namespace AerolineaFrba.Compra
 {
     public partial class PagoAdminForm : PagoKioskoForm
     {
-        public PagoAdminForm()
+        public PagoAdminForm(double precio)
         {
             InitializeComponent();
             cardCheckBox.CheckedChanged += new EventHandler(cardCheckBox_CheckedChanged);
             cardCheckBox.Checked = false;
             creditCardGroupBox.Enabled = false;
             aceptarButton.Enabled = true;
+            this.precioLabel.Text = "Su saldo a pagar es de: $" + precio;
+
         }
 
         public void cardCheckBox_CheckedChanged(object sender, EventArgs e) {

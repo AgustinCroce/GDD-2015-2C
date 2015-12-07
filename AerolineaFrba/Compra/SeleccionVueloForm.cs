@@ -59,7 +59,7 @@ namespace AerolineaFrba.Compra
                     DataTable Pas_Lista = si.Pas_Lista;
 
                     if (Properties.Settings.Default.Modo == "Admin") {
-                        PagoAdminForm pa = new PagoAdminForm();
+                        PagoAdminForm pa = new PagoAdminForm(si.precio);
                         pa.ShowDialog();
                         if (pa.habilitado)
                         {
@@ -93,12 +93,12 @@ namespace AerolineaFrba.Compra
                             storeProcedure.ExecuteNonQuery();
                             dbStoreProcedure.CerrarConexion();
 
-                            MessageBox.Show("Se ha creado su compra con PNR: " + (int)returnParameter.Value);
+                            MessageBox.Show("Se ha creado su compra de $ " + si.precio + "con PNR: " + (int)returnParameter.Value);
                         }
                     }
 
                     if (Properties.Settings.Default.Modo == "Kiosko") {
-                        PagoKioskoForm pa = new PagoKioskoForm();
+                        PagoKioskoForm pa = new PagoKioskoForm(si.precio);
                         pa.ShowDialog();
                         if (pa.habilitado)
                         {
@@ -123,7 +123,7 @@ namespace AerolineaFrba.Compra
                             storeProcedure.ExecuteNonQuery();
                             dbStoreProcedure.CerrarConexion();
 
-                            MessageBox.Show("Se ha creado su compra con PNR: " + (int)returnParameter.Value);
+                            MessageBox.Show("Se ha creado su compra de $ "+ si.precio + "con PNR: " + (int)returnParameter.Value);
                         }
                     }
                     

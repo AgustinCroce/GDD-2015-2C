@@ -1011,7 +1011,6 @@ GO
 
 CREATE PROCEDURE "TS".spRegistrarCanje
   @Cli_Cod NUMERIC(18,0),
-  @Cli_DNI NVARCHAR(255),
   @Prod_Cod NUMERIC(18,0),
   @Canje_Cantidad_Prod INT,
   @Canje_Fecha DATE
@@ -1021,11 +1020,6 @@ BEGIN
 	SET @Saldo = "TS".fnConsultarSaldoMillas(@Canje_Fecha, @Cli_Cod);
 
 	IF(SELECT Prod_Stock FROM "TS".Producto WHERE Prod_Cod = @Prod_Cod) < @Canje_Cantidad_Prod
-	BEGIN
-		RETURN -2
-	END
-
-	IF(SELECT COUNT(*) FROM "TS".Cliente WHERE Cli_Cod = @Cli_Cod AND Cli_DNI = @Cli_DNI) = 0
 	BEGIN
 		RETURN -1
 	END
@@ -1046,7 +1040,7 @@ BEGIN
 		SET Prod_Stock = Prod_Stock - @Canje_Cantidad_Prod
 		WHERE Prod_Cod = @Prod_Cod
 		
-		RETURN 0
+		RETURN 1
 	END
 END
 GO
@@ -2008,6 +2002,37 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID (N'TS.fnGetPrecioPasaje') IS NOT NULL
+   DROP FUNCTION "TS".fnGetPrecioPasaje
+GO
+
+CREATE FUNCTION "TS".fnGetPrecioPasaje(@Viaj_Cod NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	DECLARE @Ruta_Cod NUMERIC(18,0) = (SELECT Ruta_Cod FROM TS.Viaje WHERE Viaj_Cod = @Viaj_Cod) 
+
+	RETURN (SELECT R.Ruta_Precio_Base_Pasaje * (1 + T.TipoSer_Porcentaje)
+	FROM TS.Ruta AS R, TS.Tipo_Servicio as T
+	WHERE R.Ruta_Cod = @Ruta_Cod AND T.TipoSer_Nombre = R.Ruta_Servicio)
+END
+GO
+
+IF OBJECT_ID (N'TS.fnGetPrecioEncomienda') IS NOT NULL
+   DROP FUNCTION "TS".fnGetPrecioEncomienda
+GO
+
+CREATE FUNCTION "TS".fnGetPrecioEncomienda(@Viaj_Cod NUMERIC(18,0), @Enc_Kgs NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	DECLARE @Ruta_Cod NUMERIC(18,0) = (SELECT Ruta_Cod FROM TS.Viaje WHERE Viaj_Cod = @Viaj_Cod)
+
+	RETURN (SELECT R.Ruta_Precio_Base_Kg * @Enc_Kgs * (1 + T.TipoSer_Porcentaje)
+	FROM TS.Ruta AS R, TS.Tipo_Servicio as T
+	WHERE R.Ruta_Cod = @Ruta_Cod AND T.TipoSer_Nombre = R.Ruta_Servicio)
+END
+GO
 /******************************* INDICES *********************************************/
 
 IF OBJECT_ID (N'ixAeronave') IS NOT NULL

@@ -40,7 +40,7 @@
             // cardCheckBox
             // 
             this.cardCheckBox.AutoSize = true;
-            this.cardCheckBox.Location = new System.Drawing.Point(16, 190);
+            this.cardCheckBox.Location = new System.Drawing.Point(22, 219);
             this.cardCheckBox.Name = "cardCheckBox";
             this.cardCheckBox.Size = new System.Drawing.Size(104, 17);
             this.cardCheckBox.TabIndex = 14;
@@ -49,7 +49,7 @@
             // 
             // aceptarButton
             // 
-            this.aceptarButton.Location = new System.Drawing.Point(362, 423);
+            this.aceptarButton.Location = new System.Drawing.Point(362, 440);
             this.aceptarButton.Name = "aceptarButton";
             this.aceptarButton.Size = new System.Drawing.Size(75, 23);
             this.aceptarButton.TabIndex = 15;
@@ -61,11 +61,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(455, 458);
+            this.ClientSize = new System.Drawing.Size(455, 473);
             this.Controls.Add(this.aceptarButton);
             this.Controls.Add(this.cardCheckBox);
             this.Name = "PagoAdminForm";
             this.Text = "PagoAdminForm";
+            this.Controls.SetChildIndex(this.precioLabel, 0);
             this.Controls.SetChildIndex(this.fullNameTextBox, 0);
             this.Controls.SetChildIndex(this.dniTextBox, 0);
             this.Controls.SetChildIndex(this.addressTextBox, 0);

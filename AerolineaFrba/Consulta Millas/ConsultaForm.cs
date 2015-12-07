@@ -24,12 +24,14 @@ namespace AerolineaFrba.Consulta_Millas
             clienteComboBox.ValueMember = "Value";
             clienteComboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             clienteComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+            db.CerrarConexion();
         }
 
         private void searchButton_Click(object sender, EventArgs e)
         {
             DbComunicator db = new DbComunicator();
-            try
+            
+            if(clienteComboBox.SelectedValue != null)
             {
                 string hoy = Properties.Settings.Default.FechaSistema.ToString();
                 
@@ -55,9 +57,9 @@ namespace AerolineaFrba.Consulta_Millas
 
                 saldoLabel.Text = "Su saldo es de: " + (int)returnParameter.Value;
             }
-            catch (System.InvalidOperationException ex)
+            else
             {
-                MessageBox.Show("La cuenta buscada no existe");
+                MessageBox.Show("Debe seleccionar un cliente para poder llevar a cabo la busqueda.");
             }
         }
     }

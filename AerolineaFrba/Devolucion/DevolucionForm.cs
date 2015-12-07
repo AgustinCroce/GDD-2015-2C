@@ -116,7 +116,7 @@ namespace AerolineaFrba.Devolucion
             SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.BigInt);
             returnParameter.Direction = ParameterDirection.ReturnValue;
             storeProcedure.Parameters.Add(new SqlParameter("@Com_PNR", pnrTextBox.Text));
-            storeProcedure.Parameters.Add(new SqlParameter("@Can_Fecha", dateTimePicker.Value));
+            storeProcedure.Parameters.Add(new SqlParameter("@Can_Fecha", Properties.Settings.Default.FechaSistema));
             storeProcedure.Parameters.Add(new SqlParameter("@Can_Motivo", motivoTextBox.Text));
 
             DataTable pasajes = new DataTable();
