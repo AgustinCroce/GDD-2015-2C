@@ -18,12 +18,27 @@ namespace AerolineaFrba.Compra
             cardCheckBox.CheckedChanged += new EventHandler(cardCheckBox_CheckedChanged);
             cardCheckBox.Checked = false;
             creditCardGroupBox.Enabled = false;
-            acceptButton.Enabled = true;
+            aceptarButton.Enabled = true;
         }
 
         public void cardCheckBox_CheckedChanged(object sender, EventArgs e) {
             creditCardGroupBox.Enabled = cardCheckBox.Checked;
-            acceptButton.Enabled = false;
+            if (cardCheckBox.Checked)
+            {
+                aceptarButton.Enabled = false;
+            }
+            else {
+                aceptarButton.Enabled = true;
+                cardCodeTextBox.Text = "";
+                cardEmitterTextBox.Text = "";
+                cardNumberDuesComboBox.DataSource = null;
+                cardDateTextBox.Text = "";
+            }
+            this.fillInputs();
+        }
+
+        public override void foundCard() {
+            aceptarButton.Enabled = true;
         }
 
         private void aceptarButton_Click(object sender, EventArgs e)
@@ -31,9 +46,16 @@ namespace AerolineaFrba.Compra
             this.habilitado = true;
             if (cardCheckBox.Checked)
             {
-                this.Tar_Numero = Convert.ToDouble(cardNumberTextBox.Text);
-                this.Com_Cuotas = Convert.ToDouble(cardNumberDuesComboBox.SelectedValue);
-                this.Com_Forma_Pago = "Tarjeta";
+                if (this.validarFechaTarjeta(cardDateTextBox.Text, Properties.Settings.Default.FechaSistema))
+                {
+                    this.Tar_Numero = Convert.ToDouble(cardNumberTextBox.Text);
+                    this.Com_Cuotas = Convert.ToDouble(cardNumberDuesComboBox.SelectedValue);
+                    this.Com_Forma_Pago = "Tarjeta";
+                }
+                else {
+                    this.habilitado = false;
+                    MessageBox.Show("La tarjeta que selecciono se encuentra vencida");
+                }
             }
             else
             {
@@ -41,7 +63,11 @@ namespace AerolineaFrba.Compra
                 this.Com_Cuotas = 0;
                 this.Com_Forma_Pago = "Efectivo";
             }
-            this.Close();
+
+            if (this.habilitado) {
+                this.Close();
+            }
+            
         }
     }
 }

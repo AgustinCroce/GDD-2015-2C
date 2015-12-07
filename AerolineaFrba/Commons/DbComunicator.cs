@@ -37,7 +37,7 @@ namespace AerolineaFrba.Commons{
                 queryDictionary.Add(this.getLector()[keyName], this.getLector()[valueName]);
             }
             if (queryDictionary.Values.Count == 0){
-                queryDictionary.Add("No hay elementos para listar", "No hay elementos para listar");
+                queryDictionary.Add(-1 , "No hay elementos para listar");
             }
             return queryDictionary;
         }

@@ -24,6 +24,7 @@ namespace AerolineaFrba.Compra
             this.encomiendaGridView = encomiendaGridView;
             this.maxKgs = maxKgs;
             kgsTextBox.KeyPress += InputNumField_KeyPress;
+            acceptButton.Enabled = false;
         }
 
         private void InputNumField_KeyPress(object sender, KeyPressEventArgs e)
@@ -33,12 +34,23 @@ namespace AerolineaFrba.Compra
 
         private void acceptButton_Click(object sender, EventArgs e)
         {
-            if (Convert.ToInt16(kgsTextBox.Text) > maxKgs){
+            if (String.IsNullOrEmpty(kgsTextBox.Text)) {
+                MessageBox.Show("Debe ingresar un peso en la casilla Kgs.");
+            } else if (Convert.ToInt16(kgsTextBox.Text) > maxKgs){
                 MessageBox.Show("No puede superar más de los " + maxKgs.ToString() + " kilos");
             } else {
                 this.encomiendaGridView.Rows.Insert(0, this.cliCod, dniTextBox.Text, fullNameTextBox.Text, addressTextBox.Text, phoneTextBox.Text, bornDateTimePicker.Value, mailTextBox.Text, kgsTextBox.Text);
                 this.Close();
             }
+        }
+
+        override public void foundCliCod(string cliCod){
+            acceptButton.Enabled = true;
+        }
+
+        override public void notFoundCliCod()
+        {
+            acceptButton.Enabled = false;
         }
     }
 }

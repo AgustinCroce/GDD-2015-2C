@@ -62,10 +62,19 @@ namespace AerolineaFrba.Compra
             else
             {
                 editClientButton.Enabled = false;
-                
+                fullNameTextBox.Text = "";
+                addressTextBox.Text = "";
+                phoneTextBox.Text = "";
+                mailTextBox.Text = "";
+                this.notFoundCliCod();
             }
 
             db.CerrarConexion();
+        }
+
+        public virtual void notFoundCliCod()
+        {
+            
         }
 
         private void dniTextBox_TextChanged(object sender, EventArgs e)

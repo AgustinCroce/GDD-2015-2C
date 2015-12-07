@@ -29,34 +29,43 @@ namespace AerolineaFrba.Compra
 
         private void acceptButton_Click(object sender, EventArgs e)
         {
-            DbComunicator dbStoreProcedure = new DbComunicator();
-            SqlCommand storeProcedure = dbStoreProcedure.GetStoreProcedure("TS.spEditarCliente");
-            SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Int);
-            returnParameter.Direction = ParameterDirection.ReturnValue;
-            storeProcedure.Parameters.Add(new SqlParameter("@Cli_Cod", Convert.ToInt64(cliCod)));
-            storeProcedure.Parameters.Add(new SqlParameter("@Cli_DNI", dniTextBox.Text));
-            storeProcedure.Parameters.Add(new SqlParameter("@Cli_Nombre", fullNameTextBox.Text));
-            storeProcedure.Parameters.Add(new SqlParameter("@Cli_Mail", mailTextBox.Text));
-            storeProcedure.Parameters.Add(new SqlParameter("@Cli_Tel", phoneTextBox.Text));
-            storeProcedure.Parameters.Add(new SqlParameter("@Cli_Direccion", addressTextBox.Text));
-            storeProcedure.Parameters.Add(new SqlParameter("@Cli_Fecha_Nacimiento", bornDateTimePicker.Value));
-            storeProcedure.ExecuteNonQuery();
-            dbStoreProcedure.CerrarConexion();
-
-            if ((int)returnParameter.Value == -1){
-                MessageBox.Show("Ya existe un cliente con el DNI especificado.");
+            if (String.IsNullOrEmpty(dniTextBox.Text) || String.IsNullOrEmpty(fullNameTextBox.Text) || String.IsNullOrEmpty(phoneTextBox.Text) || String.IsNullOrEmpty(addressTextBox.Text))
+            {
+                MessageBox.Show("Todos los campos deben ser completados para poder llevar a cabo la edición.");
             }
+            else {
+                DbComunicator dbStoreProcedure = new DbComunicator();
+                SqlCommand storeProcedure = dbStoreProcedure.GetStoreProcedure("TS.spEditarCliente");
+                SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Int);
+                returnParameter.Direction = ParameterDirection.ReturnValue;
+                storeProcedure.Parameters.Add(new SqlParameter("@Cli_Cod", Convert.ToInt64(cliCod)));
+                storeProcedure.Parameters.Add(new SqlParameter("@Cli_DNI", dniTextBox.Text));
+                storeProcedure.Parameters.Add(new SqlParameter("@Cli_Nombre", fullNameTextBox.Text));
+                storeProcedure.Parameters.Add(new SqlParameter("@Cli_Mail", mailTextBox.Text));
+                storeProcedure.Parameters.Add(new SqlParameter("@Cli_Tel", phoneTextBox.Text));
+                storeProcedure.Parameters.Add(new SqlParameter("@Cli_Direccion", addressTextBox.Text));
+                storeProcedure.Parameters.Add(new SqlParameter("@Cli_Fecha_Nacimiento", bornDateTimePicker.Value));
+                storeProcedure.ExecuteNonQuery();
+                dbStoreProcedure.CerrarConexion();
 
-            if ((int)returnParameter.Value != 0 && (int)returnParameter.Value != -1){
-                MessageBox.Show("Error inesperado");
+                if ((int)returnParameter.Value == -1)
+                {
+                    MessageBox.Show("Ya existe un cliente con el DNI especificado.");
+                }
+
+                if ((int)returnParameter.Value != 0 && (int)returnParameter.Value != -1)
+                {
+                    MessageBox.Show("Error inesperado");
+                }
+
+                if ((int)returnParameter.Value == 0)
+                {
+                    MessageBox.Show("Edición Realizada");
+                    this.Close();
+                }
             }
-
-            if ((int)returnParameter.Value == 0) {
-                MessageBox.Show("Edición Realizada");
-                this.Close();
-            }
-
-        }
+            
+     }
         
 
         private void cancelButton_Click(object sender, EventArgs e)

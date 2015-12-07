@@ -254,8 +254,8 @@ CREATE TABLE "TS".Butaca
 CREATE TABLE "TS".Tarjeta
 (
   Tar_Numero NUMERIC(18,0) PRIMARY KEY,
-  Tar_Fecha_Vencimiento NUMERIC(4,0) NOT NULL,
-  Tar_Codigo_Seguridad NUMERIC(18,0) NOT NULL,
+  Tar_Fecha_Vencimiento NVARCHAR(4) NOT NULL,
+  Tar_Codigo_Seguridad NVARCHAR(3) NOT NULL,
   Cli_Cod NUMERIC(18,0) REFERENCES "TS".Cliente(Cli_Cod),
   TipoTar_Cod NUMERIC(18,0) REFERENCES "TS".Tipo_Tarjeta(TipoTar_Cod)
 );
@@ -919,7 +919,7 @@ IF EXISTS (
 GO
 
 CREATE FUNCTION "TS".fnConsultarSaldoMillas(
-  @Hoy DATE,
+  @Hoy DATETIME,
   @Cli_Cod NUMERIC(18,0))
 RETURNS INT
 AS
@@ -935,14 +935,14 @@ BEGIN
 	ELSE
 	BEGIN
 
-		SET @Millas= (SELECT SUM(Mil_Cantidad)
+		SET @Millas= ISNULL((SELECT SUM(Mil_Cantidad)
 						FROM "TS".Milla
 						WHERE Cli_Cod = @Cli_Cod AND DATEDIFF(DAY, Mil_Fecha, @Hoy) <= 365
-						GROUP BY Cli_Cod);
-		SET @Canjes = (SELECT SUM(Canje_Total)
+						GROUP BY Cli_Cod),0);
+		SET @Canjes = ISNULL((SELECT ISNULL(SUM(Canje_Total),0)
 						FROM "TS".Canje
 						WHERE Cli_Cod = @Cli_Cod AND DATEDIFF(DAY, Canje_Fecha, @Hoy) <= 365
-						GROUP BY Cli_Cod)
+						GROUP BY Cli_Cod),0)
 		SET @Saldo = @Millas - @Canjes
 		
 		IF @Saldo <= 0
@@ -1624,8 +1624,8 @@ GO
 CREATE PROCEDURE "TS".spCrearTarjeta
   @Cli_Cod NUMERIC(18,0),
   @Tar_Numero NUMERIC(18,0),
-  @Tar_Fecha_Vencimiento NUMERIC(4,0),
-  @Tar_Codigo_Seguridad NUMERIC(18,0),
+  @Tar_Fecha_Vencimiento NVARCHAR(4),
+  @Tar_Codigo_Seguridad NVARCHAR(4),
   @TipoTar_Cod NUMERIC(18,0)
 AS
 BEGIN
@@ -1650,8 +1650,8 @@ GO
 
 CREATE PROCEDURE "TS".spEditarTarjeta
   @Tar_Numero NUMERIC(18,0),
-  @Tar_Fecha_Vencimiento NUMERIC(4,0),
-  @Tar_Codigo_Seguridad NUMERIC(18,0),
+  @Tar_Fecha_Vencimiento NVARCHAR(4),
+  @Tar_Codigo_Seguridad NVARCHAR(3),
   @TipoTar_Cod NUMERIC(18,0)
 AS
 BEGIN

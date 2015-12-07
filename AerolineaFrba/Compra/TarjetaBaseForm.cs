@@ -26,12 +26,34 @@ namespace AerolineaFrba.Compra
             cardEmitterComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "TipoTar_Nombre", "TipoTar_Cod"), null);
             cardEmitterComboBox.DisplayMember = "Key";
             cardEmitterComboBox.ValueMember = "Value";
+            cardEmitterComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             db.CerrarConexion();
         }
 
         private void InputNumField_KeyPress(object sender, KeyPressEventArgs e)
         {
             this.validator.KeyPressBinding(this.validator.validateInt, false, e);
+        }
+
+        public bool validarFecha() {
+            bool ok = true;
+            int mes = 0;
+            if (cardDateTextBox.Text.Length < 4)
+            {
+                ok = false;
+            }
+            else {
+                mes = Convert.ToInt32(cardDateTextBox.Text.Substring(0, 2));
+                if (mes <= 0 || mes > 12) {
+                    ok = false;
+                }
+            }
+
+            if (!ok) {
+                MessageBox.Show("El campo fecha debe tener 4 digitos que representen en form MMAA la fecha de vencimiento de la tarjeta");
+            }
+
+            return ok;
         }
     }
 }

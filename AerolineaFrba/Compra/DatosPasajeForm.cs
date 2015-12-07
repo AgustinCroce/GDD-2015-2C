@@ -24,7 +24,9 @@ namespace AerolineaFrba.Compra
             this.pasajeGridView = pasajeGridView;
             this.butacaReservada = 0;
             this.viajCod = viajCod;
+            acceptButton.Enabled = false;
             string butacasR = "";
+            butacaComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 
             foreach (var butaca in butacasReservadas)
             {
@@ -39,6 +41,16 @@ namespace AerolineaFrba.Compra
             butacaComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryButacas, "But_Cod", "But_Label"), null);
             butacaComboBox.DisplayMember = "Value";
             butacaComboBox.ValueMember = "Key";
+        }
+
+        override public void foundCliCod(string cliCod)
+        {
+            acceptButton.Enabled = true;
+        }
+
+        override public void notFoundCliCod()
+        {
+            acceptButton.Enabled = false;
         }
 
         private void acceptButton_Click(object sender, EventArgs e)

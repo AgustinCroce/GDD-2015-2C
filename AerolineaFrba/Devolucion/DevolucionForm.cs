@@ -36,23 +36,14 @@ namespace AerolineaFrba.Devolucion
             encomiendaGridView.RowHeaderMouseClick += this.ActivarAcciones;
             pasajeGridView.CellClick += this.ActivarAcciones;
             pasajeGridView.RowHeaderMouseClick += this.ActivarAcciones;
+            acceptButton.Enabled = false;
         }
 
         private void ActivarAcciones(object sender, EventArgs e)
         {
-            if (true)
-            {
-                pasajeGridView.SelectionChanged += this.DesactivarAcciones;
-                encomiendaGridView.SelectionChanged += this.DesactivarAcciones;
-            }
-            else this.DesactivarAcciones(sender, e);
+            acceptButton.Enabled = pasajeGridView.SelectedRows.Count > 0 || encomiendaGridView.SelectedRows.Count > 0;
         }
 
-        private void DesactivarAcciones(object sender, EventArgs e)
-        {
-            pasajeGridView.SelectionChanged -= this.DesactivarAcciones;
-            encomiendaGridView.SelectionChanged -= this.DesactivarAcciones;
-        }
 
         private void InputNumField_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -61,6 +52,7 @@ namespace AerolineaFrba.Devolucion
 
         private void fillRows()
         {
+            acceptButton.Enabled = false;
             if (!String.IsNullOrEmpty(pnrTextBox.Text)) {
                 DbComunicator db = new DbComunicator();
                 db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Encomienda_Compra WHERE Com_PNR = " + pnrTextBox.Text);
@@ -72,11 +64,16 @@ namespace AerolineaFrba.Devolucion
                     queryEncomieda += " FROM TS.Encomienda_Compra AS EC, TS.Encomienda AS E";
                     queryEncomieda += " WHERE EC.Enc_Cod = E.Enc_Cod AND EC.Com_PNR = " + pnrTextBox.Text;
                     encomiendaGridView.DataSource = db.GetDataAdapter(queryEncomieda).Tables[0];
+                    encomiendaGridView.ClearSelection();
                     encomiendaGroupBox.Enabled = true;
                 }
                 else
                 {
-                    encomiendaGridView = new DataGridView();
+                    DbComunicator dbC = new DbComunicator();
+                    string queryEncomieda = "SELECT E.Enc_Cod, E.Enc_Fecha_Compra, E.Enc_Kg";
+                    queryEncomieda += " FROM TS.Encomienda AS E";
+                    queryEncomieda += " WHERE E.Enc_Cod= -1" ;
+                    encomiendaGridView.DataSource = dbC.GetDataAdapter(queryEncomieda).Tables[0];
                     encomiendaGroupBox.Enabled = false;
                 }
 
@@ -90,11 +87,16 @@ namespace AerolineaFrba.Devolucion
                     queryPasajes += " FROM TS.Pasaje_Compra AS PC, TS.Pasaje as P, TS.Cliente AS C";
                     queryPasajes += " WHERE PC.Pas_Cod = P.Pas_Cod AND P.Cli_Cod = C.Cli_Cod AND PC.Com_PNR = " + pnrTextBox.Text;
                     pasajeGridView.DataSource = db.GetDataAdapter(queryPasajes).Tables[0];
+                    pasajeGridView.ClearSelection();
                     pasajesGroupBox.Enabled = true;
                 }
                 else
                 {
-                    pasajeGridView = new DataGridView();
+                    DbComunicator dbP = new DbComunicator();
+                    string queryPasajes = "SELECT P.Pas_Cod, P.Pas_Fecha_Compra, P.Pas_Precio, 0 Cli_Nombre";
+                    queryPasajes += " FROM TS.Pasaje as P";
+                    queryPasajes += " WHERE P.Pas_Cod = -1";
+                    pasajeGridView.DataSource = dbP.GetDataAdapter(queryPasajes).Tables[0];
                     pasajesGroupBox.Enabled = false;
                 }
 
@@ -144,6 +146,18 @@ namespace AerolineaFrba.Devolucion
                 MessageBox.Show("Cancelación realiza con éxito.");
                 fillRows();
             }
+        }
+
+        private void refreshPasajeButton_Click(object sender, EventArgs e)
+        {
+            pasajeGridView.ClearSelection();
+            acceptButton.Enabled = pasajeGridView.SelectedRows.Count > 0 || encomiendaGridView.SelectedRows.Count > 0;
+        }
+
+        private void refreshEncomiendaButton_Click(object sender, EventArgs e)
+        {
+            encomiendaGridView.ClearSelection();
+            acceptButton.Enabled = pasajeGridView.SelectedRows.Count > 0 || encomiendaGridView.SelectedRows.Count > 0;
         }
 
     }

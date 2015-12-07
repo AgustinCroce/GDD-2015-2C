@@ -39,14 +39,15 @@
             this.label9 = new System.Windows.Forms.Label();
             this.cardCodeTextBox = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.cardNumberTextBox = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.acceptButton = new System.Windows.Forms.Button();
+            this.cardNumberTextBox = new System.Windows.Forms.ComboBox();
             this.creditCardGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // creditCardGroupBox
             // 
+            this.creditCardGroupBox.Controls.Add(this.cardNumberTextBox);
             this.creditCardGroupBox.Controls.Add(this.cardEmitterTextBox);
             this.creditCardGroupBox.Controls.Add(this.editCreditCardButton);
             this.creditCardGroupBox.Controls.Add(this.addCreditCardButton);
@@ -57,7 +58,6 @@
             this.creditCardGroupBox.Controls.Add(this.label9);
             this.creditCardGroupBox.Controls.Add(this.cardCodeTextBox);
             this.creditCardGroupBox.Controls.Add(this.label8);
-            this.creditCardGroupBox.Controls.Add(this.cardNumberTextBox);
             this.creditCardGroupBox.Controls.Add(this.label7);
             this.creditCardGroupBox.Location = new System.Drawing.Point(16, 213);
             this.creditCardGroupBox.Name = "creditCardGroupBox";
@@ -151,13 +151,6 @@
             this.label8.TabIndex = 2;
             this.label8.Text = "Código de Seguridad";
             // 
-            // cardNumberTextBox
-            // 
-            this.cardNumberTextBox.Location = new System.Drawing.Point(125, 20);
-            this.cardNumberTextBox.Name = "cardNumberTextBox";
-            this.cardNumberTextBox.Size = new System.Drawing.Size(290, 20);
-            this.cardNumberTextBox.TabIndex = 1;
-            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -176,6 +169,14 @@
             this.acceptButton.Text = "Aceptar";
             this.acceptButton.UseVisualStyleBackColor = true;
             this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
+            // 
+            // cardNumberTextBox
+            // 
+            this.cardNumberTextBox.FormattingEnabled = true;
+            this.cardNumberTextBox.Location = new System.Drawing.Point(125, 23);
+            this.cardNumberTextBox.Name = "cardNumberTextBox";
+            this.cardNumberTextBox.Size = new System.Drawing.Size(290, 21);
+            this.cardNumberTextBox.TabIndex = 14;
             // 
             // PagoKioskoForm
             // 
@@ -211,11 +212,11 @@
         public System.Windows.Forms.Label label9;
         public System.Windows.Forms.TextBox cardCodeTextBox;
         public System.Windows.Forms.Label label8;
-        public System.Windows.Forms.TextBox cardNumberTextBox;
         public System.Windows.Forms.Label label7;
         public System.Windows.Forms.Button acceptButton;
         private System.Windows.Forms.Button addCreditCardButton;
         private System.Windows.Forms.Button editCreditCardButton;
-        private System.Windows.Forms.TextBox cardEmitterTextBox;
+        public System.Windows.Forms.TextBox cardEmitterTextBox;
+        public System.Windows.Forms.ComboBox cardNumberTextBox;
     }
 }

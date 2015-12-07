@@ -95,7 +95,8 @@ namespace AerolineaFrba.Compra
         private void acceptButton_Click(object sender, EventArgs e)
         {
             this.habilitado = encomiendaGridView.RowCount >= 1 || pasajeGridView.RowCount >= 1;
-            if(this.habilitado){
+            if (this.habilitado)
+            {
                 DataTable pasajes = new DataTable();
                 pasajes.Columns.Add("Cli_Cod", typeof(double));
                 pasajes.Columns.Add("But_Cod", typeof(double));
@@ -105,15 +106,19 @@ namespace AerolineaFrba.Compra
                     pasajes.Rows.Add(row.Cells[0].Value, row.Cells[7].Value);
                 }
 
-                if (encomiendaGridView.RowCount >= 1) {
+                if (encomiendaGridView.RowCount >= 1)
+                {
                     this.Enc_Cod = Convert.ToDouble(encomiendaGridView.Rows[0].Cells[0].Value);
                     this.Enc_Kgs = Convert.ToDouble(encomiendaGridView.Rows[0].Cells[7].Value);
                 }
-                
+
                 this.Pas_Lista = pasajes;
 
                 this.Close();
-            }      
+            }
+            else {
+                MessageBox.Show("Debe agregar por lo menos un item para poder continuar");
+            }   
 
         }
 
@@ -124,6 +129,7 @@ namespace AerolineaFrba.Compra
 
         private void deletePasajeButton_Click(object sender, EventArgs e)
         {
+            butacasReservadas.Remove(Convert.ToInt32(pasajeGridView.SelectedRows[0].Cells[7].Value));
             pasajeGridView.Rows.RemoveAt(this.pasajeGridView.SelectedRows[0].Index);
         }
 
