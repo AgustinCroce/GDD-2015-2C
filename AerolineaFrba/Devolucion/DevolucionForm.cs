@@ -20,18 +20,9 @@ namespace AerolineaFrba.Devolucion
         {
             InitializeComponent();
             this.validator = new Commons.Validator();
-            pnrTextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            pnrTextBox.KeyPress += this.InputNumField_KeyPress;
-            pnrTextBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            AutoCompleteStringCollection col = new AutoCompleteStringCollection();
-            string queryCuentas = "SELECT Com_PNR FROM TS.Compra";
-            DbComunicator db = new DbComunicator();
-            db.CargarAutocomplete(col, queryCuentas, "Com_PNR");
-            pnrTextBox.AutoCompleteCustomSource = col;
             pnrTextBox.TextChanged += new EventHandler(pnrTextBox_TextChanged);
             encomiendaGroupBox.Enabled = false;
             pasajesGroupBox.Enabled = false;
-            db.CerrarConexion();
             encomiendaGridView.CellClick += this.ActivarAcciones;
             encomiendaGridView.RowHeaderMouseClick += this.ActivarAcciones;
             pasajeGridView.CellClick += this.ActivarAcciones;
@@ -158,6 +149,22 @@ namespace AerolineaFrba.Devolucion
         {
             encomiendaGridView.ClearSelection();
             acceptButton.Enabled = pasajeGridView.SelectedRows.Count > 0 || encomiendaGridView.SelectedRows.Count > 0;
+        }
+
+        private void DevolucionForm_Load(object sender, EventArgs e)
+        {
+            pnrTextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            pnrTextBox.KeyPress += this.InputNumField_KeyPress;
+            pnrTextBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            AutoCompleteStringCollection col = new AutoCompleteStringCollection();
+            string queryCompras = "SELECT PC.Com_PNR FROM TS.Pasaje_Compra as PC, TS.Viaje as V, TS.Pasaje as P";
+            queryCompras += " WHERE PC.Pas_Cod = P.Pas_Cod AND P.Viaj_Cod = V.Viaj_Cod AND V.Fecha_Llegada IS NULL";
+            queryCompras += " UNION SELECT EC.Com_PNR FROM TS.Encomienda_Compra as EC, TS.Encomienda as E, TS.Viaje as V";
+            queryCompras += " WHERE EC.Enc_Cod = E.Enc_Cod AND E.Viaj_Cod = V.Viaj_Cod AND V.Fecha_Llegada IS NULL";
+            DbComunicator db = new DbComunicator();
+            db.CargarAutocomplete(col, queryCompras, "Com_PNR");
+            pnrTextBox.AutoCompleteCustomSource = col;
+            db.CerrarConexion();
         }
 
     }

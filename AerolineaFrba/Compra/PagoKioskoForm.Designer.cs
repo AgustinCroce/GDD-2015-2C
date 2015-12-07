@@ -41,8 +41,8 @@
             this.cardCodeTextBox = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.acceptButton = new System.Windows.Forms.Button();
             this.precioLabel = new System.Windows.Forms.Label();
+            this.acceptButton = new System.Windows.Forms.Button();
             this.creditCardGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -169,6 +169,14 @@
             this.label7.TabIndex = 0;
             this.label7.Text = "Número";
             // 
+            // precioLabel
+            // 
+            this.precioLabel.AutoSize = true;
+            this.precioLabel.Location = new System.Drawing.Point(13, 189);
+            this.precioLabel.Name = "precioLabel";
+            this.precioLabel.Size = new System.Drawing.Size(0, 13);
+            this.precioLabel.TabIndex = 14;
+            // 
             // acceptButton
             // 
             this.acceptButton.Location = new System.Drawing.Point(362, 440);
@@ -178,14 +186,6 @@
             this.acceptButton.Text = "Aceptar";
             this.acceptButton.UseVisualStyleBackColor = true;
             this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
-            // 
-            // precioLabel
-            // 
-            this.precioLabel.AutoSize = true;
-            this.precioLabel.Location = new System.Drawing.Point(13, 189);
-            this.precioLabel.Name = "precioLabel";
-            this.precioLabel.Size = new System.Drawing.Size(0, 13);
-            this.precioLabel.TabIndex = 14;
             // 
             // PagoKioskoForm
             // 
@@ -197,15 +197,15 @@
             this.Controls.Add(this.creditCardGroupBox);
             this.Name = "PagoKioskoForm";
             this.Text = "Datos del Pago";
+            this.Controls.SetChildIndex(this.creditCardGroupBox, 0);
+            this.Controls.SetChildIndex(this.acceptButton, 0);
+            this.Controls.SetChildIndex(this.precioLabel, 0);
             this.Controls.SetChildIndex(this.fullNameTextBox, 0);
             this.Controls.SetChildIndex(this.dniTextBox, 0);
             this.Controls.SetChildIndex(this.addressTextBox, 0);
             this.Controls.SetChildIndex(this.phoneTextBox, 0);
             this.Controls.SetChildIndex(this.mailTextBox, 0);
             this.Controls.SetChildIndex(this.bornDateTimePicker, 0);
-            this.Controls.SetChildIndex(this.creditCardGroupBox, 0);
-            this.Controls.SetChildIndex(this.acceptButton, 0);
-            this.Controls.SetChildIndex(this.precioLabel, 0);
             this.creditCardGroupBox.ResumeLayout(false);
             this.creditCardGroupBox.PerformLayout();
             this.ResumeLayout(false);
@@ -224,11 +224,11 @@
         public System.Windows.Forms.TextBox cardCodeTextBox;
         public System.Windows.Forms.Label label8;
         public System.Windows.Forms.Label label7;
-        public System.Windows.Forms.Button acceptButton;
         private System.Windows.Forms.Button addCreditCardButton;
         private System.Windows.Forms.Button editCreditCardButton;
         public System.Windows.Forms.TextBox cardEmitterTextBox;
         public System.Windows.Forms.ComboBox cardNumberTextBox;
         public System.Windows.Forms.Label precioLabel;
+        public System.Windows.Forms.Button acceptButton;
     }
 }

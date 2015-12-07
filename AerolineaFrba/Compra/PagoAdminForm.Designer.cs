@@ -29,13 +29,12 @@
         private void InitializeComponent()
         {
             this.cardCheckBox = new System.Windows.Forms.CheckBox();
-            this.aceptarButton = new System.Windows.Forms.Button();
             this.creditCardGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // acceptButton
             // 
-            this.acceptButton.Click += new System.EventHandler(this.aceptarButton_Click);
+            this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
             // 
             // cardCheckBox
             // 
@@ -47,22 +46,11 @@
             this.cardCheckBox.Text = "Paga con tarjeta";
             this.cardCheckBox.UseVisualStyleBackColor = true;
             // 
-            // aceptarButton
-            // 
-            this.aceptarButton.Location = new System.Drawing.Point(362, 440);
-            this.aceptarButton.Name = "aceptarButton";
-            this.aceptarButton.Size = new System.Drawing.Size(75, 23);
-            this.aceptarButton.TabIndex = 15;
-            this.aceptarButton.Text = "Aceptar";
-            this.aceptarButton.UseVisualStyleBackColor = true;
-            this.aceptarButton.Click += new System.EventHandler(this.aceptarButton_Click);
-            // 
             // PagoAdminForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(455, 473);
-            this.Controls.Add(this.aceptarButton);
             this.Controls.Add(this.cardCheckBox);
             this.Name = "PagoAdminForm";
             this.Text = "PagoAdminForm";
@@ -76,7 +64,6 @@
             this.Controls.SetChildIndex(this.creditCardGroupBox, 0);
             this.Controls.SetChildIndex(this.acceptButton, 0);
             this.Controls.SetChildIndex(this.cardCheckBox, 0);
-            this.Controls.SetChildIndex(this.aceptarButton, 0);
             this.creditCardGroupBox.ResumeLayout(false);
             this.creditCardGroupBox.PerformLayout();
             this.ResumeLayout(false);
@@ -87,6 +74,5 @@
         #endregion
 
         private System.Windows.Forms.CheckBox cardCheckBox;
-        private System.Windows.Forms.Button aceptarButton;
     }
 }

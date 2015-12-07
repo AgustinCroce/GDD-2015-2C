@@ -22,9 +22,11 @@ namespace AerolineaFrba.Compra
             origenComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "Ciudad_Cod", "Ciudad_Nombre"), null);
             origenComboBox.DisplayMember = "Value";
             origenComboBox.ValueMember = "Key";
+            origenComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             destinoComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "Ciudad_Cod", "Ciudad_Nombre"), null);
             destinoComboBox.DisplayMember = "Value";
             destinoComboBox.ValueMember = "Key";
+            destinoComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             
         }
 
@@ -93,7 +95,7 @@ namespace AerolineaFrba.Compra
                             storeProcedure.ExecuteNonQuery();
                             dbStoreProcedure.CerrarConexion();
 
-                            MessageBox.Show("Se ha creado su compra de $ " + si.precio + "con PNR: " + (int)returnParameter.Value);
+                            MessageBox.Show("Se ha creado su compra de $" + si.precio + " con PNR: " + (int)returnParameter.Value);
                         }
                     }
 
@@ -123,7 +125,7 @@ namespace AerolineaFrba.Compra
                             storeProcedure.ExecuteNonQuery();
                             dbStoreProcedure.CerrarConexion();
 
-                            MessageBox.Show("Se ha creado su compra de $ "+ si.precio + "con PNR: " + (int)returnParameter.Value);
+                            MessageBox.Show("Se ha creado su compra de $"+ si.precio + " con PNR: " + (int)returnParameter.Value);
                         }
                     }
                     

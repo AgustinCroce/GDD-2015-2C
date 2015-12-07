@@ -581,26 +581,32 @@ IF OBJECT_ID (N'TS.spConsultarViaje') IS NOT NULL
 GO
 
 CREATE PROCEDURE "TS".spConsultarViaje
-	@CiudadOrigen NUMERIC(18,0),
-	@CiudadDestino NUMERIC(18,0),
-	@Aero_Matricula NUMERIC(18,0),
-	@Fecha_Salida DATETIME
+	@Ciudad_Origen NUMERIC(18,0),
+	@Ciudad_Destino NUMERIC(18,0),
+	@Aero_Matricula NVARCHAR(255),
+	@Fecha_Salida DATETIME,
+	@Fecha_Llegada DATETIME
 AS
 BEGIN
 	DECLARE @Cantidad INT
 	SET @Cantidad = (SELECT COUNT(*)
 						FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
-						WHERE R.Ruta_Ciudad_Destino = @CiudadDestino AND R.Ruta_Ciudad_Origen = @CiudadOrigen
+						WHERE R.Ruta_Ciudad_Destino = @Ciudad_Destino AND R.Ruta_Ciudad_Origen = @Ciudad_Origen
 							AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
 	IF @Cantidad = 0
 	BEGIN
 		IF ((SELECT COUNT(*)
 				FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
-				WHERE R.Ruta_Ciudad_Origen = @CiudadOrigen
+				WHERE R.Ruta_Ciudad_Origen = @Ciudad_Origen
 				AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL) = 1)
 		BEGIN
 			SET @Cantidad = -1
 		END
+	END
+
+	IF DATEDIFF(MINUTE, @Fecha_Salida, @Fecha_Llegada) < 0
+	BEGIN
+		SET @Cantidad = -2
 	END
 	
 	RETURN @Cantidad
@@ -612,19 +618,19 @@ IF OBJECT_ID (N'TS.spRegistrarLlegada') IS NOT NULL
 GO
 
 CREATE PROCEDURE "TS".spRegistrarLlegada
-	@CiudadOrigen NUMERIC(18,0),
-	@CiudadDestino NUMERIC(18,0),
-	@Aero_Matricula NUMERIC(18,0),
+	@Ciudad_Origen NUMERIC(18,0),
+	@Ciudad_Destino NUMERIC(18,0),
+	@Aero_Matricula NVARCHAR(255),
 	@Fecha_Salida DATETIME,
-	@Llegada DATETIME
+	@Fecha_Llegada DATETIME
 AS
 BEGIN
 	DECLARE @Viaj_Cod NUMERIC(18,0) = (SELECT V.Viaj_Cod
 						FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
-						WHERE R.Ruta_Ciudad_Destino = @CiudadDestino AND R.Ruta_Ciudad_Origen = @CiudadOrigen
+						WHERE R.Ruta_Ciudad_Destino = @Ciudad_Destino AND R.Ruta_Ciudad_Origen = @Ciudad_Origen
 							AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
 	UPDATE TS.Viaje
-	SET Fecha_Llegada = @Llegada
+	SET Fecha_Llegada = @Fecha_Llegada
 	WHERE Viaj_Cod = @Viaj_Cod
 
 	UPDATE TS.Milla
@@ -640,28 +646,6 @@ BEGIN
 						WHERE M.Pas_Cod IS NOT NULL AND P.Pas_Cod = M.Pas_Cod AND P.Viaj_Cod = @Viaj_Cod)
 END
 GO
-
-IF OBJECT_ID (N'TS.spRegistrarLlegadaUnica') IS NOT NULL
-   DROP PROCEDURE "TS".spRegistrarLlegadaUnica
-GO
-
-CREATE PROCEDURE "TS".spRegistrarLlegadaUnica
-	@CiudadOrigen varchar(255),
-	@CiudadDestino varchar(255),
-	@AeroNum Numeric(18,0),
-	@Llegada Datetime
-AS
-BEGIN
-	DECLARE @ViajeCod Numeric(18,0)
-	SET @ViajeCod = (SELECT V.Viaj_Cod
-						FROM TS.Viaje as V, TS.Ruta as R
-						WHERE V.Ruta_Cod = R.Ruta_Cod AND R.Ruta_Ciudad_Origen = @CiudadOrigen
-						AND R.Ruta_Ciudad_Destino = @CiudadDestino AND V.Aero_Num = @AeroNum AND V.Fecha_Llegada = NULL)
-	EXEC TS.spRegistrarLlegada @ViajeCod, @Llegada
-END
-GO
-
-
 
 IF OBJECT_ID (N'TS.fnViajesPendientes') IS NOT NULL
    DROP FUNCTION "TS".fnViajesPendientes
@@ -2031,6 +2015,32 @@ BEGIN
 	RETURN (SELECT R.Ruta_Precio_Base_Kg * @Enc_Kgs * (1 + T.TipoSer_Porcentaje)
 	FROM TS.Ruta AS R, TS.Tipo_Servicio as T
 	WHERE R.Ruta_Cod = @Ruta_Cod AND T.TipoSer_Nombre = R.Ruta_Servicio)
+END
+GO
+
+IF OBJECT_ID (N'TS.fnValidarViajeCliente') IS NOT NULL
+   DROP FUNCTION "TS".fnValidarViajeCliente
+GO
+
+CREATE FUNCTION "TS".fnValidarViajeCliente(@Viaj_Cod NUMERIC(18,0), @Cli_Cod NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	DECLARE @Cantidad INT = (SELECT COUNT(*)
+								FROM TS.Viaje as V1, TS.Viaje as V2, TS.Pasaje as P
+								WHERE V1.Viaj_Cod != V2.Viaj_Cod AND V1.Viaj_Cod = 1
+								AND MONTH(V1.Fecha_Salida) = MONTH(V2.Fecha_Salida) AND DAY(V1.Fecha_Salida) = DAY(V2.Fecha_Salida) AND YEAR(V1.Fecha_Salida) = YEAR(V2.Fecha_Salida)
+								AND P.Viaj_Cod = V2.Viaj_Cod AND P.Cli_Cod = 3)
+	IF @Cantidad > 1
+	BEGIN
+		RETURN 0
+	END
+	ELSE
+	BEGIN
+		RETURN 1
+	END
+
+	RETURN 0
 END
 GO
 /******************************* INDICES *********************************************/

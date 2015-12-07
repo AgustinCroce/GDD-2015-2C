@@ -180,6 +180,7 @@
             this.Controls.Add(this.label2);
             this.Name = "DevolucionForm";
             this.Text = "Devolucion";
+            this.Load += new System.EventHandler(this.DevolucionForm_Load);
             this.encomiendaGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.encomiendaGridView)).EndInit();
             this.pasajesGroupBox.ResumeLayout(false);

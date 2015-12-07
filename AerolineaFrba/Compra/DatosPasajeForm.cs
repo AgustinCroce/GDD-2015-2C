@@ -85,9 +85,25 @@ namespace AerolineaFrba.Compra
                 MessageBox.Show("Ya se ha sacado un pasaje para este cliente en este vuelo.");
             }
             else {
-                this.pasajeGridView.Rows.Insert(0, this.cliCod, dniTextBox.Text, fullNameTextBox.Text, addressTextBox.Text, butacaComboBox.SelectedValue, precioTextBox.Text);
-                this.butacaReservada = Convert.ToInt32(butacaComboBox.SelectedValue);
-                this.Close();
+                db = new DbComunicator();
+                SqlCommand storeProcedure = db.GetStoreProcedure("TS.fnValidarViajeCliente");
+                SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Int);
+                returnParameter.Direction = ParameterDirection.ReturnValue;
+                storeProcedure.Parameters.Add(new SqlParameter("@Cli_Cod", this.cliCod));
+                storeProcedure.Parameters.Add(new SqlParameter("@Viaj_Cod", this.viajCod));
+                storeProcedure.ExecuteNonQuery();
+                db.CerrarConexion();
+
+                if ((int)returnParameter.Value == 1)
+                {
+                    this.pasajeGridView.Rows.Insert(0, this.cliCod, dniTextBox.Text, fullNameTextBox.Text, addressTextBox.Text, butacaComboBox.SelectedValue, precioTextBox.Text);
+                    this.butacaReservada = Convert.ToInt32(butacaComboBox.SelectedValue);
+                    this.Close();
+                }
+                else {
+                    MessageBox.Show("El cliente ya tiene un pasaje para un vuelo que sale el mismo dia que el viaje selccionado.");
+                }
+                
             }
             
         }

@@ -18,32 +18,32 @@ namespace AerolineaFrba.Compra
             cardCheckBox.CheckedChanged += new EventHandler(cardCheckBox_CheckedChanged);
             cardCheckBox.Checked = false;
             creditCardGroupBox.Enabled = false;
-            aceptarButton.Enabled = true;
             this.precioLabel.Text = "Su saldo a pagar es de: $" + precio;
 
+        }
+
+        public override void clientLoaded()
+        {
+            cardCheckBox.Checked = false;
+            acceptButton.Enabled = true;
         }
 
         public void cardCheckBox_CheckedChanged(object sender, EventArgs e) {
             creditCardGroupBox.Enabled = cardCheckBox.Checked;
             if (cardCheckBox.Checked)
             {
-                aceptarButton.Enabled = false;
+                acceptButton.Enabled = false;
             }
             else {
-                aceptarButton.Enabled = true;
+                acceptButton.Enabled = true;
                 cardCodeTextBox.Text = "";
                 cardEmitterTextBox.Text = "";
                 cardNumberDuesComboBox.DataSource = null;
                 cardDateTextBox.Text = "";
             }
-            this.fillInputs();
         }
 
-        public override void foundCard() {
-            aceptarButton.Enabled = true;
-        }
-
-        private void aceptarButton_Click(object sender, EventArgs e)
+       public override void acceptButton_Click(object sender, EventArgs e)
         {
             this.habilitado = true;
             if (cardCheckBox.Checked)

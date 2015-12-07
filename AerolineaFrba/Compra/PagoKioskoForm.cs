@@ -50,6 +50,8 @@ namespace AerolineaFrba.Compra
             fillCardInputs();
         }
 
+        public virtual void clientLoaded() { }
+
         override public void foundCliCod(string cliCod)
         {
             DbComunicator db1 = new DbComunicator();
@@ -64,6 +66,7 @@ namespace AerolineaFrba.Compra
             cardNumberTextBox.DropDownStyle = ComboBoxStyle.DropDownList;
             cardNumberDuesComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             this.Cli_Cod = Convert.ToDouble(this.cliCod);
+            this.clientLoaded();
             db1.CerrarConexion();
         }
 
@@ -148,7 +151,7 @@ namespace AerolineaFrba.Compra
             fillCardInputs();
         }
 
-        private void acceptButton_Click(object sender, EventArgs e)
+        public virtual void acceptButton_Click(object sender, EventArgs e)
         {
             if (this.validarFechaTarjeta(cardDateTextBox.Text, Properties.Settings.Default.FechaSistema))
             {
