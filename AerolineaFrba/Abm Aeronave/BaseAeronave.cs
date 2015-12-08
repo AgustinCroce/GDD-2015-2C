@@ -27,7 +27,7 @@ namespace AerolineaFrba.Abm_Aeronave
             TB_butacas_ventanilla.KeyPress += this.InputNumField_KeyPress;
             TB_kg_disponibles.KeyPress += this.InputNumField_KeyPress;
             TB_numero.KeyPress += this.InputNumField_KeyPress;
-            string QueryServicio = "SELECT DISTINCT Aero_Servicio Nombre FROM [GD2C2015].[TS].[Aeronave]";
+            string QueryServicio = "SELECT TipoSer_Nombre Nombre FROM [GD2C2015].[TS].[Tipo_Servicio]";
             Dictionary<object, object> Servicios = this.db.GetQueryDictionary(QueryServicio, "Nombre", "Nombre");
             CB_servicio.DataSource = new BindingSource(Servicios, null);
             CB_servicio.DisplayMember = "Value";

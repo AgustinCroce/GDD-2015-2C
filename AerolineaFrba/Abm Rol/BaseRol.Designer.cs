@@ -89,6 +89,7 @@
             // 
             // CB_estado
             // 
+            this.CB_estado.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CB_estado.FormattingEnabled = true;
             this.CB_estado.Items.AddRange(new object[] {
             "Habilitado",

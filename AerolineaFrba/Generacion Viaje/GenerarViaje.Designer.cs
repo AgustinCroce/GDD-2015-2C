@@ -130,6 +130,7 @@
             // 
             // CB_servicio
             // 
+            this.CB_servicio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CB_servicio.Enabled = false;
             this.CB_servicio.FormattingEnabled = true;
             this.CB_servicio.Location = new System.Drawing.Point(74, 82);
@@ -139,6 +140,7 @@
             // 
             // CB_aeronave
             // 
+            this.CB_aeronave.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CB_aeronave.Enabled = false;
             this.CB_aeronave.FormattingEnabled = true;
             this.CB_aeronave.Location = new System.Drawing.Point(74, 55);
@@ -148,6 +150,7 @@
             // 
             // CB_ruta
             // 
+            this.CB_ruta.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CB_ruta.FormattingEnabled = true;
             this.CB_ruta.Location = new System.Drawing.Point(74, 24);
             this.CB_ruta.Name = "CB_ruta";

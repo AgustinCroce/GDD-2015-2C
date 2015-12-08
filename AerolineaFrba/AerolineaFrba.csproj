@@ -264,11 +264,11 @@
     <Compile Include="Devolucion\DevolucionForm.Designer.cs">
       <DependentUpon>DevolucionForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.cs">
+    <Compile Include="Login.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Login.Designer.cs">
+      <DependentUpon>Login.cs</DependentUpon>
     </Compile>
     <Compile Include="Generacion Viaje\GenerarViaje.cs">
       <SubType>Form</SubType>
@@ -301,6 +301,18 @@
     </Compile>
     <Compile Include="Registro Llegada Destino\SeleccionarViajeForm.Designer.cs">
       <DependentUpon>SeleccionarViajeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SeleccionFuncionalidad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SeleccionFuncionalidad.Designer.cs">
+      <DependentUpon>SeleccionFuncionalidad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SeleccionRol.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SeleccionRol.Designer.cs">
+      <DependentUpon>SeleccionRol.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Abm Aeronave\AgregarAeronaveRemplazo.resx">
       <DependentUpon>AgregarAeronaveRemplazo.cs</DependentUpon>
@@ -410,8 +422,8 @@
     <EmbeddedResource Include="Devolucion\DevolucionForm.resx">
       <DependentUpon>DevolucionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="Login.resx">
+      <DependentUpon>Login.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Generacion Viaje\GenerarViaje.resx">
       <DependentUpon>GenerarViaje.cs</DependentUpon>
@@ -430,6 +442,12 @@
     </Compile>
     <EmbeddedResource Include="Registro Llegada Destino\Llegada.resx">
       <DependentUpon>Llegada.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SeleccionFuncionalidad.resx">
+      <DependentUpon>SeleccionFuncionalidad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SeleccionRol.resx">
+      <DependentUpon>SeleccionRol.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

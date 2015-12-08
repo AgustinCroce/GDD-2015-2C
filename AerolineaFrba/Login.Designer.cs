@@ -1,6 +1,6 @@
 ﻿namespace AerolineaFrba
 {
-    partial class Form1
+    partial class Login
     {
         /// <summary>
         /// Variable del diseñador requerida.
@@ -33,6 +33,7 @@
             this.passwordTextBox = new System.Windows.Forms.Label();
             this.passTextBox = new System.Windows.Forms.MaskedTextBox();
             this.logInButton = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // usernameLabel
@@ -46,9 +47,9 @@
             // 
             // usernameTextBox
             // 
-            this.usernameTextBox.Location = new System.Drawing.Point(118, 10);
+            this.usernameTextBox.Location = new System.Drawing.Point(85, 10);
             this.usernameTextBox.Name = "usernameTextBox";
-            this.usernameTextBox.Size = new System.Drawing.Size(100, 20);
+            this.usernameTextBox.Size = new System.Drawing.Size(142, 20);
             this.usernameTextBox.TabIndex = 1;
             // 
             // passwordTextBox
@@ -62,15 +63,16 @@
             // 
             // passTextBox
             // 
-            this.passTextBox.Location = new System.Drawing.Point(118, 44);
+            this.passTextBox.Location = new System.Drawing.Point(85, 44);
             this.passTextBox.Name = "passTextBox";
+            this.passTextBox.PasswordChar = '#';
             this.passTextBox.PromptChar = '*';
-            this.passTextBox.Size = new System.Drawing.Size(100, 20);
+            this.passTextBox.Size = new System.Drawing.Size(142, 20);
             this.passTextBox.TabIndex = 3;
             // 
             // logInButton
             // 
-            this.logInButton.Location = new System.Drawing.Point(152, 87);
+            this.logInButton.Location = new System.Drawing.Point(152, 70);
             this.logInButton.Name = "logInButton";
             this.logInButton.Size = new System.Drawing.Size(75, 23);
             this.logInButton.TabIndex = 4;
@@ -78,17 +80,28 @@
             this.logInButton.UseVisualStyleBackColor = true;
             this.logInButton.Click += new System.EventHandler(this.logInButton_Click);
             // 
-            // Form1
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(16, 70);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "Salir";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // Login
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(239, 122);
+            this.ClientSize = new System.Drawing.Size(239, 102);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.logInButton);
             this.Controls.Add(this.passTextBox);
             this.Controls.Add(this.passwordTextBox);
             this.Controls.Add(this.usernameTextBox);
             this.Controls.Add(this.usernameLabel);
-            this.Name = "Form1";
+            this.Name = "Login";
             this.Text = "Aerolineas FRBA";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -102,6 +115,7 @@
         private System.Windows.Forms.Label passwordTextBox;
         private System.Windows.Forms.MaskedTextBox passTextBox;
         private System.Windows.Forms.Button logInButton;
+        private System.Windows.Forms.Button button1;
     }
 }
 

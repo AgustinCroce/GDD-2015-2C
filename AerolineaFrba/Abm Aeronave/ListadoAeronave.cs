@@ -25,7 +25,7 @@ namespace AerolineaFrba.Abm_Aeronave
         private void ListadoAeronave_Load(object sender, EventArgs e)
         {
             string QueryAeronave = "SELECT Aero_Num Numero, Aero_Modelo Modelo, Aero_Matricula Matricula, Aero_Fabricante Fabricante, Aero_Servicio Servicio, Aero_Cantidad_Kg_Disponibles 'KG Disponible', TS.fnButacasAeronave(Aero_Num, 'Ventanilla') 'Butacas Ventanilla', TS.fnButacasAeronave(Aero_Num, 'Pasillo') 'Butacas Pasillo', Aero_Borrado Borrada FROM [GD2C2015].[TS].[Aeronave]";
-            string QueryServicio = "SELECT DISTINCT Aero_Servicio Nombre FROM [GD2C2015].[TS].[Aeronave]";
+            string QueryServicio = "SELECT TipoSer_Nombre Nombre FROM [GD2C2015].[TS].[Tipo_Servicio]";
             DGV_aeronave.DataSource = db.GetDataAdapter(QueryAeronave).Tables[0];
             Dictionary<object, object> Servicios = this.db.GetQueryDictionary(QueryServicio, "Nombre", "Nombre");
             CB_servicio.DataSource = new BindingSource(Servicios, null);
@@ -59,7 +59,7 @@ namespace AerolineaFrba.Abm_Aeronave
 
         private void BT_buscar_Click(object sender, EventArgs e)
         {
-            string QueryBusqueda = "SELECT Aero_Num Numero, Aero_Modelo Modelo, Aero_Matricula Matricula, Aero_Fabricante Fabricante, Aero_Servicio Servicio, Aero_Cantidad_Kg_Disponibles 'KG Disponible', TS.fnButacasAeronave(Aero_Num, 'Ventanilla') 'Butacas Ventanilla', TS.fnButacasAeronave(Aero_Num, 'Pasillo') 'Butacas Pasillo', Aero_Borrado Borrada FROM [GD2C2015].[TS].[Aeronave] WHERE Aero_Servicio LIKE '%" + CB_servicio.SelectedValue + "%'";
+            string QueryBusqueda = "SELECT Aero_Num Numero, Aero_Modelo Modelo, Aero_Matricula Matricula, Aero_Fabricante Fabricante, Aero_Servicio Servicio, Aero_Cantidad_Kg_Disponibles 'KG Disponible', TS.fnButacasAeronave(Aero_Num, 'Ventanilla') 'Butacas Ventanilla', TS.fnButacasAeronave(Aero_Num, 'Pasillo') 'Butacas Pasillo', Aero_Borrado Borrada FROM [GD2C2015].[TS].[Aeronave] WHERE Aero_Servicio='" + CB_servicio.SelectedValue +"'";
             DGV_aeronave.DataSource = db.GetDataAdapter(QueryBusqueda).Tables[0];
         }
 
