@@ -186,6 +186,7 @@ Permite generar un viaje determinados.
 Los campos de fechas no pueden ser anteriores a la fecha del sistema (la configurada en el properties del proyecto), la fecha de salida no puede ser posterior a la de estimada de llegada y la fecha de llegada no puede superar las 24 horas de diferencia con la de salida
 La seleccion de ruta es solo en rutas ya generadas anteriormente.
 La seleccion de aeronave no se habilita hasta que se seleccione la ruta ya que esta va a indicar el servicio a brindar por la aeronave y por ende el listado de aeronaves solo permite ver aeronaves validas para efectuar dicho servicio.
+Si se selecciona una aeronave que ya tenga programado un viaje para esa fecha, la aeronave no podra ser utilizada y mediante un mensaje indica al usaurio que la cambie.
 El servicio no se permite modificar sino que se selecciona mediante la ruta a utilizar.
 El boton de guardar solo se habilita cuando todos los campos esten completos.
 
