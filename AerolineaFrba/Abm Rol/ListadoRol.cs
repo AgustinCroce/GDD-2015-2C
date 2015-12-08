@@ -66,14 +66,14 @@ namespace AerolineaFrba.Abm_Rol
         {
             AltaRol re = new AltaRol();
             re.FormClosed += new FormClosedEventHandler(ListadoRol_Load);
-            re.Show();
+            re.ShowDialog();
         }
 
         private void BT_modificar_Click(object sender, EventArgs e)
         {
             ModificacionRol re = new ModificacionRol(DGV_rol.SelectedRows[0]);
             re.FormClosed += new FormClosedEventHandler(ListadoRol_Load);
-            re.Show();
+            re.ShowDialog();
         }
 
         private void BT_eliminar_Click(object sender, EventArgs e)
@@ -113,14 +113,14 @@ namespace AerolineaFrba.Abm_Rol
         {
             Funcionalidades re = new Funcionalidades(DGV_rol.SelectedRows[0], "Agregar");
             re.FormClosed += new FormClosedEventHandler(ListadoRol_Load);
-            re.Show();
+            re.ShowDialog();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             Funcionalidades re = new Funcionalidades(DGV_rol.SelectedRows[0], "Eliminar");
             re.FormClosed += new FormClosedEventHandler(ListadoRol_Load);
-            re.Show();
+            re.ShowDialog();
         }
 
 

@@ -67,14 +67,14 @@ namespace AerolineaFrba.Abm_Aeronave
         {
             AltaAeronave re = new AltaAeronave();
             re.FormClosed += new FormClosedEventHandler(ListadoAeronave_Load);
-            re.Show();
+            re.ShowDialog();
         }
 
         private void BT_modificar_Click(object sender, EventArgs e)
         {
             ModificacionAeronave re = new ModificacionAeronave(DGV_aeronave.SelectedRows[0]);
             re.FormClosed += new FormClosedEventHandler(ListadoAeronave_Load);
-            re.Show();
+            re.ShowDialog();
         }
 
         private void RemplazarEnViaje(string aeronum, string fecha, string viaje)
@@ -99,7 +99,7 @@ namespace AerolineaFrba.Abm_Aeronave
             {
                 MessageBox.Show("No existe aeronave que pueda remplazar la aeronave actual en el viaje: " + viaje);
                 AgregarAeronaveRemplazo form = new AgregarAeronaveRemplazo(DGV_aeronave.SelectedRows[0]);
-                form.Show();
+                form.ShowDialog();
                 this.RemplazarEnViaje(aeronum, fecha, viaje);
             }
         }
@@ -125,7 +125,7 @@ namespace AerolineaFrba.Abm_Aeronave
                 {
                     MessageBox.Show("No existe aeronave que pueda remplazar la aeronave actual");
                     AgregarAeronaveRemplazo form = new AgregarAeronaveRemplazo(DGV_aeronave.SelectedRows[0]);
-                    form.Show();
+                    form.ShowDialog();
                     this.RemplazoDeAeronave(aeronum, fecha);
                 }
             }
@@ -214,7 +214,7 @@ namespace AerolineaFrba.Abm_Aeronave
             {
                 MessageBox.Show("No existe aeronave que pueda remplazar la aeronave actual en el viaje: " + viaje);
                 AgregarAeronaveRemplazo form = new AgregarAeronaveRemplazo(DGV_aeronave.SelectedRows[0]);
-                form.Show();
+                form.ShowDialog();
                 this.RemplazarEnViajeDesdeHasta(aeronum, fecha1, fecha2, viaje);
             }
         }
@@ -241,7 +241,7 @@ namespace AerolineaFrba.Abm_Aeronave
                 {
                     MessageBox.Show("No existe aeronave que pueda remplazar la aeronave actual");
                     AgregarAeronaveRemplazo form = new AgregarAeronaveRemplazo(DGV_aeronave.SelectedRows[0]);
-                    form.Show();
+                    form.ShowDialog();
                     this.RemplazoDeAeronaveDesdeHasta(aeronum, fecha1, fecha2);
                 }
             }

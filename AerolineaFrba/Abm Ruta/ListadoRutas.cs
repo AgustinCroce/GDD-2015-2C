@@ -69,7 +69,7 @@ namespace AerolineaFrba.Abm_Ruta
         {
             ModificacionRuta re = new ModificacionRuta(DGV_rutas.SelectedRows[0]);
             re.FormClosed += new FormClosedEventHandler(ListadoRutas_Load);
-            re.Show();
+            re.ShowDialog();
         }
 
         private void BT_eliminar_Click(object sender, EventArgs e)
@@ -89,7 +89,7 @@ namespace AerolineaFrba.Abm_Ruta
         {
             AltaRuta re = new AltaRuta();
             re.FormClosed += new FormClosedEventHandler(ListadoRutas_Load);
-            re.Show();
+            re.ShowDialog();
         }
     }
 }

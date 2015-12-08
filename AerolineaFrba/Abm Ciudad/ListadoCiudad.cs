@@ -60,14 +60,14 @@ namespace AerolineaFrba.Abm_Ciudad
         {
             AltaCiudad re = new AltaCiudad();
             re.FormClosed += new FormClosedEventHandler(ListadoCiudad_Load);
-            re.Show();
+            re.ShowDialog();
         }
 
         private void BT_modificar_Click(object sender, EventArgs e)
         {
             ModificacionCiudad re = new ModificacionCiudad(DGV_ciudad.SelectedRows[0]);
             re.FormClosed += new FormClosedEventHandler(ListadoCiudad_Load);
-            re.Show();
+            re.ShowDialog();
         }
 
         private void BT_eliminar_Click(object sender, EventArgs e)

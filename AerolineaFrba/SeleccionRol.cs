@@ -32,7 +32,7 @@ namespace AerolineaFrba
         {
             rol = CB_roles.SelectedValue.ToString();
             SeleccionFuncionalidad re = new SeleccionFuncionalidad(rol, username);
-            re.Show();
+            re.ShowDialog();
         }
 
         private void button1_Click(object sender, EventArgs e)
