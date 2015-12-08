@@ -40,7 +40,7 @@ namespace AerolineaFrba.Abm_Ruta
 
         private void BaseRuta_Load(object sender, EventArgs e)
         {
-            string QueryCiudades = "SELECT Ciudad_Cod Codigo, Ciudad_Nombre 'Nombre' FROM [GD2C2015].[TS].[Ciudad]";
+            string QueryCiudades = "SELECT Ciudad_Cod Codigo, Ciudad_Nombre 'Nombre' FROM [GD2C2015].[TS].[Ciudad] WHERE Ciudad_Borrada=0";
             Dictionary<object, object> Ciudades = this.db.GetQueryDictionary(QueryCiudades, "Codigo", "Nombre");
             CB_destino.DataSource = new BindingSource(Ciudades, null);
             CB_origen.DataSource = new BindingSource(Ciudades, null);

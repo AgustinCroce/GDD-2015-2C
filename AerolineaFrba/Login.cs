@@ -69,7 +69,7 @@ namespace AerolineaFrba
                 case 0: {
                     MessageBox.Show("Te logeaste correctamente!");
                     SeleccionRol re = new SeleccionRol(username);
-                    re.Show();
+                    re.ShowDialog();
                     break;
                 }
                 case 1: MessageBox.Show("Login Invalido!"); break;

@@ -69,7 +69,7 @@ namespace AerolineaFrba.Compra
             }
             else {
                 DatosEncomienda de = new DatosEncomienda(viajCod, encomiendaGridView, kgsLibres);
-                de.Show();
+                de.ShowDialog();
             }
             
         }

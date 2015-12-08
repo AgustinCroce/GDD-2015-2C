@@ -53,7 +53,7 @@ namespace AerolineaFrba
             if (CB_funcionalidades.SelectedValue.ToString() == "Consulta de Millas de Pasajero Frecuente") re = new Consulta_Millas.ConsultaForm(username);
             if (CB_funcionalidades.SelectedValue.ToString() == "Canje de Millas de Pasajero Frecuente") re = new Canje_Millas.CanjeForm();
             if (CB_funcionalidades.SelectedValue.ToString() == "Listado Estadistico") re = new Listado_Estadistico.Listado();
-            if (re != null) re.Show();
+            if (re != null) re.ShowDialog();
         }
     }
 }

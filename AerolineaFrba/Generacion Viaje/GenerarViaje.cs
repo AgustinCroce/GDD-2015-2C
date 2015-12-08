@@ -26,7 +26,7 @@ namespace AerolineaFrba.Generacion_Viaje
 
         private void GenerarViaje_Load(object sender, EventArgs e)
         {
-            string QueryRutas = "SELECT [Ruta_Cod] Codigo, CAST([Ruta_Codigo] AS NVARCHAR(255)) + ' - Desde: ' + C1.Ciudad_Nombre + ' hasta ' + C2.Ciudad_Nombre + ' (servicio: ' +Ruta_Servicio + ')' Nombre FROM [GD2C2015].[TS].[Ruta] AS R, [GD2C2015].[TS].[Ciudad] AS C1, [GD2C2015].[TS].[Ciudad] AS C2 WHERE C1.Ciudad_Cod = R.Ruta_Ciudad_Origen AND C2.Ciudad_Cod = R.Ruta_Ciudad_Destino";
+            string QueryRutas = "SELECT [Ruta_Cod] Codigo, CAST([Ruta_Codigo] AS NVARCHAR(255)) + ' - Desde: ' + C1.Ciudad_Nombre + ' hasta ' + C2.Ciudad_Nombre + ' (servicio: ' +Ruta_Servicio + ')' Nombre FROM [GD2C2015].[TS].[Ruta] AS R, [GD2C2015].[TS].[Ciudad] AS C1, [GD2C2015].[TS].[Ciudad] AS C2 WHERE C1.Ciudad_Cod = R.Ruta_Ciudad_Origen AND C2.Ciudad_Cod = R.Ruta_Ciudad_Destino AND R.Ruta_Borrada=0";
             Dictionary<object, object> Rutas = this.db.GetQueryDictionary(QueryRutas, "Codigo", "Nombre");
             CB_ruta.DataSource = new BindingSource(Rutas, null);
             CB_ruta.DisplayMember = "Value";
@@ -39,7 +39,7 @@ namespace AerolineaFrba.Generacion_Viaje
 
         private void onChangeRuta(object sender, EventArgs e)
         {
-            string QueryAeronaves = "SELECT A.Aero_Num Codigo, A.Aero_Matricula  + ' (Modelo: ' + A.Aero_Modelo + ' fabricante: ' + A.Aero_Fabricante + ')' Nombre FROM [GD2C2015].[TS].[Ruta] AS R, [GD2C2015].[TS].[Aeronave] as A WHERE R.Ruta_Cod = " + CB_ruta.SelectedValue + " AND R.Ruta_Servicio = A.Aero_Servicio";
+            string QueryAeronaves = "SELECT A.Aero_Num Codigo, A.Aero_Matricula  + ' (Modelo: ' + A.Aero_Modelo + ' fabricante: ' + A.Aero_Fabricante + ')' Nombre FROM [GD2C2015].[TS].[Ruta] AS R, [GD2C2015].[TS].[Aeronave] as A WHERE R.Ruta_Cod = " + CB_ruta.SelectedValue + " AND R.Ruta_Servicio = A.Aero_Servicio AND A.Aero_Borrado=0";
             Dictionary<object, object> Aeronaves = this.db.GetQueryDictionary(QueryAeronaves, "Codigo", "Nombre");
             CB_aeronave.DataSource = new BindingSource(Aeronaves, null);
             CB_aeronave.DisplayMember = "Value";
