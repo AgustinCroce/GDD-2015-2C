@@ -12,10 +12,10 @@ using System.Data.SqlClient;
 
 namespace AerolineaFrba
 {
-    public partial class Form1 : Form
+    public partial class Login : Form
     {
         Commons.EnabledButtons enabledButtons;
-        public Form1()
+        public Login()
         {
             InitializeComponent();
             this.enabledButtons = new Commons.EnabledButtons();
@@ -66,14 +66,23 @@ namespace AerolineaFrba
             int resultado = this.LlamarProcedureLogin(username, password);
             switch (resultado)
             {
-                case 0:
-                    MessageBox.Show("Te logeaste master!"); break;
+                case 0: {
+                    MessageBox.Show("Te logeaste correctamente!");
+                    SeleccionRol re = new SeleccionRol(username);
+                    re.Show();
+                    break;
+                }
                 case 1: MessageBox.Show("Login Invalido!"); break;
                 case 2: MessageBox.Show("El usuario no existe"); break;
                 case 3: MessageBox.Show("El usuario se encuentra deshabilitado. Comuniquese con un administrador del sistema."); break;
             }
             passTextBox.Text = "";
             db1.CerrarConexion();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }
