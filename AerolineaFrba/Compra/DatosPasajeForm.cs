@@ -96,8 +96,14 @@ namespace AerolineaFrba.Compra
 
                 if ((int)returnParameter.Value == 1)
                 {
-                    this.pasajeGridView.Rows.Insert(0, this.cliCod, dniTextBox.Text, fullNameTextBox.Text, addressTextBox.Text, butacaComboBox.SelectedValue, precioTextBox.Text);
+                    string cliDni = "";
+                    DbComunicator db1 = new DbComunicator();
+                    db1.EjecutarQuery("SELECT Cli_DNI FROM TS.Cliente WHERE Cli_Cod = " + this.cliCod);
+                    db1.getLector().Read();
+                    cliDni = db1.getLector()["Cli_DNI"].ToString();
+                    this.pasajeGridView.Rows.Insert(0, this.cliCod, cliDni, fullNameTextBox.Text, addressTextBox.Text, butacaComboBox.SelectedValue, precioTextBox.Text);
                     this.butacaReservada = Convert.ToInt32(butacaComboBox.SelectedValue);
+                    db1.CerrarConexion();
                     this.Close();
                 }
                 else {

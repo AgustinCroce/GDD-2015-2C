@@ -16,14 +16,14 @@ namespace AerolineaFrba.Consulta_Millas
     {
 
         int cliCod;
-        public ConsultaForm(int cliCod)
+        public ConsultaForm(string username)
         {
             InitializeComponent();
-            this.cliCod = cliCod;
             DbComunicator db = new DbComunicator();
-            db.EjecutarQuery("SELECT Cli_Nombre FROM TS.Cliente WHERE Cli_Cod = " + cliCod);
+            db.EjecutarQuery("SELECT Cli_Cod, Cli_Nombre FROM TS.Cliente WHERE Usr_Usrname = '" + username + "'");
             db.getLector().Read();
             nombreLabel.Text = "Cliente Nombre: " + db.getLector()["Cli_Nombre"].ToString();
+            this.cliCod = Convert.ToInt32(db.getLector()["Cli_Cod"]);
             db.CerrarConexion();
         }
 

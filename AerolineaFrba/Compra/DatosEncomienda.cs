@@ -62,7 +62,13 @@ namespace AerolineaFrba.Compra
             } else if (Convert.ToInt16(kgsTextBox.Text) > maxKgs){
                 MessageBox.Show("No puede superar más de los " + maxKgs.ToString() + " kilos");
             } else {
-                this.encomiendaGridView.Rows.Insert(0, this.cliCod, dniTextBox.Text, fullNameTextBox.Text, addressTextBox.Text, kgsTextBox.Text, precioTextBox.Text);
+                string cliDni = "";
+                DbComunicator db = new DbComunicator();
+                db.EjecutarQuery("SELECT Cli_DNI FROM TS.Cliente WHERE Cli_Cod = " + this.cliCod);
+                db.getLector().Read();
+                cliDni = db.getLector()["Cli_DNI"].ToString();
+                db.CerrarConexion();
+                this.encomiendaGridView.Rows.Insert(0, this.cliCod, cliDni, fullNameTextBox.Text, addressTextBox.Text, kgsTextBox.Text, precioTextBox.Text);
                 this.Close();
             }
         }
