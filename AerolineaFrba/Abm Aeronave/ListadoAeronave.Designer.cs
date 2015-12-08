@@ -137,6 +137,7 @@
             // 
             // CB_servicio
             // 
+            this.CB_servicio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CB_servicio.FormattingEnabled = true;
             this.CB_servicio.Location = new System.Drawing.Point(65, 21);
             this.CB_servicio.Name = "CB_servicio";

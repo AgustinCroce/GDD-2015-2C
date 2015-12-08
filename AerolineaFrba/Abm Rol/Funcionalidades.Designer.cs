@@ -45,6 +45,7 @@
             // 
             // CB_funcionalidades
             // 
+            this.CB_funcionalidades.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CB_funcionalidades.FormattingEnabled = true;
             this.CB_funcionalidades.Location = new System.Drawing.Point(92, 10);
             this.CB_funcionalidades.Name = "CB_funcionalidades";

@@ -98,6 +98,7 @@
             // 
             // CB_origen
             // 
+            this.CB_origen.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CB_origen.FormattingEnabled = true;
             this.CB_origen.Location = new System.Drawing.Point(47, 71);
             this.CB_origen.Name = "CB_origen";
@@ -106,6 +107,7 @@
             // 
             // CB_destino
             // 
+            this.CB_destino.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CB_destino.FormattingEnabled = true;
             this.CB_destino.Location = new System.Drawing.Point(47, 105);
             this.CB_destino.Name = "CB_destino";
@@ -114,6 +116,7 @@
             // 
             // CB_servicio
             // 
+            this.CB_servicio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CB_servicio.FormattingEnabled = true;
             this.CB_servicio.Location = new System.Drawing.Point(95, 138);
             this.CB_servicio.Name = "CB_servicio";
