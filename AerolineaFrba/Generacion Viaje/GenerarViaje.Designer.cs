@@ -42,6 +42,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.DTP_hora_estimada_llegada = new System.Windows.Forms.DateTimePicker();
+            this.DTP_hora_salida = new System.Windows.Forms.DateTimePicker();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -50,7 +52,7 @@
             // 
             this.DTP_fecha_salida.Location = new System.Drawing.Point(150, 23);
             this.DTP_fecha_salida.Name = "DTP_fecha_salida";
-            this.DTP_fecha_salida.Size = new System.Drawing.Size(546, 20);
+            this.DTP_fecha_salida.Size = new System.Drawing.Size(421, 20);
             this.DTP_fecha_salida.TabIndex = 0;
             this.DTP_fecha_salida.Value = new System.DateTime(2015, 12, 3, 10, 54, 3, 0);
             // 
@@ -58,7 +60,7 @@
             // 
             this.DTP_fecha_estimada_llegada.Location = new System.Drawing.Point(150, 49);
             this.DTP_fecha_estimada_llegada.Name = "DTP_fecha_estimada_llegada";
-            this.DTP_fecha_estimada_llegada.Size = new System.Drawing.Size(546, 20);
+            this.DTP_fecha_estimada_llegada.Size = new System.Drawing.Size(421, 20);
             this.DTP_fecha_estimada_llegada.TabIndex = 1;
             // 
             // label1
@@ -102,7 +104,9 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.DTP_hora_estimada_llegada);
             this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.DTP_hora_salida);
             this.groupBox1.Controls.Add(this.DTP_fecha_salida);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.DTP_fecha_estimada_llegada);
@@ -184,6 +188,24 @@
             this.label3.TabIndex = 11;
             this.label3.Text = "Ruta";
             // 
+            // DTP_hora_estimada_llegada
+            // 
+            this.DTP_hora_estimada_llegada.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.DTP_hora_estimada_llegada.Location = new System.Drawing.Point(577, 49);
+            this.DTP_hora_estimada_llegada.Name = "DTP_hora_estimada_llegada";
+            this.DTP_hora_estimada_llegada.ShowUpDown = true;
+            this.DTP_hora_estimada_llegada.Size = new System.Drawing.Size(119, 20);
+            this.DTP_hora_estimada_llegada.TabIndex = 18;
+            // 
+            // DTP_hora_salida
+            // 
+            this.DTP_hora_salida.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.DTP_hora_salida.Location = new System.Drawing.Point(577, 23);
+            this.DTP_hora_salida.Name = "DTP_hora_salida";
+            this.DTP_hora_salida.ShowUpDown = true;
+            this.DTP_hora_salida.Size = new System.Drawing.Size(119, 20);
+            this.DTP_hora_salida.TabIndex = 17;
+            // 
             // GenerarViaje
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -220,5 +242,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox CB_servicio;
+        private System.Windows.Forms.DateTimePicker DTP_hora_estimada_llegada;
+        private System.Windows.Forms.DateTimePicker DTP_hora_salida;
     }
 }

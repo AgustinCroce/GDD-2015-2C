@@ -70,9 +70,12 @@ namespace AerolineaFrba.Generacion_Viaje
             TimeSpan ts = llegada - salida;
             int differenceInDays = ts.Days;
             if (differenceInDays >= 0 && differenceInDays <= 1){
+                DateTime dateSalida = DTP_fecha_salida.Value.Date + DTP_hora_salida.Value.TimeOfDay;
+                DateTime dateLlegada = DTP_hora_estimada_llegada.Value.Date + DTP_hora_estimada_llegada.Value.TimeOfDay;
                 SqlCommand spALtaViaje = this.db.GetStoreProcedure("TS.spAltaViaje");
-                spALtaViaje.Parameters.Add(new SqlParameter("@Fecha_salida", DTP_fecha_salida.Value));
-                spALtaViaje.Parameters.Add(new SqlParameter("@Fecha_estimada", DTP_fecha_estimada_llegada.Value));
+                
+                spALtaViaje.Parameters.Add(new SqlParameter("@Fecha_salida", dateSalida));
+                spALtaViaje.Parameters.Add(new SqlParameter("@Fecha_estimada", dateLlegada));
                 spALtaViaje.Parameters.Add(new SqlParameter("@Aero", Convert.ToInt64(CB_aeronave.SelectedValue)));
                 spALtaViaje.Parameters.Add(new SqlParameter("@Ruta", Convert.ToInt64(CB_ruta.SelectedValue)));
                 SqlParameter returnParameter = spALtaViaje.Parameters.Add("@ReturnVal", SqlDbType.Int);
