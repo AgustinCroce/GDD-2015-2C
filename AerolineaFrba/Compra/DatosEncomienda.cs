@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AerolineaFrba.Commons;
+using System.Data.SqlClient;
 
 namespace AerolineaFrba.Compra
 {
@@ -16,15 +17,37 @@ namespace AerolineaFrba.Compra
         private DataGridView encomiendaGridView;
         private double maxKgs;
         public Commons.Validator validator;
+        public double viajCod;
 
-        public DatosEncomienda(DataGridView encomiendaGridView, double maxKgs)
+        public DatosEncomienda(double viajCod, DataGridView encomiendaGridView, double maxKgs)
         {
             InitializeComponent();
             this.validator = new Commons.Validator();
             this.encomiendaGridView = encomiendaGridView;
             this.maxKgs = maxKgs;
             kgsTextBox.KeyPress += InputNumField_KeyPress;
+            kgsTextBox.TextChanged += kgsTextBox_TextChanged;
             acceptButton.Enabled = false;
+            this.viajCod = viajCod;
+        }
+
+        private void kgsTextBox_TextChanged(object sender, EventArgs e)
+        {
+            int kgs = 0;
+            if (!String.IsNullOrEmpty(kgsTextBox.Text)) {
+                kgs = Convert.ToInt32(kgsTextBox.Text);
+            }
+
+            DbComunicator db = new DbComunicator();
+            SqlCommand storeProcedure = db.GetStoreProcedure("TS.fnGetPrecioEncomienda");
+            SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Int);
+            returnParameter.Direction = ParameterDirection.ReturnValue;
+            storeProcedure.Parameters.Add(new SqlParameter("@Enc_Kgs", kgs));
+            storeProcedure.Parameters.Add(new SqlParameter("@Viaj_Cod", viajCod));
+            storeProcedure.ExecuteNonQuery();
+            db.CerrarConexion();
+
+            precioTextBox.Text = ((int) returnParameter.Value).ToString();
         }
 
         private void InputNumField_KeyPress(object sender, KeyPressEventArgs e)
@@ -39,7 +62,7 @@ namespace AerolineaFrba.Compra
             } else if (Convert.ToInt16(kgsTextBox.Text) > maxKgs){
                 MessageBox.Show("No puede superar más de los " + maxKgs.ToString() + " kilos");
             } else {
-                this.encomiendaGridView.Rows.Insert(0, this.cliCod, dniTextBox.Text, fullNameTextBox.Text, addressTextBox.Text, phoneTextBox.Text, bornDateTimePicker.Value, mailTextBox.Text, kgsTextBox.Text);
+                this.encomiendaGridView.Rows.Insert(0, this.cliCod, dniTextBox.Text, fullNameTextBox.Text, addressTextBox.Text, kgsTextBox.Text, precioTextBox.Text);
                 this.Close();
             }
         }

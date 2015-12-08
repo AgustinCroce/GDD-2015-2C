@@ -28,45 +28,27 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dateTimePicker = new System.Windows.Forms.DateTimePicker();
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pnrTextBox = new System.Windows.Forms.TextBox();
             this.motivoTextBox = new System.Windows.Forms.RichTextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.encomiendaGroupBox = new System.Windows.Forms.GroupBox();
+            this.refreshEncomiendaButton = new System.Windows.Forms.Button();
             this.encomiendaGridView = new System.Windows.Forms.DataGridView();
             this.pasajesGroupBox = new System.Windows.Forms.GroupBox();
+            this.refreshPasajeButton = new System.Windows.Forms.Button();
             this.pasajeGridView = new System.Windows.Forms.DataGridView();
             this.acceptButton = new System.Windows.Forms.Button();
-            this.refreshEncomiendaButton = new System.Windows.Forms.Button();
-            this.refreshPasajeButton = new System.Windows.Forms.Button();
             this.encomiendaGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.encomiendaGridView)).BeginInit();
             this.pasajesGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pasajeGridView)).BeginInit();
             this.SuspendLayout();
             // 
-            // dateTimePicker
-            // 
-            this.dateTimePicker.Location = new System.Drawing.Point(74, 12);
-            this.dateTimePicker.Name = "dateTimePicker";
-            this.dateTimePicker.Size = new System.Drawing.Size(333, 20);
-            this.dateTimePicker.TabIndex = 0;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(21, 18);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(37, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Fecha";
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(21, 46);
+            this.label2.Location = new System.Drawing.Point(18, 12);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(30, 13);
             this.label2.TabIndex = 2;
@@ -74,7 +56,7 @@
             // 
             // pnrTextBox
             // 
-            this.pnrTextBox.Location = new System.Drawing.Point(74, 43);
+            this.pnrTextBox.Location = new System.Drawing.Point(71, 9);
             this.pnrTextBox.MaxLength = 18;
             this.pnrTextBox.Name = "pnrTextBox";
             this.pnrTextBox.Size = new System.Drawing.Size(333, 20);
@@ -82,7 +64,7 @@
             // 
             // motivoTextBox
             // 
-            this.motivoTextBox.Location = new System.Drawing.Point(74, 69);
+            this.motivoTextBox.Location = new System.Drawing.Point(71, 35);
             this.motivoTextBox.MaxLength = 255;
             this.motivoTextBox.Name = "motivoTextBox";
             this.motivoTextBox.Size = new System.Drawing.Size(333, 96);
@@ -92,7 +74,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(19, 72);
+            this.label3.Location = new System.Drawing.Point(16, 38);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(39, 13);
             this.label3.TabIndex = 5;
@@ -102,12 +84,22 @@
             // 
             this.encomiendaGroupBox.Controls.Add(this.refreshEncomiendaButton);
             this.encomiendaGroupBox.Controls.Add(this.encomiendaGridView);
-            this.encomiendaGroupBox.Location = new System.Drawing.Point(22, 184);
+            this.encomiendaGroupBox.Location = new System.Drawing.Point(19, 150);
             this.encomiendaGroupBox.Name = "encomiendaGroupBox";
             this.encomiendaGroupBox.Size = new System.Drawing.Size(385, 128);
             this.encomiendaGroupBox.TabIndex = 6;
             this.encomiendaGroupBox.TabStop = false;
             this.encomiendaGroupBox.Text = "Encomienda";
+            // 
+            // refreshEncomiendaButton
+            // 
+            this.refreshEncomiendaButton.Location = new System.Drawing.Point(263, 99);
+            this.refreshEncomiendaButton.Name = "refreshEncomiendaButton";
+            this.refreshEncomiendaButton.Size = new System.Drawing.Size(116, 23);
+            this.refreshEncomiendaButton.TabIndex = 20;
+            this.refreshEncomiendaButton.Text = "Cancelar Selección";
+            this.refreshEncomiendaButton.UseVisualStyleBackColor = true;
+            this.refreshEncomiendaButton.Click += new System.EventHandler(this.refreshEncomiendaButton_Click);
             // 
             // encomiendaGridView
             // 
@@ -130,12 +122,22 @@
             // 
             this.pasajesGroupBox.Controls.Add(this.refreshPasajeButton);
             this.pasajesGroupBox.Controls.Add(this.pasajeGridView);
-            this.pasajesGroupBox.Location = new System.Drawing.Point(24, 318);
+            this.pasajesGroupBox.Location = new System.Drawing.Point(21, 284);
             this.pasajesGroupBox.Name = "pasajesGroupBox";
             this.pasajesGroupBox.Size = new System.Drawing.Size(383, 182);
             this.pasajesGroupBox.TabIndex = 7;
             this.pasajesGroupBox.TabStop = false;
             this.pasajesGroupBox.Text = "Pasajes";
+            // 
+            // refreshPasajeButton
+            // 
+            this.refreshPasajeButton.Location = new System.Drawing.Point(261, 153);
+            this.refreshPasajeButton.Name = "refreshPasajeButton";
+            this.refreshPasajeButton.Size = new System.Drawing.Size(116, 23);
+            this.refreshPasajeButton.TabIndex = 20;
+            this.refreshPasajeButton.Text = "Cancelar Selección";
+            this.refreshPasajeButton.UseVisualStyleBackColor = true;
+            this.refreshPasajeButton.Click += new System.EventHandler(this.refreshPasajeButton_Click);
             // 
             // pasajeGridView
             // 
@@ -156,7 +158,7 @@
             // 
             // acceptButton
             // 
-            this.acceptButton.Location = new System.Drawing.Point(285, 506);
+            this.acceptButton.Location = new System.Drawing.Point(282, 472);
             this.acceptButton.Name = "acceptButton";
             this.acceptButton.Size = new System.Drawing.Size(122, 23);
             this.acceptButton.TabIndex = 1;
@@ -164,31 +166,11 @@
             this.acceptButton.UseVisualStyleBackColor = true;
             this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
             // 
-            // refreshEncomiendaButton
-            // 
-            this.refreshEncomiendaButton.Location = new System.Drawing.Point(263, 99);
-            this.refreshEncomiendaButton.Name = "refreshEncomiendaButton";
-            this.refreshEncomiendaButton.Size = new System.Drawing.Size(116, 23);
-            this.refreshEncomiendaButton.TabIndex = 20;
-            this.refreshEncomiendaButton.Text = "Cancelar Selección";
-            this.refreshEncomiendaButton.UseVisualStyleBackColor = true;
-            this.refreshEncomiendaButton.Click += new System.EventHandler(this.refreshEncomiendaButton_Click);
-            // 
-            // refreshPasajeButton
-            // 
-            this.refreshPasajeButton.Location = new System.Drawing.Point(261, 153);
-            this.refreshPasajeButton.Name = "refreshPasajeButton";
-            this.refreshPasajeButton.Size = new System.Drawing.Size(116, 23);
-            this.refreshPasajeButton.TabIndex = 20;
-            this.refreshPasajeButton.Text = "Cancelar Selección";
-            this.refreshPasajeButton.UseVisualStyleBackColor = true;
-            this.refreshPasajeButton.Click += new System.EventHandler(this.refreshPasajeButton_Click);
-            // 
             // DevolucionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(425, 541);
+            this.ClientSize = new System.Drawing.Size(425, 500);
             this.Controls.Add(this.acceptButton);
             this.Controls.Add(this.pasajesGroupBox);
             this.Controls.Add(this.encomiendaGroupBox);
@@ -196,10 +178,9 @@
             this.Controls.Add(this.motivoTextBox);
             this.Controls.Add(this.pnrTextBox);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.dateTimePicker);
             this.Name = "DevolucionForm";
             this.Text = "Devolucion";
+            this.Load += new System.EventHandler(this.DevolucionForm_Load);
             this.encomiendaGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.encomiendaGridView)).EndInit();
             this.pasajesGroupBox.ResumeLayout(false);
@@ -211,8 +192,6 @@
 
         #endregion
 
-        private System.Windows.Forms.DateTimePicker dateTimePicker;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox pnrTextBox;
         private System.Windows.Forms.RichTextBox motivoTextBox;

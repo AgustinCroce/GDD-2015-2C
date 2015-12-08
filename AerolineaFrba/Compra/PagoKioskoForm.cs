@@ -20,7 +20,7 @@ namespace AerolineaFrba.Compra
         public double Com_Cuotas;
         public string Com_Forma_Pago;
 
-        public PagoKioskoForm(){
+        public PagoKioskoForm() {
             InitializeComponent();
             cardNumberTextBox.Enabled = false;
             cardCodeTextBox.Enabled = false;
@@ -29,6 +29,18 @@ namespace AerolineaFrba.Compra
             cardNumberDuesComboBox.Enabled = false;
             addCreditCardButton.Enabled = false;
             editCreditCardButton.Enabled = false;
+        }
+
+        public PagoKioskoForm(double precio){
+            InitializeComponent();
+            cardNumberTextBox.Enabled = false;
+            cardCodeTextBox.Enabled = false;
+            cardDateTextBox.Enabled = false;
+            cardEmitterTextBox.Enabled = false;
+            cardNumberDuesComboBox.Enabled = false;
+            addCreditCardButton.Enabled = false;
+            editCreditCardButton.Enabled = false;
+            this.precioLabel.Text = "Su saldo a pagar es de: $" + precio;
 
             //cardNumberTextBox.KeyPress += this.InputNumField_KeyPress;
         }
@@ -37,6 +49,8 @@ namespace AerolineaFrba.Compra
         {
             fillCardInputs();
         }
+
+        public virtual void clientLoaded() { }
 
         override public void foundCliCod(string cliCod)
         {
@@ -52,6 +66,7 @@ namespace AerolineaFrba.Compra
             cardNumberTextBox.DropDownStyle = ComboBoxStyle.DropDownList;
             cardNumberDuesComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             this.Cli_Cod = Convert.ToDouble(this.cliCod);
+            this.clientLoaded();
             db1.CerrarConexion();
         }
 
@@ -136,7 +151,7 @@ namespace AerolineaFrba.Compra
             fillCardInputs();
         }
 
-        private void acceptButton_Click(object sender, EventArgs e)
+        public virtual void acceptButton_Click(object sender, EventArgs e)
         {
             if (this.validarFechaTarjeta(cardDateTextBox.Text, Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema)))
             {

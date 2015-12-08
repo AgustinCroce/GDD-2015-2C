@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AerolineaFrba.Commons;
+using System.Data.SqlClient;
 
 namespace AerolineaFrba.Compra
 {
@@ -28,6 +29,16 @@ namespace AerolineaFrba.Compra
             string butacasR = "";
             butacaComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 
+            DbComunicator db = new DbComunicator();
+            SqlCommand storeProcedure = db.GetStoreProcedure("TS.fnGetPrecioPasaje");
+            SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Int);
+            returnParameter.Direction = ParameterDirection.ReturnValue;
+            storeProcedure.Parameters.Add(new SqlParameter("@Viaj_Cod", viajCod));
+            storeProcedure.ExecuteNonQuery();
+            db.CerrarConexion();
+
+            precioTextBox.Text = ((int)returnParameter.Value).ToString();
+
             foreach (var butaca in butacasReservadas)
             {
                 butacasR += " AND B.But_Cod != " + butaca + " ";
@@ -37,10 +48,11 @@ namespace AerolineaFrba.Compra
             queryButacas += "WHERE B.But_Cod NOT IN (SELECT But_Cod FROM TS.Pasaje_Compra as PC, TS.Pasaje as P WHERE P.Pas_Cod = PC.Pas_Cod AND P.Viaj_Cod = "+ viajCod + ") ";
             queryButacas += "AND B.Aero_Num = V.Aero_Num AND V.Viaj_Cod = " + viajCod + " " + butacasR;
             queryButacas += "ORDER BY B.But_Piso ASC, B.But_Numero ASC";
-            DbComunicator db = new DbComunicator();
-            butacaComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryButacas, "But_Cod", "But_Label"), null);
+            DbComunicator db2 = new DbComunicator();
+            butacaComboBox.DataSource = new BindingSource(db2.GetQueryDictionary(queryButacas, "But_Cod", "But_Label"), null);
             butacaComboBox.DisplayMember = "Value";
             butacaComboBox.ValueMember = "Key";
+            db2.CerrarConexion();
         }
 
         override public void foundCliCod(string cliCod)
@@ -73,9 +85,25 @@ namespace AerolineaFrba.Compra
                 MessageBox.Show("Ya se ha sacado un pasaje para este cliente en este vuelo.");
             }
             else {
-                this.pasajeGridView.Rows.Insert(0, this.cliCod, dniTextBox.Text, fullNameTextBox.Text, addressTextBox.Text, phoneTextBox.Text, bornDateTimePicker.Value, mailTextBox.Text, butacaComboBox.SelectedValue);
-                this.butacaReservada = Convert.ToInt32(butacaComboBox.SelectedValue);
-                this.Close();
+                db = new DbComunicator();
+                SqlCommand storeProcedure = db.GetStoreProcedure("TS.fnValidarViajeCliente");
+                SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Int);
+                returnParameter.Direction = ParameterDirection.ReturnValue;
+                storeProcedure.Parameters.Add(new SqlParameter("@Cli_Cod", this.cliCod));
+                storeProcedure.Parameters.Add(new SqlParameter("@Viaj_Cod", this.viajCod));
+                storeProcedure.ExecuteNonQuery();
+                db.CerrarConexion();
+
+                if ((int)returnParameter.Value == 1)
+                {
+                    this.pasajeGridView.Rows.Insert(0, this.cliCod, dniTextBox.Text, fullNameTextBox.Text, addressTextBox.Text, butacaComboBox.SelectedValue, precioTextBox.Text);
+                    this.butacaReservada = Convert.ToInt32(butacaComboBox.SelectedValue);
+                    this.Close();
+                }
+                else {
+                    MessageBox.Show("El cliente ya tiene un pasaje para un vuelo que sale el mismo dia que el viaje selccionado.");
+                }
+                
             }
             
         }
