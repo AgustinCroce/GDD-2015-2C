@@ -30,7 +30,7 @@ namespace AerolineaFrba.Abm_Ruta
         private void ListadoRutas_Load(object sender, EventArgs e)
         {
             string QueryRutas = "SELECT Ruta_Cod 'Codigo Unico', Ruta_Codigo 'Codigo', C1.Ciudad_Nombre 'Origen', C2.Ciudad_Nombre 'Destino', Ruta_Servicio 'Servicio', Ruta_Precio_Base_Kg 'Precio Kg', Ruta_Precio_Base_Pasaje 'Precio Pasaje', Ruta_Borrada Borrada FROM [GD2C2015].[TS].[Ruta], [GD2C2015].[TS].[Ciudad] as C1, [GD2C2015].[TS].[Ciudad] as C2 WHERE C1.Ciudad_Cod = Ruta_Ciudad_Origen AND  C2.Ciudad_Cod = Ruta_Ciudad_Destino";
-            string QueryCiudades = "SELECT Ciudad_Nombre 'Nombre' FROM [GD2C2015].[TS].[Ciudad]";
+            string QueryCiudades = "SELECT Ciudad_Nombre 'Nombre' FROM [GD2C2015].[TS].[Ciudad] WHERE Ciudad_Borrada = 0";
             DGV_rutas.DataSource = db.GetDataAdapter(QueryRutas).Tables[0];
             Dictionary<object, object> Ciudades = this.db.GetQueryDictionary(QueryCiudades, "Nombre", "Nombre");
             CB_ciudad.DataSource = new BindingSource(Ciudades, null);

@@ -17,7 +17,7 @@ namespace AerolineaFrba.Compra
         public SeleccionVueloForm()
         {
             InitializeComponent();
-            string queryCiudades = "SELECT Ciudad_Cod, Ciudad_Nombre FROM TS.Ciudad";
+            string queryCiudades = "SELECT Ciudad_Cod, Ciudad_Nombre FROM TS.Ciudad WHERE Ciudad_Borrada = 0";
             DbComunicator db = new DbComunicator();
             origenComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryCiudades, "Ciudad_Cod", "Ciudad_Nombre"), null);
             origenComboBox.DisplayMember = "Value";

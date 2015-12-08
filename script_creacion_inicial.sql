@@ -582,26 +582,32 @@ IF OBJECT_ID (N'TS.spConsultarViaje') IS NOT NULL
 GO
 
 CREATE PROCEDURE "TS".spConsultarViaje
-	@CiudadOrigen NUMERIC(18,0),
-	@CiudadDestino NUMERIC(18,0),
-	@Aero_Matricula NUMERIC(18,0),
-	@Fecha_Salida DATETIME
+	@Ciudad_Origen NUMERIC(18,0),
+	@Ciudad_Destino NUMERIC(18,0),
+	@Aero_Matricula NVARCHAR(255),
+	@Fecha_Salida DATETIME,
+	@Fecha_Llegada DATETIME
 AS
 BEGIN
 	DECLARE @Cantidad INT
 	SET @Cantidad = (SELECT COUNT(*)
 						FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
-						WHERE R.Ruta_Ciudad_Destino = @CiudadDestino AND R.Ruta_Ciudad_Origen = @CiudadOrigen
+						WHERE R.Ruta_Ciudad_Destino = @Ciudad_Destino AND R.Ruta_Ciudad_Origen = @Ciudad_Origen
 							AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
 	IF @Cantidad = 0
 	BEGIN
 		IF ((SELECT COUNT(*)
 				FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
-				WHERE R.Ruta_Ciudad_Origen = @CiudadOrigen
+				WHERE R.Ruta_Ciudad_Origen = @Ciudad_Origen
 				AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL) = 1)
 		BEGIN
 			SET @Cantidad = -1
 		END
+	END
+
+	IF DATEDIFF(MINUTE, @Fecha_Salida, @Fecha_Llegada) < 0
+	BEGIN
+		SET @Cantidad = -2
 	END
 	
 	RETURN @Cantidad
@@ -613,19 +619,19 @@ IF OBJECT_ID (N'TS.spRegistrarLlegada') IS NOT NULL
 GO
 
 CREATE PROCEDURE "TS".spRegistrarLlegada
-	@CiudadOrigen NUMERIC(18,0),
-	@CiudadDestino NUMERIC(18,0),
-	@Aero_Matricula NUMERIC(18,0),
+	@Ciudad_Origen NUMERIC(18,0),
+	@Ciudad_Destino NUMERIC(18,0),
+	@Aero_Matricula NVARCHAR(255),
 	@Fecha_Salida DATETIME,
-	@Llegada DATETIME
+	@Fecha_Llegada DATETIME
 AS
 BEGIN
 	DECLARE @Viaj_Cod NUMERIC(18,0) = (SELECT V.Viaj_Cod
 						FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
-						WHERE R.Ruta_Ciudad_Destino = @CiudadDestino AND R.Ruta_Ciudad_Origen = @CiudadOrigen
+						WHERE R.Ruta_Ciudad_Destino = @Ciudad_Destino AND R.Ruta_Ciudad_Origen = @Ciudad_Origen
 							AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
 	UPDATE TS.Viaje
-	SET Fecha_Llegada = @Llegada
+	SET Fecha_Llegada = @Fecha_Llegada
 	WHERE Viaj_Cod = @Viaj_Cod
 
 	UPDATE TS.Milla
@@ -642,28 +648,6 @@ BEGIN
 END
 GO
 
-IF OBJECT_ID (N'TS.spRegistrarLlegadaUnica') IS NOT NULL
-   DROP PROCEDURE "TS".spRegistrarLlegadaUnica
-GO
-
-CREATE PROCEDURE "TS".spRegistrarLlegadaUnica
-	@CiudadOrigen varchar(255),
-	@CiudadDestino varchar(255),
-	@AeroNum Numeric(18,0),
-	@Llegada Datetime
-AS
-BEGIN
-	DECLARE @ViajeCod Numeric(18,0)
-	SET @ViajeCod = (SELECT V.Viaj_Cod
-						FROM TS.Viaje as V, TS.Ruta as R
-						WHERE V.Ruta_Cod = R.Ruta_Cod AND R.Ruta_Ciudad_Origen = @CiudadOrigen
-						AND R.Ruta_Ciudad_Destino = @CiudadDestino AND V.Aero_Num = @AeroNum AND V.Fecha_Llegada = NULL)
-	EXEC TS.spRegistrarLlegada @ViajeCod, @Llegada
-END
-GO
-
-
-
 IF OBJECT_ID (N'TS.fnViajesPendientes') IS NOT NULL
    DROP FUNCTION "TS".fnViajesPendientes
 GO
@@ -673,8 +657,8 @@ RETURNS INT
 AS
 BEGIN
 	RETURN (SELECT COUNT(*)
-	FROM TS.Viaje AS V, TS.Pasaje AS P, TS.Encomienda AS E, TS.Pasaje_Compra AS PC, TS.Encomienda_Compra AS EC
-	WHERE V.Aero_Num = @Aero AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0 AND ((P.Viaj_Cod=V.Viaj_Cod AND PC.Pas_Cod=P.Pas_Cod) OR (E.Viaj_Cod=V.Viaj_Cod AND EC.Enc_Cod=E.Enc_Cod)))
+	FROM TS.Viaje AS V
+	WHERE V.Aero_Num = @Aero AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0 AND V.Fecha_Llegada IS NULL)
 END
 GO
 
@@ -1012,7 +996,6 @@ GO
 
 CREATE PROCEDURE "TS".spRegistrarCanje
   @Cli_Cod NUMERIC(18,0),
-  @Cli_DNI NVARCHAR(255),
   @Prod_Cod NUMERIC(18,0),
   @Canje_Cantidad_Prod INT,
   @Canje_Fecha DATE
@@ -1022,11 +1005,6 @@ BEGIN
 	SET @Saldo = "TS".fnConsultarSaldoMillas(@Canje_Fecha, @Cli_Cod);
 
 	IF(SELECT Prod_Stock FROM "TS".Producto WHERE Prod_Cod = @Prod_Cod) < @Canje_Cantidad_Prod
-	BEGIN
-		RETURN -2
-	END
-
-	IF(SELECT COUNT(*) FROM "TS".Cliente WHERE Cli_Cod = @Cli_Cod AND Cli_DNI = @Cli_DNI) = 0
 	BEGIN
 		RETURN -1
 	END
@@ -1047,7 +1025,7 @@ BEGIN
 		SET Prod_Stock = Prod_Stock - @Canje_Cantidad_Prod
 		WHERE Prod_Cod = @Prod_Cod
 		
-		RETURN 0
+		RETURN 1
 	END
 END
 GO
@@ -1542,11 +1520,11 @@ BEGIN
   INSERT INTO @Com_PNRs(Com_PNR)
 	SELECT DISTINCT PC.Com_PNR
 	FROM TS.Pasaje AS P, TS.Viaje AS V, TS.Pasaje_Compra AS PC
-	WHERE P.Viaj_cod = V.Viaj_cod AND PC.Pas_Cod = P.Pas_Cod AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0
+	WHERE P.Viaj_cod = V.Viaj_cod AND PC.Pas_Cod = P.Pas_Cod AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo
 	UNION
 	SELECT DISTINCT EC.Com_PNR
 	FROM TS.Encomienda AS E, TS.Viaje AS V, TS.Encomienda_Compra AS EC
-	WHERE E.Viaj_cod = V.Viaj_cod AND EC.Enc_Cod = E.Enc_Cod AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0
+	WHERE E.Viaj_cod = V.Viaj_cod AND EC.Enc_Cod = E.Enc_Cod AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo
 
   DECLARE @Com_PNR NUMERIC(18,0)
   DECLARE tscursor CURSOR FOR SELECT * FROM @Com_PNRs
@@ -1595,11 +1573,11 @@ BEGIN
   INSERT INTO @Com_PNRs(Com_PNR)
 	SELECT DISTINCT PC.Com_PNR
 	FROM TS.Pasaje AS P, TS.Viaje AS V, TS.Pasaje_Compra AS PC
-	WHERE P.Viaj_cod = V.Viaj_cod AND PC.Pas_Cod = P.Pas_Cod AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0
+	WHERE P.Viaj_cod = V.Viaj_cod AND PC.Pas_Cod = P.Pas_Cod AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @codigo_unico
 	UNION
 	SELECT DISTINCT EC.Com_PNR
 	FROM TS.Encomienda AS E, TS.Viaje AS V, TS.Encomienda_Compra AS EC
-	WHERE E.Viaj_cod = V.Viaj_cod AND EC.Enc_Cod = E.Enc_Cod AND DATEDIFF(minute, @HOY, V.Fecha_Salida)>0
+	WHERE E.Viaj_cod = V.Viaj_cod AND EC.Enc_Cod = E.Enc_Cod AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @codigo_unico
 
   DECLARE @Com_PNR NUMERIC(18,0)
   DECLARE tscursor CURSOR FOR SELECT * FROM @Com_PNRs
@@ -1615,6 +1593,20 @@ BEGIN
   CLOSE tscursor
   DEALLOCATE tscursor
   RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.fnButacasAeronave') IS NOT NULL
+   DROP FUNCTION "TS".fnButacasAeronave
+GO
+
+CREATE FUNCTION "TS".fnButacasAeronave(
+  @Aeronave_cod NUMERIC(18,0),
+  @Tipo NVARCHAR(255))
+RETURNS INT
+AS
+BEGIN
+	RETURN (SELECT COUNT(*) FROM [GD2C2015].[TS].[Butaca] WHERE Aero_Num = @Aeronave_cod AND But_Tipo = @Tipo)
 END
 GO
 
@@ -2005,7 +1997,63 @@ BEGIN
 	RETURN @Cli_Cod
 END
 GO
+IF OBJECT_ID (N'TS.fnGetPrecioPasaje') IS NOT NULL
+   DROP FUNCTION "TS".fnGetPrecioPasaje
+GO
 
+CREATE FUNCTION "TS".fnGetPrecioPasaje(@Viaj_Cod NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	DECLARE @Ruta_Cod NUMERIC(18,0) = (SELECT Ruta_Cod FROM TS.Viaje WHERE Viaj_Cod = @Viaj_Cod) 
+
+	RETURN (SELECT R.Ruta_Precio_Base_Pasaje * (1 + T.TipoSer_Porcentaje)
+	FROM TS.Ruta AS R, TS.Tipo_Servicio as T
+	WHERE R.Ruta_Cod = @Ruta_Cod AND T.TipoSer_Nombre = R.Ruta_Servicio)
+END
+GO
+
+IF OBJECT_ID (N'TS.fnGetPrecioEncomienda') IS NOT NULL
+   DROP FUNCTION "TS".fnGetPrecioEncomienda
+GO
+
+CREATE FUNCTION "TS".fnGetPrecioEncomienda(@Viaj_Cod NUMERIC(18,0), @Enc_Kgs NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	DECLARE @Ruta_Cod NUMERIC(18,0) = (SELECT Ruta_Cod FROM TS.Viaje WHERE Viaj_Cod = @Viaj_Cod)
+
+	RETURN (SELECT R.Ruta_Precio_Base_Kg * @Enc_Kgs * (1 + T.TipoSer_Porcentaje)
+	FROM TS.Ruta AS R, TS.Tipo_Servicio as T
+	WHERE R.Ruta_Cod = @Ruta_Cod AND T.TipoSer_Nombre = R.Ruta_Servicio)
+END
+GO
+
+IF OBJECT_ID (N'TS.fnValidarViajeCliente') IS NOT NULL
+   DROP FUNCTION "TS".fnValidarViajeCliente
+GO
+
+CREATE FUNCTION "TS".fnValidarViajeCliente(@Viaj_Cod NUMERIC(18,0), @Cli_Cod NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	DECLARE @Cantidad INT = (SELECT COUNT(*)
+								FROM TS.Viaje as V1, TS.Viaje as V2, TS.Pasaje as P
+								WHERE V1.Viaj_Cod != V2.Viaj_Cod AND V1.Viaj_Cod = 1
+								AND MONTH(V1.Fecha_Salida) = MONTH(V2.Fecha_Salida) AND DAY(V1.Fecha_Salida) = DAY(V2.Fecha_Salida) AND YEAR(V1.Fecha_Salida) = YEAR(V2.Fecha_Salida)
+								AND P.Viaj_Cod = V2.Viaj_Cod AND P.Cli_Cod = 3)
+	IF @Cantidad > 1
+	BEGIN
+		RETURN 0
+	END
+	ELSE
+	BEGIN
+		RETURN 1
+	END
+
+	RETURN 0
+END
+GO
 /******************************* INDICES *********************************************/
 
 IF OBJECT_ID (N'ixAeronave') IS NOT NULL
@@ -2102,10 +2150,6 @@ INSERT INTO "TS".Tipo_Tarjeta(TipoTar_Nombre, TipoTar_Cuotas) VALUES
   ('CREDICOP', 3),
   ('ICBC', 1),
   ('FRBA PLUS', 120);
-
-INSERT INTO "TS".Tipo_Servicio(TipoSer_Nombre, TipoSer_Porcentaje) VALUES
-  ('Primera Clase', 0.8),
-  ('Turista', 0.2);
 
 /*********** INSERTO 3 USUARIOS ADMIN, ADMIN2 Y ADMIN3 CON PASSWORD w23e **********************/
 INSERT INTO "TS".Usuario(Usr_Username, Usr_Password, Usr_Intentos_Login, Usr_Borrado) VALUES
