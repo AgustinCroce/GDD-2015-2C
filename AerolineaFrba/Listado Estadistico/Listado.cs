@@ -27,6 +27,8 @@ namespace AerolineaFrba.Listado_Estadistico
         private void Listado_Load(object sender, EventArgs e)
         {
             this.changeTag(sender, e);
+            CB_semestre.SelectedText = "1";
+            CB_anio.Text = "2015";
             TC_listado.SelectedIndexChanged += this.changeTag;
         }
 
@@ -53,13 +55,33 @@ namespace AerolineaFrba.Listado_Estadistico
         }
 
         private void loadDGV(){
-            string queryListado = "SELECT * FROM " + this.vwActual;
-            this.DGVActual.DataSource = db.GetDataAdapter(queryListado).Tables[0];
+            this.ejectutarQuerySemetral();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ejectutarQuerySemetral()
+        {
+            string queryListado = null;
+            if (CB_semestre.Text == "1")
+                queryListado = "SELECT TOP 5 V.Nombre, SUM(V.Cantidad) AS Cantidad FROM " + this.vwActual + " AS V WHERE V.Anio="+ CB_anio.Text +" AND V.Mes IN (1,2,3,4,5,6) GROUP BY V.Nombre ORDER BY Cantidad DESC";
+            if (CB_semestre.Text == "2")
+                queryListado = "SELECT TOP 5 V.Nombre, SUM(V.Cantidad) AS Cantidad FROM " + this.vwActual + " AS V WHERE V.Anio=" + CB_anio.Text + " AND V.Mes IN (7,8,9,10,11,12) GROUP BY V.Nombre ORDER BY Cantidad DESC";
+            if (queryListado != null) this.DGVActual.DataSource = db.GetDataAdapter(queryListado).Tables[0];
+        }
+
+
+        private void BT_actualizar_Click(object sender, EventArgs e)
+        {
+            this.ejectutarQuerySemetral();
         }
     }
 }
