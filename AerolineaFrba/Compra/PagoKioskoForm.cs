@@ -138,7 +138,7 @@ namespace AerolineaFrba.Compra
 
         private void acceptButton_Click(object sender, EventArgs e)
         {
-            if (this.validarFechaTarjeta(cardDateTextBox.Text, Properties.Settings.Default.FechaSistema))
+            if (this.validarFechaTarjeta(cardDateTextBox.Text, Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema)))
             {
                 this.Tar_Numero = Convert.ToDouble(cardNumberTextBox.Text);
                 this.habilitado = true;

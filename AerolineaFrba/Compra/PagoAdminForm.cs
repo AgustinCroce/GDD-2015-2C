@@ -46,7 +46,7 @@ namespace AerolineaFrba.Compra
             this.habilitado = true;
             if (cardCheckBox.Checked)
             {
-                if (this.validarFechaTarjeta(cardDateTextBox.Text, Properties.Settings.Default.FechaSistema))
+                if (this.validarFechaTarjeta(cardDateTextBox.Text, Convert.ToDateTime(Properties.Settings.Default.FechaSistema)))
                 {
                     this.Tar_Numero = Convert.ToDouble(cardNumberTextBox.Text);
                     this.Com_Cuotas = Convert.ToDouble(cardNumberDuesComboBox.SelectedValue);
