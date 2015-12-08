@@ -1850,11 +1850,10 @@ GO
 
 CREATE VIEW "TS".vsDestinoConMasPasajesComprados
    AS
-	SELECT TOP 5 C.Ciudad_Nombre Nombre, COUNT(*) Cantidad
+	SELECT C.Ciudad_Nombre Nombre, COUNT(*) Cantidad, YEAR(P.Pas_Fecha_Compra) as Anio, MONTH(P.Pas_Fecha_Compra) as Mes
 	FROM TS.Pasaje_Compra AS PC, TS.Pasaje AS P, TS.Viaje AS V, TS.Ruta AS R, TS.Ciudad AS C
 	WHERE PC.Pas_Cod=P.Pas_Cod AND P.Viaj_Cod=V.Viaj_Cod AND V.Ruta_Cod=R.Ruta_Cod AND R.Ruta_Ciudad_Destino=C.Ciudad_Cod
-	GROUP BY C.Ciudad_Nombre
-	ORDER BY Cantidad DESC
+	GROUP BY C.Ciudad_Nombre, YEAR(P.Pas_Fecha_Compra), MONTH(P.Pas_Fecha_Compra)
 GO
 
 /* o Top 5 de los destinos con aeronaves más vacías.*/
@@ -1864,11 +1863,10 @@ GO
 
 CREATE VIEW "TS".vsDestinoAernovesMasVacias
    AS
-	SELECT TOP 5 C.Ciudad_Nombre Nombre, SUM(TS.fnButacasDisponibles(AE.Aero_Num)) Cantidad
+	SELECT C.Ciudad_Nombre Nombre, SUM(TS.fnButacasDisponibles(AE.Aero_Num)) Cantidad, YEAR(V.Fecha_Salida) as Anio, MONTH(V.Fecha_Salida) as Mes
 	FROM TS.Pasaje_Compra AS PC, TS.Pasaje AS P, TS.Viaje AS V, TS.Ruta AS R, TS.Ciudad AS C, TS.Aeronave AS AE
 	WHERE PC.Pas_Cod=P.Pas_Cod AND P.Viaj_Cod=V.Viaj_Cod AND V.Ruta_Cod=R.Ruta_Cod AND R.Ruta_Ciudad_Destino=C.Ciudad_Cod AND AE.Aero_Num=V.Aero_Num
-	GROUP BY C.Ciudad_Nombre
-	ORDER BY Cantidad DESC
+	GROUP BY C.Ciudad_Nombre, YEAR(V.Fecha_Salida), MONTH(V.Fecha_Salida)
 GO
 
 /* o Top 5 de los Clientes con más puntos acumulados a la fecha*/
@@ -1878,10 +1876,10 @@ GO
 
 CREATE VIEW "TS".vsClientesConMasMillas
    AS
-	SELECT TOP 5 C.Cli_Nombre Nombre, SUM(ISNULL(TS.fnConsultarSaldoMillas(GETDATE(), C.Cli_Cod),0)) Cantidad
-	FROM TS.Cliente AS C
-	GROUP BY C.Cli_Nombre
-	ORDER BY Cantidad DESC
+	SELECT C.Cli_Nombre Nombre, SUM(M.Mil_Cantidad - CA.Canje_Total) Cantidad, YEAR(M.Mil_Fecha) as Anio, MONTH(M.Mil_Fecha) as Mes
+	FROM TS.Cliente AS C, TS.Milla AS M, TS.Canje AS CA
+	WHERE M.Cli_Cod = C.Cli_Cod AND CA.Cli_Cod=C.Cli_Cod AND M.Mil_Valida=1
+	GROUP BY C.Cli_Nombre, YEAR(M.Mil_Fecha), MONTH(M.Mil_Fecha)
 GO
 
 /* o Top 5 de los destinos con pasajes cancelados.*/
@@ -1891,11 +1889,10 @@ GO
 
 CREATE VIEW "TS".vsDestinosConMasPasajesCancelados
    AS
-	SELECT TOP 5 C.Ciudad_Nombre Nombre, COUNT(*) Cantidad
+	SELECT C.Ciudad_Nombre Nombre, COUNT(*) Cantidad, YEAR(V.Fecha_Salida) as Anio, MONTH(V.Fecha_Salida) as Mes
 	FROM TS.Pasaje_Cancelacion AS PC, TS.Pasaje AS P, TS.Viaje AS V, TS.Ruta AS R, TS.Ciudad AS C
 	WHERE PC.Pas_Cod=P.Pas_Cod AND P.Viaj_Cod=V.Viaj_Cod AND V.Ruta_Cod=R.Ruta_Cod AND R.Ruta_Ciudad_Destino=C.Ciudad_Cod
-	GROUP BY C.Ciudad_Nombre
-	ORDER BY Cantidad DESC
+	GROUP BY C.Ciudad_Nombre, YEAR(V.Fecha_Salida), MONTH(V.Fecha_Salida)
 GO
 
 /* o Top 5 de las aeronaves con mayor cantidad de días fuera de servicio.*/
@@ -1923,9 +1920,10 @@ GO
 
 CREATE VIEW "TS".vsAeronaveMasFueraDeServicio
    AS
-	SELECT TOP 5 AE.Aero_Matricula Matricula, SUM(ISNULL("TS".fnDiasFueraServicio(AE.Aero_Num), 0)) Cantidad
-	FROM TS.Aeronave AS AE
-	GROUP BY AE.Aero_Matricula
+	SELECT AE.Aero_Matricula Matricula, SUM(ISNULL(DATEDIFF(day, AFS.AudFS_Fecha_Inicio, AFS.AudFS_Fecha_Fin),0)) Cantidad, YEAR(AFS.AudFS_Fecha_Inicio) as Anio, MONTH(AFS.AudFS_Fecha_Inicio) as Mes
+	FROM TS.Aeronave AS AE, TS.Auditoria_Fuera_De_Servicio AS AFS
+	WHERE AFS.Aero_Num=AE.Aero_Num
+	GROUP BY AE.Aero_Matricula,YEAR(AFS.AudFS_Fecha_Inicio), MONTH(AFS.AudFS_Fecha_Inicio)
 	ORDER BY Cantidad DESC
 GO
 
