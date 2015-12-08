@@ -62,10 +62,6 @@ IF OBJECT_ID('TS.Viaje', 'U') IS NOT NULL
   DROP TABLE "TS".Viaje
 GO
 
-IF OBJECT_ID('TS.Tipo_Servicio', 'U') IS NOT NULL
-  DROP TABLE "TS".Tipo_Servicio
-GO
-
 IF OBJECT_ID('TS.Ruta', 'U') IS NOT NULL
   DROP TABLE "TS".Ruta
 GO
@@ -114,16 +110,20 @@ IF OBJECT_ID('TS.Rol', 'U') IS NOT NULL
   DROP TABLE "TS".Rol
 GO
 
-IF OBJECT_ID('TS.Usuario', 'U') IS NOT NULL
-  DROP TABLE "TS".Usuario
-GO
-
 IF OBJECT_ID('TS.Cliente', 'U') IS NOT NULL
   DROP TABLE "TS".Cliente
 GO
 
+IF OBJECT_ID('TS.Usuario', 'U') IS NOT NULL
+  DROP TABLE "TS".Usuario
+GO
+
 IF OBJECT_ID('TS.Producto', 'U') IS NOT NULL
   DROP TABLE "TS".Producto
+GO
+
+IF OBJECT_ID('TS.Tipo_Servicio', 'U') IS NOT NULL
+  DROP TABLE "TS".Tipo_Servicio
 GO
 
 /********************************** CREACIÓN DE TABLAS **************************************/
@@ -170,6 +170,7 @@ CREATE TABLE "TS".Rol_Usuario
 CREATE TABLE "TS".Cliente
 (
   Cli_Cod NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
+  Usr_Username NVARCHAR(255) REFERENCES "TS".Usuario(Usr_Username),
   Cli_Nombre NVARCHAR(255) NOT NULL,
   Cli_Direccion NVARCHAR(255) NOT NULL,
   Cli_Tel NVARCHAR(255) NOT NULL,
@@ -196,6 +197,12 @@ CREATE TABLE "TS".Canje
   Canje_Total INT DEFAULT 0
 );
 
+CREATE TABLE "TS".Tipo_Servicio
+(
+	TipoSer_Nombre NVARCHAR(255) PRIMARY KEY,
+	TipoSer_Porcentaje NUMERIC(2,2)
+);
+
 CREATE TABLE "TS".Aeronave
 (
   Aero_Num NUMERIC(18,0) PRIMARY KEY IDENTITY(1,1),
@@ -203,7 +210,7 @@ CREATE TABLE "TS".Aeronave
   Aero_Modelo NVARCHAR(255) NOT NULL,
   Aero_Matricula NVARCHAR(255) NOT NULL,
   Aero_Fabricante NVARCHAR(255) NOT NULL,
-  Aero_Servicio NVARCHAR(255) NOT NULL,
+  Aero_Servicio NVARCHAR(255) NOT NULL REFERENCES "TS".Tipo_Servicio(TipoSer_Nombre),
   Aero_Baja_Fuera_De_Servicio BIT NOT NULL DEFAULT 0,
   Aero_Baja_Vida_Util BIT NOT NULL DEFAULT 0,
   Aero_Fecha_Fuera_De_Servicio DATE,
@@ -211,12 +218,6 @@ CREATE TABLE "TS".Aeronave
   Aero_Fecha_Baja_Definitiva DATE,
   Aero_Cantidad_Kg_Disponibles NUMERIC(18,0) NOT NULL,
   Aero_Borrado BIT NOT NULL DEFAULT 0
-);
-
-CREATE TABLE "TS".Tipo_Servicio
-(
-	TipoSer_Nombre NVARCHAR(255) PRIMARY KEY,
-	TipoSer_Porcentaje NUMERIC(2,2)
 );
 
 CREATE TABLE "TS".Tipo_Tarjeta
@@ -268,7 +269,7 @@ CREATE TABLE "TS".Ruta
   Ruta_Ciudad_Destino NUMERIC(18,0) REFERENCES "TS".Ciudad(Ciudad_Cod),
   Ruta_Precio_Base_Kg NUMERIC(18,2) NOT NULL DEFAULT 0,
   Ruta_Precio_Base_Pasaje NUMERIC(18,2) NOT NULL DEFAULT 0,
-  Ruta_Servicio NVARCHAR(255) NOT NULL,
+  Ruta_Servicio NVARCHAR(255) NOT NULL REFERENCES "TS".Tipo_Servicio(TipoSer_Nombre),
   Ruta_Borrada BIT NOT NULL DEFAULT 0
 );
 
@@ -581,32 +582,26 @@ IF OBJECT_ID (N'TS.spConsultarViaje') IS NOT NULL
 GO
 
 CREATE PROCEDURE "TS".spConsultarViaje
-	@Ciudad_Origen NUMERIC(18,0),
-	@Ciudad_Destino NUMERIC(18,0),
-	@Aero_Matricula NVARCHAR(255),
-	@Fecha_Salida DATETIME,
-	@Fecha_Llegada DATETIME
+	@CiudadOrigen NUMERIC(18,0),
+	@CiudadDestino NUMERIC(18,0),
+	@Aero_Matricula NUMERIC(18,0),
+	@Fecha_Salida DATETIME
 AS
 BEGIN
 	DECLARE @Cantidad INT
 	SET @Cantidad = (SELECT COUNT(*)
 						FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
-						WHERE R.Ruta_Ciudad_Destino = @Ciudad_Destino AND R.Ruta_Ciudad_Origen = @Ciudad_Origen
+						WHERE R.Ruta_Ciudad_Destino = @CiudadDestino AND R.Ruta_Ciudad_Origen = @CiudadOrigen
 							AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
 	IF @Cantidad = 0
 	BEGIN
 		IF ((SELECT COUNT(*)
 				FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
-				WHERE R.Ruta_Ciudad_Origen = @Ciudad_Origen
+				WHERE R.Ruta_Ciudad_Origen = @CiudadOrigen
 				AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL) = 1)
 		BEGIN
 			SET @Cantidad = -1
 		END
-	END
-
-	IF DATEDIFF(MINUTE, @Fecha_Salida, @Fecha_Llegada) < 0
-	BEGIN
-		SET @Cantidad = -2
 	END
 	
 	RETURN @Cantidad
@@ -618,19 +613,19 @@ IF OBJECT_ID (N'TS.spRegistrarLlegada') IS NOT NULL
 GO
 
 CREATE PROCEDURE "TS".spRegistrarLlegada
-	@Ciudad_Origen NUMERIC(18,0),
-	@Ciudad_Destino NUMERIC(18,0),
-	@Aero_Matricula NVARCHAR(255),
+	@CiudadOrigen NUMERIC(18,0),
+	@CiudadDestino NUMERIC(18,0),
+	@Aero_Matricula NUMERIC(18,0),
 	@Fecha_Salida DATETIME,
-	@Fecha_Llegada DATETIME
+	@Llegada DATETIME
 AS
 BEGIN
 	DECLARE @Viaj_Cod NUMERIC(18,0) = (SELECT V.Viaj_Cod
 						FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
-						WHERE R.Ruta_Ciudad_Destino = @Ciudad_Destino AND R.Ruta_Ciudad_Origen = @Ciudad_Origen
+						WHERE R.Ruta_Ciudad_Destino = @CiudadDestino AND R.Ruta_Ciudad_Origen = @CiudadOrigen
 							AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
 	UPDATE TS.Viaje
-	SET Fecha_Llegada = @Fecha_Llegada
+	SET Fecha_Llegada = @Llegada
 	WHERE Viaj_Cod = @Viaj_Cod
 
 	UPDATE TS.Milla
@@ -646,6 +641,28 @@ BEGIN
 						WHERE M.Pas_Cod IS NOT NULL AND P.Pas_Cod = M.Pas_Cod AND P.Viaj_Cod = @Viaj_Cod)
 END
 GO
+
+IF OBJECT_ID (N'TS.spRegistrarLlegadaUnica') IS NOT NULL
+   DROP PROCEDURE "TS".spRegistrarLlegadaUnica
+GO
+
+CREATE PROCEDURE "TS".spRegistrarLlegadaUnica
+	@CiudadOrigen varchar(255),
+	@CiudadDestino varchar(255),
+	@AeroNum Numeric(18,0),
+	@Llegada Datetime
+AS
+BEGIN
+	DECLARE @ViajeCod Numeric(18,0)
+	SET @ViajeCod = (SELECT V.Viaj_Cod
+						FROM TS.Viaje as V, TS.Ruta as R
+						WHERE V.Ruta_Cod = R.Ruta_Cod AND R.Ruta_Ciudad_Origen = @CiudadOrigen
+						AND R.Ruta_Ciudad_Destino = @CiudadDestino AND V.Aero_Num = @AeroNum AND V.Fecha_Llegada = NULL)
+	EXEC TS.spRegistrarLlegada @ViajeCod, @Llegada
+END
+GO
+
+
 
 IF OBJECT_ID (N'TS.fnViajesPendientes') IS NOT NULL
    DROP FUNCTION "TS".fnViajesPendientes
@@ -995,6 +1012,7 @@ GO
 
 CREATE PROCEDURE "TS".spRegistrarCanje
   @Cli_Cod NUMERIC(18,0),
+  @Cli_DNI NVARCHAR(255),
   @Prod_Cod NUMERIC(18,0),
   @Canje_Cantidad_Prod INT,
   @Canje_Fecha DATE
@@ -1004,6 +1022,11 @@ BEGIN
 	SET @Saldo = "TS".fnConsultarSaldoMillas(@Canje_Fecha, @Cli_Cod);
 
 	IF(SELECT Prod_Stock FROM "TS".Producto WHERE Prod_Cod = @Prod_Cod) < @Canje_Cantidad_Prod
+	BEGIN
+		RETURN -2
+	END
+
+	IF(SELECT COUNT(*) FROM "TS".Cliente WHERE Cli_Cod = @Cli_Cod AND Cli_DNI = @Cli_DNI) = 0
 	BEGIN
 		RETURN -1
 	END
@@ -1024,7 +1047,7 @@ BEGIN
 		SET Prod_Stock = Prod_Stock - @Canje_Cantidad_Prod
 		WHERE Prod_Cod = @Prod_Cod
 		
-		RETURN 1
+		RETURN 0
 	END
 END
 GO
@@ -1902,7 +1925,6 @@ CREATE VIEW "TS".vsAeronaveMasFueraDeServicio
 	FROM TS.Aeronave AS AE, TS.Auditoria_Fuera_De_Servicio AS AFS
 	WHERE AFS.Aero_Num=AE.Aero_Num
 	GROUP BY AE.Aero_Matricula,YEAR(AFS.AudFS_Fecha_Inicio), MONTH(AFS.AudFS_Fecha_Inicio)
-	ORDER BY Cantidad DESC
 GO
 
 IF OBJECT_ID (N'TS.fnGetViaje') IS NOT NULL
@@ -1984,63 +2006,6 @@ BEGIN
 END
 GO
 
-IF OBJECT_ID (N'TS.fnGetPrecioPasaje') IS NOT NULL
-   DROP FUNCTION "TS".fnGetPrecioPasaje
-GO
-
-CREATE FUNCTION "TS".fnGetPrecioPasaje(@Viaj_Cod NUMERIC(18,0))
-RETURNS INT
-AS
-BEGIN
-	DECLARE @Ruta_Cod NUMERIC(18,0) = (SELECT Ruta_Cod FROM TS.Viaje WHERE Viaj_Cod = @Viaj_Cod) 
-
-	RETURN (SELECT R.Ruta_Precio_Base_Pasaje * (1 + T.TipoSer_Porcentaje)
-	FROM TS.Ruta AS R, TS.Tipo_Servicio as T
-	WHERE R.Ruta_Cod = @Ruta_Cod AND T.TipoSer_Nombre = R.Ruta_Servicio)
-END
-GO
-
-IF OBJECT_ID (N'TS.fnGetPrecioEncomienda') IS NOT NULL
-   DROP FUNCTION "TS".fnGetPrecioEncomienda
-GO
-
-CREATE FUNCTION "TS".fnGetPrecioEncomienda(@Viaj_Cod NUMERIC(18,0), @Enc_Kgs NUMERIC(18,0))
-RETURNS INT
-AS
-BEGIN
-	DECLARE @Ruta_Cod NUMERIC(18,0) = (SELECT Ruta_Cod FROM TS.Viaje WHERE Viaj_Cod = @Viaj_Cod)
-
-	RETURN (SELECT R.Ruta_Precio_Base_Kg * @Enc_Kgs * (1 + T.TipoSer_Porcentaje)
-	FROM TS.Ruta AS R, TS.Tipo_Servicio as T
-	WHERE R.Ruta_Cod = @Ruta_Cod AND T.TipoSer_Nombre = R.Ruta_Servicio)
-END
-GO
-
-IF OBJECT_ID (N'TS.fnValidarViajeCliente') IS NOT NULL
-   DROP FUNCTION "TS".fnValidarViajeCliente
-GO
-
-CREATE FUNCTION "TS".fnValidarViajeCliente(@Viaj_Cod NUMERIC(18,0), @Cli_Cod NUMERIC(18,0))
-RETURNS INT
-AS
-BEGIN
-	DECLARE @Cantidad INT = (SELECT COUNT(*)
-								FROM TS.Viaje as V1, TS.Viaje as V2, TS.Pasaje as P
-								WHERE V1.Viaj_Cod != V2.Viaj_Cod AND V1.Viaj_Cod = 1
-								AND MONTH(V1.Fecha_Salida) = MONTH(V2.Fecha_Salida) AND DAY(V1.Fecha_Salida) = DAY(V2.Fecha_Salida) AND YEAR(V1.Fecha_Salida) = YEAR(V2.Fecha_Salida)
-								AND P.Viaj_Cod = V2.Viaj_Cod AND P.Cli_Cod = 3)
-	IF @Cantidad > 1
-	BEGIN
-		RETURN 0
-	END
-	ELSE
-	BEGIN
-		RETURN 1
-	END
-
-	RETURN 0
-END
-GO
 /******************************* INDICES *********************************************/
 
 IF OBJECT_ID (N'ixAeronave') IS NOT NULL
@@ -2122,7 +2087,7 @@ INSERT INTO "TS".Rol_Funcionalidad(Func_Cod, Rol_Nombre) VALUES
   (8, 'Cliente'),
   (9, 'Administrador'),
   (10, 'Cliente'),
-  (11, 'Cliente'),
+  (11, 'Administrador'),
   (12, 'Administrador');
 
 INSERT INTO "TS".Producto(Prod_Nombre, Prod_Stock, Prod_Valor) VALUES
@@ -2140,7 +2105,6 @@ INSERT INTO "TS".Tipo_Tarjeta(TipoTar_Nombre, TipoTar_Cuotas) VALUES
 
 INSERT INTO "TS".Tipo_Servicio(TipoSer_Nombre, TipoSer_Porcentaje) VALUES
   ('Primera Clase', 0.8),
-  ('Ejecutivo', 0.4),
   ('Turista', 0.2);
 
 /*********** INSERTO 3 USUARIOS ADMIN, ADMIN2 Y ADMIN3 CON PASSWORD w23e **********************/
@@ -2159,6 +2123,11 @@ INSERT INTO "TS".Cliente(Cli_Nombre, Cli_Direccion, Cli_Tel, Cli_Mail, Cli_Fecha
 SELECT DISTINCT Cli_Apellido + ', ' + Cli_Nombre, Cli_Dir, Cli_Telefono, Cli_Mail, Cli_Fecha_Nac, Cli_Dni
 FROM GD2C2015.gd_esquema.Maestra
 WHERE Cli_Dni IS NOT NULL;
+
+INSERT INTO "TS".Tipo_Servicio(TipoSer_Nombre, TipoSer_Porcentaje)
+SELECT DISTINCT Tipo_Servicio, 0.4
+FROM GD2C2015.gd_esquema.Maestra
+WHERE Aeronave_Matricula IS NOT NULL;
 
 INSERT INTO "TS".Aeronave(Aero_Matricula, Aero_Modelo, Aero_Cantidad_Kg_Disponibles, Aero_Fabricante, Aero_Servicio, Aero_Fecha_Fuera_De_Servicio, Aero_Fecha_Reinicio_De_Servicio, Aero_Fecha_Baja_Definitiva, Aero_Fecha_De_Alta)
 SELECT DISTINCT Aeronave_Matricula, Aeronave_Modelo, Aeronave_KG_Disponibles, Aeronave_Fabricante, Tipo_Servicio, NULL, NULL, NULL, GETDATE()
@@ -2313,3 +2282,15 @@ BEGIN
 	END
 END
 GO
+
+INSERT INTO TS.Usuario(Usr_Username, Usr_Password)
+SELECT DISTINCT CAST(Cli_Cod AS NVARCHAR(255))+REPLACE(SUBSTRING(Cli_Nombre, CHARINDEX(', ', Cli_Nombre)+1, LEN(Cli_Nombre)),' ',''), '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8' FROM ts.Cliente
+
+UPDATE TS.Cliente
+SET Usr_Username=CAST(C.Cli_Cod AS NVARCHAR(255))+REPLACE(SUBSTRING(C.Cli_Nombre, CHARINDEX(', ', C.Cli_Nombre)+1, LEN(C.Cli_Nombre)),' ','')
+FROM TS.Cliente AS C
+WHERE Cli_Cod=C.Cli_Cod
+
+INSERT INTO TS.Rol_Usuario(Usr_Username, Rol_Nombre)
+SELECT CAST(C.Cli_Cod AS NVARCHAR(255))+REPLACE(SUBSTRING(C.Cli_Nombre, CHARINDEX(', ', C.Cli_Nombre)+1, LEN(C.Cli_Nombre)),' ',''), 'Cliente'
+FROM TS.Cliente AS C
