@@ -19,14 +19,15 @@ namespace AerolineaFrba.Compra
         {
             InitializeComponent();
             DbComunicator db = new DbComunicator();
-            dniTextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            dniTextBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            AutoCompleteStringCollection col = new AutoCompleteStringCollection();
-            string queryCuentas = "SELECT Cli_DNI FROM TS.Cliente";
-            db.CargarAutocomplete(col, queryCuentas, "Cli_DNI");
-            dniTextBox.AutoCompleteCustomSource = col;
-            dniTextBox.TextChanged += new EventHandler(dniTextBox_TextChanged);
             db.CerrarConexion();
+            string queryClientes = "SELECT Cli_DNI + ' Nombre: ' + Cli_Nombre Cli_Detalle, Cli_Cod FROM TS.Cliente ";
+            dniComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryClientes, "Cli_Detalle", "Cli_Cod"), null);
+            dniComboBox.DisplayMember = "Key";
+            dniComboBox.ValueMember = "Value";
+            dniComboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            dniComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+            dniComboBox.SelectedValueChanged += dniComboBox_SelectedValueChanged;
+            dniComboBox.TextChanged += dniComboBox_TextChanged;
 
             fullNameTextBox.Enabled = false;
             addressTextBox.Enabled = false;
@@ -37,18 +38,38 @@ namespace AerolineaFrba.Compra
             editClientButton.Enabled = false;
         }
 
+        private void dniComboBox_TextChanged(object sender, EventArgs e)
+        {
+            int index = -1;
+            index = dniComboBox.FindStringExact(dniComboBox.Text);
+            if (index == -1)
+            {
+                fillInputs();
+            }
+            else {
+                editClientButton.Enabled = false;
+                fullNameTextBox.Text = "";
+                addressTextBox.Text = "";
+                phoneTextBox.Text = "";
+                mailTextBox.Text = "";
+                this.notFoundCliCod();
+            }
+        }
+
+        private void dniComboBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            fillInputs();
+        }
+
         public virtual void foundCliCod(string cliCod) {
             
         }
 
         public void fillInputs() {
             DbComunicator db = new DbComunicator();
-            db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Cliente WHERE Cli_DNI = '" + dniTextBox.Text + "'");
-            db.getLector().Read();
-
-            if (Convert.ToInt16(db.getLector()["Cantidad"].ToString()) > 0)
+            if (dniComboBox.SelectedValue != null)
             {
-                db.EjecutarQuery("SELECT Cli_Cod, Cli_Nombre, Cli_Direccion, Cli_Tel, Cli_Mail, Cli_Fecha_Nacimiento FROM TS.Cliente WHERE Cli_DNI = '" + dniTextBox.Text + "'");
+                db.EjecutarQuery("SELECT Cli_Cod, Cli_Nombre, Cli_Direccion, Cli_Tel, Cli_Mail, Cli_Fecha_Nacimiento FROM TS.Cliente WHERE Cli_Cod = '" + dniComboBox.SelectedValue + "'");
                 db.getLector().Read();
                 fullNameTextBox.Text = db.getLector()["Cli_Nombre"].ToString();
                 addressTextBox.Text = db.getLector()["Cli_Direccion"].ToString();
@@ -75,11 +96,6 @@ namespace AerolineaFrba.Compra
         public virtual void notFoundCliCod()
         {
             
-        }
-
-        private void dniTextBox_TextChanged(object sender, EventArgs e)
-        {
-            fillInputs();
         }
 
         private void editClientButton_Click(object sender, EventArgs e)

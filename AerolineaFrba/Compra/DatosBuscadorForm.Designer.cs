@@ -30,7 +30,12 @@
         {
             this.addClientButton = new System.Windows.Forms.Button();
             this.editClientButton = new System.Windows.Forms.Button();
+            this.dniComboBox = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
+            // 
+            // dniTextBox
+            // 
+            this.dniTextBox.Visible = false;
             // 
             // addClientButton
             // 
@@ -52,11 +57,20 @@
             this.editClientButton.UseVisualStyleBackColor = true;
             this.editClientButton.Click += new System.EventHandler(this.editClientButton_Click);
             // 
+            // dniComboBox
+            // 
+            this.dniComboBox.FormattingEnabled = true;
+            this.dniComboBox.Location = new System.Drawing.Point(127, 9);
+            this.dniComboBox.Name = "dniComboBox";
+            this.dniComboBox.Size = new System.Drawing.Size(310, 21);
+            this.dniComboBox.TabIndex = 14;
+            // 
             // DatosBuscadorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(451, 262);
+            this.Controls.Add(this.dniComboBox);
             this.Controls.Add(this.editClientButton);
             this.Controls.Add(this.addClientButton);
             this.Name = "DatosBuscadorForm";
@@ -69,6 +83,7 @@
             this.Controls.SetChildIndex(this.bornDateTimePicker, 0);
             this.Controls.SetChildIndex(this.addClientButton, 0);
             this.Controls.SetChildIndex(this.editClientButton, 0);
+            this.Controls.SetChildIndex(this.dniComboBox, 0);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -78,5 +93,6 @@
 
         private System.Windows.Forms.Button addClientButton;
         private System.Windows.Forms.Button editClientButton;
+        private System.Windows.Forms.ComboBox dniComboBox;
     }
 }

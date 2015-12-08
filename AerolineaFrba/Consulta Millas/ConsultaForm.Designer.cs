@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
             this.searchButton = new System.Windows.Forms.Button();
             this.saldoLabel = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -36,22 +35,13 @@
             this.millasGridView = new System.Windows.Forms.DataGridView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.comprasGridView = new System.Windows.Forms.DataGridView();
-            this.clienteComboBox = new System.Windows.Forms.ComboBox();
+            this.nombreLabel = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.millasGridView)).BeginInit();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.comprasGridView)).BeginInit();
             this.SuspendLayout();
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(17, 13);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(26, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "DNI";
             // 
             // searchButton
             // 
@@ -119,24 +109,23 @@
             this.comprasGridView.Size = new System.Drawing.Size(406, 251);
             this.comprasGridView.TabIndex = 0;
             // 
-            // clienteComboBox
+            // nombreLabel
             // 
-            this.clienteComboBox.FormattingEnabled = true;
-            this.clienteComboBox.Location = new System.Drawing.Point(58, 10);
-            this.clienteComboBox.Name = "clienteComboBox";
-            this.clienteComboBox.Size = new System.Drawing.Size(257, 21);
-            this.clienteComboBox.TabIndex = 6;
+            this.nombreLabel.AutoSize = true;
+            this.nombreLabel.Location = new System.Drawing.Point(23, 13);
+            this.nombreLabel.Name = "nombreLabel";
+            this.nombreLabel.Size = new System.Drawing.Size(0, 13);
+            this.nombreLabel.TabIndex = 1;
             // 
             // ConsultaForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(464, 388);
-            this.Controls.Add(this.clienteComboBox);
+            this.Controls.Add(this.nombreLabel);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.saldoLabel);
             this.Controls.Add(this.searchButton);
-            this.Controls.Add(this.label1);
             this.Name = "ConsultaForm";
             this.Text = "Consulta de millas";
             this.tabControl1.ResumeLayout(false);
@@ -151,7 +140,6 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button searchButton;
         private System.Windows.Forms.Label saldoLabel;
         private System.Windows.Forms.TabControl tabControl1;
@@ -159,6 +147,6 @@
         private System.Windows.Forms.DataGridView millasGridView;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.DataGridView comprasGridView;
-        private System.Windows.Forms.ComboBox clienteComboBox;
+        private System.Windows.Forms.Label nombreLabel;
     }
 }
