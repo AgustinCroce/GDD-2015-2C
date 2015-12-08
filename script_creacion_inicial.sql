@@ -593,13 +593,13 @@ BEGIN
 	SET @Cantidad = (SELECT COUNT(*)
 						FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
 						WHERE R.Ruta_Ciudad_Destino = @Ciudad_Destino AND R.Ruta_Ciudad_Origen = @Ciudad_Origen
-							AND V.Ruta_Cod = R.Ruta_Cod AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
+							AND V.Ruta_Cod = R.Ruta_Cod AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND DATEDIFF(MINUTE, Fecha_Salida, @Fecha_Salida)  =  0  AND Fecha_Llegada IS NULL)
 	IF @Cantidad = 0
 	BEGIN
 		IF ((SELECT COUNT(*)
 				FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
 				WHERE R.Ruta_Ciudad_Origen = @Ciudad_Origen
-				AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND V.Ruta_Cod = R.Ruta_Cod AND  Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL) = 1)
+				AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND V.Ruta_Cod = R.Ruta_Cod AND  DATEDIFF(MINUTE, Fecha_Salida, @Fecha_Salida)  =  0 AND  Fecha_Llegada IS NULL) = 1)
 		BEGIN
 			SET @Cantidad = -1
 		END
@@ -629,7 +629,7 @@ BEGIN
 	DECLARE @Viaj_Cod NUMERIC(18,0) = (SELECT TOP 1 V.Viaj_Cod
 						FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
 						WHERE R.Ruta_Ciudad_Destino = @Ciudad_Destino AND R.Ruta_Ciudad_Origen = @Ciudad_Origen AND V.Ruta_Cod = R.Ruta_Cod
-							AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
+							AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND DATEDIFF(MINUTE, Fecha_Salida, @Fecha_Salida)  =  0 AND Fecha_Llegada IS NULL)
 	UPDATE TS.Viaje
 	SET Fecha_Llegada = @Fecha_Llegada
 	WHERE Viaj_Cod = @Viaj_Cod
