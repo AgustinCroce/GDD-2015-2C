@@ -32,6 +32,10 @@
             this.cancelButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
+            // dniTextBox
+            // 
+            this.dniTextBox.Enabled = false;
+            // 
             // acceptButton
             // 
             this.acceptButton.Location = new System.Drawing.Point(362, 175);

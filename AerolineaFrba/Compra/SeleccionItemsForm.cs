@@ -129,7 +129,7 @@ namespace AerolineaFrba.Compra
 
         private void deletePasajeButton_Click(object sender, EventArgs e)
         {
-            butacasReservadas.Remove(Convert.ToInt32(pasajeGridView.SelectedRows[0].Cells[7].Value));
+            butacasReservadas.Remove(Convert.ToInt32(pasajeGridView.SelectedRows[0].Cells[4].Value));
             pasajeGridView.Rows.RemoveAt(this.pasajeGridView.SelectedRows[0].Index);
         }
 

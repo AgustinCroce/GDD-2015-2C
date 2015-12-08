@@ -19,9 +19,9 @@ namespace AerolineaFrba.Compra
         {
             InitializeComponent();
             DbComunicator db = new DbComunicator();
-            db.CerrarConexion();
             string queryClientes = "SELECT Cli_DNI + ' Nombre: ' + Cli_Nombre Cli_Detalle, Cli_Cod FROM TS.Cliente ";
             dniComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryClientes, "Cli_Detalle", "Cli_Cod"), null);
+            db.CerrarConexion();
             dniComboBox.DisplayMember = "Key";
             dniComboBox.ValueMember = "Value";
             dniComboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
@@ -100,8 +100,18 @@ namespace AerolineaFrba.Compra
 
         private void editClientButton_Click(object sender, EventArgs e)
         {
-            ClienteEditarForm ce = new ClienteEditarForm(cliCod, dniTextBox.Text ,fullNameTextBox.Text, addressTextBox.Text, phoneTextBox.Text, mailTextBox.Text, bornDateTimePicker.Value);
+            string cliDni = "";
+            DbComunicator db1 = new DbComunicator();
+            db1.EjecutarQuery("SELECT Cli_DNI FROM TS.Cliente WHERE Cli_Cod = " + this.cliCod);
+            db1.getLector().Read();
+            cliDni = db1.getLector()["Cli_DNI"].ToString();
+            db1.CerrarConexion();
+            ClienteEditarForm ce = new ClienteEditarForm(cliCod, cliDni ,fullNameTextBox.Text, addressTextBox.Text, phoneTextBox.Text, mailTextBox.Text, bornDateTimePicker.Value);
             ce.ShowDialog();
+            DbComunicator db = new DbComunicator();
+            string queryClientes = "SELECT Cli_DNI + ' Nombre: ' + Cli_Nombre Cli_Detalle, Cli_Cod FROM TS.Cliente ";
+            dniComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryClientes, "Cli_Detalle", "Cli_Cod"), null);
+            db.CerrarConexion();
             fillInputs();
         }
 
@@ -109,7 +119,10 @@ namespace AerolineaFrba.Compra
         {
             ClienteAgregarForm ca = new ClienteAgregarForm();
             ca.ShowDialog();
-            dniTextBox.Text = ca.dni;
+            DbComunicator db = new DbComunicator();
+            string queryClientes = "SELECT Cli_DNI + ' Nombre: ' + Cli_Nombre Cli_Detalle, Cli_Cod FROM TS.Cliente ";
+            dniComboBox.DataSource = new BindingSource(db.GetQueryDictionary(queryClientes, "Cli_Detalle", "Cli_Cod"), null);
+            db.CerrarConexion();
             fillInputs();
         }
     }

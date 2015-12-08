@@ -29,7 +29,7 @@ namespace AerolineaFrba.Compra
 
         private void acceptButton_Click(object sender, EventArgs e)
         {
-            if (String.IsNullOrEmpty(dniTextBox.Text) || String.IsNullOrEmpty(fullNameTextBox.Text) || String.IsNullOrEmpty(phoneTextBox.Text) || String.IsNullOrEmpty(addressTextBox.Text))
+            if (String.IsNullOrEmpty(dniTextBox.Text) || String.IsNullOrEmpty(fullNameTextBox.Text) || String.IsNullOrEmpty(phoneTextBox.Text) || String.IsNullOrEmpty(addressTextBox.Text) || String.IsNullOrEmpty(mailTextBox.Text))
             {
                 MessageBox.Show("Todos los campos deben ser completados para poder llevar a cabo la edición.");
             }

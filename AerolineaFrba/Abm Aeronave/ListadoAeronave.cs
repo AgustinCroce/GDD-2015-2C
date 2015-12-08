@@ -82,16 +82,17 @@ namespace AerolineaFrba.Abm_Aeronave
             DbComunicator db2 = new DbComunicator();
             db2.EjecutarQuery("SELECT TS.fnAeronavesParaRemplazarAEn(" + aeronum + "," + viaje + ") as Cantidad");
             db2.getLector().Read();
-            if (Convert.ToInt16(db.getLector()["Cantidad"].ToString()) > 0)
+            if (Convert.ToInt16(db2.getLector()["Cantidad"].ToString()) > 0)
             {
                 DbComunicator db3 = new DbComunicator();
-                db3.EjecutarQuery("SELECT TOP 1 A2.Aero_Num as AeroFutura FROM TS.Aeronave AS A, TS.Aeronave AS A2 WHERE A.Aero_Num=@Aero AND A.Aero_Num!=A2.Aero_Num AND A2.Aero_Fabricante=A.Aero_Fabricante AND A.Aero_Servicio=A2.Aero_Servicio AND A.Aero_Modelo=A2.Aero_Modelo");
+                db3.EjecutarQuery("SELECT TOP 1 A2.Aero_Num as AeroFutura FROM TS.Aeronave AS A, TS.Aeronave AS A2 WHERE A.Aero_Num=" + aeronum.ToString() + " AND A.Aero_Num!=A2.Aero_Num AND A2.Aero_Fabricante=A.Aero_Fabricante AND A.Aero_Servicio=A2.Aero_Servicio AND A2.Aero_Baja_Fuera_De_Servicio=0 and A2.Aero_Baja_Vida_Util=0 AND A2.Aero_Borrado=0");
                 db3.getLector().Read();
-                string aerofutura = db.getLector()["AeroFutura"].ToString();
-                SqlCommand spRemplazarAeroEn = this.db.GetStoreProcedure("TS.spRemplazarAeroEn");
+                string aerofutura = db3.getLector()["AeroFutura"].ToString();
+                DbComunicator db4 = new DbComunicator();
+                SqlCommand spRemplazarAeroEn = db4.GetStoreProcedure("TS.spRemplazarAeroEn");
                 spRemplazarAeroEn.Parameters.Add(new SqlParameter("@Aero", aeronum));
                 spRemplazarAeroEn.Parameters.Add(new SqlParameter("@HOY", Convert.ToDateTime(fecha)));
-                spRemplazarAeroEn.Parameters.Add(new SqlParameter("@Aero", aerofutura));
+                spRemplazarAeroEn.Parameters.Add(new SqlParameter("@AeroFutura", aerofutura));
                 spRemplazarAeroEn.ExecuteNonQuery();
                 MessageBox.Show("Ya se remplazo la aeronave " + aeronum + " por la aeronave " + aerofutura + " en el viaje " + viaje);
             }
@@ -106,7 +107,7 @@ namespace AerolineaFrba.Abm_Aeronave
 
         private void RemplazarEnViajes(string aeronum, string fecha) {
             db = new DbComunicator();
-            db.EjecutarQuery("SELECT Viaj_Cod as Viaje FROM TS.Viaje WHERE Aero_Num=" + aeronum + " AND DATEDIFF(minute, convert(datetime, '" + fecha + "'), V.Fecha_Salida)>0");
+            db.EjecutarQuery("SELECT Viaj_Cod as Viaje FROM TS.Viaje WHERE Aero_Num=" + aeronum + " AND DATEDIFF(minute, convert(datetime, '" + fecha + "'), Fecha_Salida)>0 AND Fecha_LLegada IS NULL");
             while (db.getLector().Read())
                 this.RemplazarEnViaje(aeronum, fecha, db.getLector()["Viaje"].ToString());
             db.CerrarConexion();
@@ -196,17 +197,18 @@ namespace AerolineaFrba.Abm_Aeronave
             DbComunicator db2 = new DbComunicator();
             db2.EjecutarQuery("SELECT TS.fnAeronavesParaRemplazarAEn(" + aeronum + "," + viaje + ") as Cantidad");
             db2.getLector().Read();
-            if (Convert.ToInt16(db.getLector()["Cantidad"].ToString()) > 0)
+            if (Convert.ToInt16(db2.getLector()["Cantidad"].ToString()) > 0)
             {
                 DbComunicator db3 = new DbComunicator();
-                db3.EjecutarQuery("SELECT TOP 1 A2.Aero_Num as AeroFutura FROM TS.Aeronave AS A, TS.Aeronave AS A2 WHERE A.Aero_Num=@Aero AND A.Aero_Num!=A2.Aero_Num AND A2.Aero_Fabricante=A.Aero_Fabricante AND A.Aero_Servicio=A2.Aero_Servicio AND A.Aero_Modelo=A2.Aero_Modelo");
+                db3.EjecutarQuery("SELECT TOP 1 A2.Aero_Num as AeroFutura FROM TS.Aeronave AS A, TS.Aeronave AS A2 WHERE A.Aero_Num=" + aeronum.ToString() + " AND A.Aero_Num!=A2.Aero_Num AND A2.Aero_Fabricante=A.Aero_Fabricante AND A.Aero_Servicio=A2.Aero_Servicio AND A2.Aero_Baja_Fuera_De_Servicio=0 and A2.Aero_Baja_Vida_Util=0 AND A2.Aero_Borrado=0");
                 db3.getLector().Read();
-                string aerofutura = db.getLector()["AeroFutura"].ToString();
-                SqlCommand spRemplazarAeroEn = this.db.GetStoreProcedure("TS.spRemplazarAeroEnDesdeHasta");
+                string aerofutura = db3.getLector()["AeroFutura"].ToString();
+                DbComunicator db4 = new DbComunicator();
+                SqlCommand spRemplazarAeroEn = db4.GetStoreProcedure("TS.spRemplazarAeroEnDesdeHasta");
                 spRemplazarAeroEn.Parameters.Add(new SqlParameter("@Aero", aeronum));
                 spRemplazarAeroEn.Parameters.Add(new SqlParameter("@Desde", Convert.ToDateTime(fecha1)));
                 spRemplazarAeroEn.Parameters.Add(new SqlParameter("@Hasta", Convert.ToDateTime(fecha2)));
-                spRemplazarAeroEn.Parameters.Add(new SqlParameter("@Aero", aerofutura));
+                spRemplazarAeroEn.Parameters.Add(new SqlParameter("@AeroFutura", aerofutura));
                 spRemplazarAeroEn.ExecuteNonQuery();
                 MessageBox.Show("Ya se remplazo la aeronave " + aeronum + " por la aeronave " + aerofutura + " en el viaje " + viaje);
             }
@@ -222,7 +224,7 @@ namespace AerolineaFrba.Abm_Aeronave
         private void RemplazarEnViajesDesdeHasta(string aeronum, string fecha1, string fecha2)
         {
             db = new DbComunicator();
-            db.EjecutarQuery("SELECT Viaj_Cod as Viaje FROM TS.Viaje WHERE Aero_Num=" + aeronum + " AND DATEDIFF(minute, convert(datetime, '" + fecha2 + "'), V.Fecha_Salida)>0 AND DATEDIFF(minute, convert(datetime, '" + fecha2 + "'), V.Fecha_Salida)>0");
+            db.EjecutarQuery("SELECT Viaj_Cod as Viaje FROM TS.Viaje WHERE Aero_Num=" + aeronum + " AND DATEDIFF(minute, convert(datetime, '" + fecha1 + "'), Fecha_Salida)>0 AND DATEDIFF(minute, convert(datetime, '" + fecha2 + "'), Fecha_Salida)<0 AND Fecha_Llegada IS NULL");
             while (db.getLector().Read())
                 this.RemplazarEnViajeDesdeHasta(aeronum, fecha1, fecha2, db.getLector()["Viaje"].ToString());
             db.CerrarConexion();

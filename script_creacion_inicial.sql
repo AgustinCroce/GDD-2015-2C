@@ -593,13 +593,13 @@ BEGIN
 	SET @Cantidad = (SELECT COUNT(*)
 						FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
 						WHERE R.Ruta_Ciudad_Destino = @Ciudad_Destino AND R.Ruta_Ciudad_Origen = @Ciudad_Origen
-							AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
+							AND V.Ruta_Cod = R.Ruta_Cod AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
 	IF @Cantidad = 0
 	BEGIN
 		IF ((SELECT COUNT(*)
 				FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
 				WHERE R.Ruta_Ciudad_Origen = @Ciudad_Origen
-				AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL) = 1)
+				AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND V.Ruta_Cod = R.Ruta_Cod AND  Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL) = 1)
 		BEGIN
 			SET @Cantidad = -1
 		END
@@ -626,9 +626,9 @@ CREATE PROCEDURE "TS".spRegistrarLlegada
 	@Fecha_Llegada DATETIME
 AS
 BEGIN
-	DECLARE @Viaj_Cod NUMERIC(18,0) = (SELECT V.Viaj_Cod
+	DECLARE @Viaj_Cod NUMERIC(18,0) = (SELECT TOP 1 V.Viaj_Cod
 						FROM TS.Viaje as V, TS.Ruta as R, TS.Aeronave as A
-						WHERE R.Ruta_Ciudad_Destino = @Ciudad_Destino AND R.Ruta_Ciudad_Origen = @Ciudad_Origen
+						WHERE R.Ruta_Ciudad_Destino = @Ciudad_Destino AND R.Ruta_Ciudad_Origen = @Ciudad_Origen AND V.Ruta_Cod = R.Ruta_Cod
 							AND V.Aero_Num = A.Aero_Num AND A.Aero_Matricula = @Aero_Matricula AND Fecha_Salida = @Fecha_Salida AND Fecha_Llegada IS NULL)
 	UPDATE TS.Viaje
 	SET Fecha_Llegada = @Fecha_Llegada
@@ -636,15 +636,13 @@ BEGIN
 
 	UPDATE TS.Milla
 	SET Mil_Valida = 1
-	WHERE Mil_Cod IN (SELECT M.Mil_Cod
-						FROM TS.Milla AS M, TS.Encomienda as E
-						WHERE M.Enc_Cod IS NOT NULL AND E.Enc_Cod = M.Enc_Cod AND E.Viaj_Cod = @Viaj_Cod)
+	FROM TS.Milla AS M, TS.Encomienda AS E 
+	WHERE M.Mil_Cod = Mil_Cod AND M.Enc_Cod IS NOT NULL AND E.Enc_Cod = M.Enc_Cod AND E.Viaj_Cod = @Viaj_Cod
 
 	UPDATE TS.Milla
 	SET Mil_Valida = 1
-	WHERE Mil_Cod IN (SELECT M.Mil_Cod
-						FROM TS.Milla AS M, TS.Pasaje as P
-						WHERE M.Pas_Cod IS NOT NULL AND P.Pas_Cod = M.Pas_Cod AND P.Viaj_Cod = @Viaj_Cod)
+	FROM TS.Milla AS M, TS.Pasaje AS P
+	WHERE M.Mil_Cod = Mil_Cod AND M.Pas_Cod IS NOT NULL AND P.Pas_Cod = M.Pas_Cod AND P.Viaj_Cod = @Viaj_Cod
 END
 GO
 
@@ -709,8 +707,8 @@ RETURNS INT
 AS
 BEGIN
 	RETURN (SELECT COUNT(*)
-	FROM TS.Viaje AS V, TS.Pasaje AS P, TS.Encomienda AS E, TS.Pasaje_Compra AS PC, TS.Encomienda_Compra AS EC
-	WHERE V.Aero_Num = @Aero AND DATEDIFF(minute, @Desde, V.Fecha_Salida)>0 AND DATEDIFF(minute, @Hasta, V.Fecha_Salida)<0 AND ((P.Viaj_Cod=V.Viaj_Cod AND PC.Pas_Cod=P.Pas_Cod) OR (E.Viaj_Cod=V.Viaj_Cod AND EC.Enc_Cod=E.Enc_Cod)))
+	FROM TS.Viaje AS V
+	WHERE V.Aero_Num = @Aero AND DATEDIFF(minute, @Desde, V.Fecha_Salida)>0 AND DATEDIFF(minute, @Hasta, V.Fecha_Salida)<0 AND V.Fecha_Llegada IS NULL)
 END
 GO
 
@@ -724,7 +722,8 @@ AS
 BEGIN
 	RETURN (SELECT COUNT(*)
 	FROM TS.Aeronave AS A, TS.Aeronave AS A2
-	WHERE A.Aero_Num=@Aero AND A.Aero_Num!=A2.Aero_Num AND A2.Aero_Fabricante=A.Aero_Fabricante AND A.Aero_Servicio=A2.Aero_Servicio AND A.Aero_Modelo=A2.Aero_Modelo)
+	WHERE A.Aero_Num=@Aero AND A.Aero_Num!=A2.Aero_Num AND A2.Aero_Fabricante=A.Aero_Fabricante AND A.Aero_Servicio=A2.Aero_Servicio
+	AND A2.Aero_Baja_Fuera_De_Servicio=0 AND A2.Aero_Baja_Vida_Util=0 AND A2.Aero_Borrado=0)
 END
 GO
 
@@ -738,8 +737,9 @@ AS
 BEGIN
 	RETURN (SELECT COUNT(*)
 	FROM TS.Aeronave AS A, TS.Aeronave AS A2, TS.Viaje AS V
-	WHERE A.Aero_Num=@Aero AND A.Aero_Num!=A2.Aero_Num AND A2.Aero_Fabricante=A.Aero_Fabricante AND A.Aero_Servicio=A2.Aero_Servicio AND A.Aero_Modelo=A2.Aero_Modelo
+	WHERE A.Aero_Num=@Aero AND A.Aero_Num!=A2.Aero_Num AND A2.Aero_Fabricante=A.Aero_Fabricante AND A.Aero_Servicio=A2.Aero_Servicio
 	AND V.Viaj_Cod=@Viaj_Cod
+	AND A2.Aero_Baja_Fuera_De_Servicio=0 AND A2.Aero_Baja_Vida_Util=0 AND A2.Aero_Borrado=0
 	AND A2.Aero_Cantidad_Kg_Disponibles>=A.Aero_Cantidad_Kg_Disponibles-V.Viaj_Kgs_Disponibles
 	AND TS.fnButacasTotales(A2.Aero_Num)>=TS.fnButacasTotales(A.Aero_Num)-V.Viaj_Butacas_Disponibles)
 END
@@ -1018,6 +1018,11 @@ BEGIN
 		DECLARE @Costo INT;
 		SET @Costo = (SELECT Prod_Valor FROM "TS".Producto WHERE Prod_Cod = @Prod_Cod)
 
+		IF(@Costo > @Saldo)
+		BEGIN
+			RETURN 0
+		END
+
 		INSERT INTO "TS".Canje(Cli_Cod, Prod_Cod, Canje_Cantidad_Prod, Canje_Fecha, Canje_Total)
 		VALUES(@Cli_Cod, @Prod_Cod, @Canje_Cantidad_Prod, @Canje_Fecha, @Costo * @Canje_Cantidad_Prod)
 		
@@ -1262,6 +1267,8 @@ BEGIN
   DECLARE @Status INT
   SET @Status = 0
   UPDATE [GD2C2015].[TS].[Aeronave] SET Aero_Baja_Fuera_De_Servicio = 1, Aero_Fecha_Fuera_De_Servicio=@Desde, Aero_Fecha_Reinicio_De_Servicio=@Hasta WHERE Aero_Num = @numero
+  INSERT INTO [GD2C2015].[TS].[Auditoria_Fuera_De_Servicio](Aero_Num,AudFS_Fecha_Inicio,AudFS_Fecha_Fin)
+	VALUES (@numero, @Desde, @Hasta)
   RETURN @Status
 END
 GO
@@ -1869,9 +1876,9 @@ GO
 
 CREATE VIEW "TS".vsClientesConMasMillas
    AS
-	SELECT C.Cli_Nombre Nombre, SUM(M.Mil_Cantidad - CA.Canje_Total) Cantidad, YEAR(M.Mil_Fecha) as Anio, MONTH(M.Mil_Fecha) as Mes
-	FROM TS.Cliente AS C, TS.Milla AS M, TS.Canje AS CA
-	WHERE M.Cli_Cod = C.Cli_Cod AND CA.Cli_Cod=C.Cli_Cod AND M.Mil_Valida=1
+	SELECT C.Cli_Nombre Nombre, SUM(M.Mil_Cantidad) Cantidad, YEAR(M.Mil_Fecha) as Anio, MONTH(M.Mil_Fecha) as Mes
+	FROM TS.Cliente AS C, TS.Milla AS M
+	WHERE M.Cli_Cod = C.Cli_Cod AND M.Mil_Valida=1
 	GROUP BY C.Cli_Nombre, YEAR(M.Mil_Fecha), MONTH(M.Mil_Fecha)
 GO
 
@@ -1913,7 +1920,7 @@ GO
 
 CREATE VIEW "TS".vsAeronaveMasFueraDeServicio
    AS
-	SELECT AE.Aero_Matricula Matricula, SUM(ISNULL(DATEDIFF(day, AFS.AudFS_Fecha_Inicio, AFS.AudFS_Fecha_Fin),0)) Cantidad, YEAR(AFS.AudFS_Fecha_Inicio) as Anio, MONTH(AFS.AudFS_Fecha_Inicio) as Mes
+	SELECT AE.Aero_Matricula Nombre, SUM(ISNULL(DATEDIFF(day, AFS.AudFS_Fecha_Inicio, AFS.AudFS_Fecha_Fin),0)) Cantidad, YEAR(AFS.AudFS_Fecha_Inicio) as Anio, MONTH(AFS.AudFS_Fecha_Inicio) as Mes
 	FROM TS.Aeronave AS AE, TS.Auditoria_Fuera_De_Servicio AS AFS
 	WHERE AFS.Aero_Num=AE.Aero_Num
 	GROUP BY AE.Aero_Matricula,YEAR(AFS.AudFS_Fecha_Inicio), MONTH(AFS.AudFS_Fecha_Inicio)
@@ -2039,10 +2046,10 @@ AS
 BEGIN
 	DECLARE @Cantidad INT = (SELECT COUNT(*)
 								FROM TS.Viaje as V1, TS.Viaje as V2, TS.Pasaje as P
-								WHERE V1.Viaj_Cod != V2.Viaj_Cod AND V1.Viaj_Cod = 1
+								WHERE V1.Viaj_Cod != V2.Viaj_Cod AND V1.Viaj_Cod = @Viaj_Cod
 								AND MONTH(V1.Fecha_Salida) = MONTH(V2.Fecha_Salida) AND DAY(V1.Fecha_Salida) = DAY(V2.Fecha_Salida) AND YEAR(V1.Fecha_Salida) = YEAR(V2.Fecha_Salida)
-								AND P.Viaj_Cod = V2.Viaj_Cod AND P.Cli_Cod = 3)
-	IF @Cantidad > 1
+								AND P.Viaj_Cod = V2.Viaj_Cod AND P.Cli_Cod = @Cli_Cod)
+	IF @Cantidad >= 1
 	BEGIN
 		RETURN 0
 	END

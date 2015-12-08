@@ -20,7 +20,7 @@ namespace AerolineaFrba.Consulta_Millas
         {
             InitializeComponent();
             DbComunicator db = new DbComunicator();
-            db.EjecutarQuery("SELECT Cli_Cod, Cli_Nombre FROM TS.Cliente WHERE Usr_Usrname = '" + username + "'");
+            db.EjecutarQuery("SELECT Cli_Cod, Cli_Nombre FROM TS.Cliente WHERE Usr_Username = '" + username + "'");
             db.getLector().Read();
             nombreLabel.Text = "Cliente Nombre: " + db.getLector()["Cli_Nombre"].ToString();
             this.cliCod = Convert.ToInt32(db.getLector()["Cli_Cod"]);

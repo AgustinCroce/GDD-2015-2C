@@ -40,7 +40,7 @@ namespace AerolineaFrba.Abm_Aeronave
             spModificarAeronave.Parameters.Add(new SqlParameter("@servicio", CB_servicio.SelectedValue));
             spModificarAeronave.Parameters.Add(new SqlParameter("@numero", Convert.ToInt64(TB_numero.Text)));
             spModificarAeronave.Parameters.Add(new SqlParameter("@kg_disponibles", Convert.ToInt64(TB_kg_disponibles.Text)));
-            SqlParameter returnParameter = spModificarAeronave.Parameters.Add("Status", SqlDbType.Int);
+            SqlParameter returnParameter = spModificarAeronave.Parameters.Add("RetVal", SqlDbType.Int);
             returnParameter.Direction = ParameterDirection.ReturnValue;
             spModificarAeronave.ExecuteNonQuery();
             if ((int)returnParameter.Value == -1)

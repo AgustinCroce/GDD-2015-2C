@@ -52,10 +52,10 @@ namespace AerolineaFrba.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2015-06-14")]
-        public string FechaSistema {
+        [global::System.Configuration.DefaultSettingValueAttribute("2015-12-02")]
+        public global::System.DateTime FechaSistema {
             get {
-                return ((string)(this["FechaSistema"]));
+                return ((global::System.DateTime)(this["FechaSistema"]));
             }
         }
         
@@ -70,7 +70,7 @@ namespace AerolineaFrba.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Kiosko")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Admin")]
         public string Modo {
             get {
                 return ((string)(this["Modo"]));
