@@ -28,7 +28,6 @@ namespace AerolineaFrba.Abm_Ruta
             SqlCommand spALtaRuta = this.db.GetStoreProcedure("TS.spAltaRuta");
             spALtaRuta.Parameters.Add(new SqlParameter("@origen", Convert.ToInt64(CB_origen.SelectedValue)));
             spALtaRuta.Parameters.Add(new SqlParameter("@destino", Convert.ToInt64(CB_destino.SelectedValue)));
-            spALtaRuta.Parameters.Add(new SqlParameter("@servicio", CB_servicio.SelectedValue));
             spALtaRuta.Parameters.Add(new SqlParameter("@codigo", Convert.ToInt64(TB_codigo.Text)));
             spALtaRuta.Parameters.Add(new SqlParameter("@precio_kg", Convert.ToInt64(TB_precio_kg.Text)));
             spALtaRuta.Parameters.Add(new SqlParameter("@precio_pasaje", Convert.ToInt64(TB_precio_pasaje.Text)));

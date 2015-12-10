@@ -39,7 +39,6 @@ namespace AerolineaFrba.Abm_Ruta
                 spModificarRuta.Parameters.Add(new SqlParameter("@HOY", Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema)));
                 spModificarRuta.Parameters.Add(new SqlParameter("@origen", Convert.ToInt64(CB_origen.SelectedValue)));
                 spModificarRuta.Parameters.Add(new SqlParameter("@destino", Convert.ToInt64(CB_destino.SelectedValue)));
-                spModificarRuta.Parameters.Add(new SqlParameter("@servicio", CB_servicio.SelectedValue));
                 spModificarRuta.Parameters.Add(new SqlParameter("@codigo_unico", Convert.ToInt64(TB_codigo_unico.Text)));
                 spModificarRuta.Parameters.Add(new SqlParameter("@codigo", Convert.ToInt64(TB_codigo.Text)));
                 spModificarRuta.Parameters.Add(new SqlParameter("@precio_kg", Convert.ToDouble(TB_precio_kg.Text)));
@@ -53,7 +52,6 @@ namespace AerolineaFrba.Abm_Ruta
         {
             this.UseItem(this.selected.Cells["Origen"].Value.ToString(), CB_origen);
             this.UseItem(this.selected.Cells["Destino"].Value.ToString(), CB_destino);
-            this.UseItem(this.selected.Cells["Servicio"].Value.ToString(), CB_servicio);
         }
     }
 }
