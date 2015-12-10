@@ -26,7 +26,7 @@ namespace AerolineaFrba.Generacion_Viaje
 
         private void GenerarViaje_Load(object sender, EventArgs e)
         {
-            string QueryRutas = "SELECT [Ruta_Cod] Codigo, CAST([Ruta_Codigo] AS NVARCHAR(255)) + ' - Desde: ' + C1.Ciudad_Nombre + ' hasta ' + C2.Ciudad_Nombre + ' (servicio: ' +Ruta_Servicio + ')' Nombre FROM [GD2C2015].[TS].[Ruta] AS R, [GD2C2015].[TS].[Ciudad] AS C1, [GD2C2015].[TS].[Ciudad] AS C2 WHERE C1.Ciudad_Cod = R.Ruta_Ciudad_Origen AND C2.Ciudad_Cod = R.Ruta_Ciudad_Destino AND R.Ruta_Borrada = 0";
+            string QueryRutas = "SELECT [Ruta_Cod] Codigo, CAST([Ruta_Codigo] AS NVARCHAR(255)) + ' - Desde: ' + C1.Ciudad_Nombre + ' hasta ' + C2.Ciudad_Nombre Nombre FROM [GD2C2015].[TS].[Ruta] AS R, [GD2C2015].[TS].[Ciudad] AS C1, [GD2C2015].[TS].[Ciudad] AS C2 WHERE C1.Ciudad_Cod = R.Ruta_Ciudad_Origen AND C2.Ciudad_Cod = R.Ruta_Ciudad_Destino AND R.Ruta_Borrada = 0";
             Dictionary<object, object> Rutas = this.db.GetQueryDictionary(QueryRutas, "Codigo", "Nombre");
             CB_ruta.DataSource = new BindingSource(Rutas, null);
             CB_ruta.DisplayMember = "Value";
@@ -39,22 +39,23 @@ namespace AerolineaFrba.Generacion_Viaje
 
         private void onChangeRuta(object sender, EventArgs e)
         {
-            string QueryAeronaves = "SELECT A.Aero_Num Codigo, A.Aero_Matricula  + ' (Modelo: ' + A.Aero_Modelo + ' fabricante: ' + A.Aero_Fabricante + ')' Nombre FROM [GD2C2015].[TS].[Ruta] AS R, [GD2C2015].[TS].[Aeronave] as A WHERE R.Ruta_Cod = " + CB_ruta.SelectedValue + " AND R.Ruta_Servicio = A.Aero_Servicio AND A.Aero_Borrado = 0";
+            string QueryServicios = "SELECT Tipo_Servicio Nombre FROM [GD2C2015].[TS].[Ruta_Servicio] WHERE Ruta_Cod = " + CB_ruta.SelectedValue;
+            Dictionary<object, object> Servicios = this.db.GetQueryDictionary(QueryServicios, "Nombre", "Nombre");
+            CB_servicio.DataSource = new BindingSource(Servicios, null);
+            CB_servicio.DisplayMember = "Value";
+            CB_servicio.ValueMember = "Key";
+            CB_servicio.SelectedValueChanged += this.onChangeServicio;
+            CB_servicio.Enabled = true;
+        }
+
+        private void onChangeServicio(object sender, EventArgs e)
+        {
+            string QueryAeronaves = "SELECT A.Aero_Num Codigo, A.Aero_Matricula  + ' (Modelo: ' + A.Aero_Modelo + ' fabricante: ' + A.Aero_Fabricante + ')' Nombre FROM [GD2C2015].[TS].[Ruta] AS R, [GD2C2015].[TS].[Aeronave] as A WHERE R.Ruta_Cod = " + CB_ruta.SelectedValue + " AND A.Aero_Servicio='" + CB_servicio.SelectedValue + "' AND A.Aero_Borrado = 0";
             Dictionary<object, object> Aeronaves = this.db.GetQueryDictionary(QueryAeronaves, "Codigo", "Nombre");
             CB_aeronave.DataSource = new BindingSource(Aeronaves, null);
             CB_aeronave.DisplayMember = "Value";
             CB_aeronave.ValueMember = "Key";
             CB_aeronave.Enabled = true;
-            string QueryServicio = "SELECT Ruta_Servicio servicio FROM [GD2C2015].[TS].[Ruta] WHERE Ruta_Cod = " + CB_ruta.SelectedValue;
-            Dictionary<object, object> Servicio = this.db.GetQueryDictionary(QueryServicio, "servicio", "servicio");
-            CB_servicio.DataSource = new BindingSource(Servicio, null);
-            CB_servicio.DisplayMember = "Value";
-            CB_servicio.ValueMember = "Key";
-            CB_aeronave.SelectedValueChanged += this.onChangeAeronave;
-        }
-
-        private void onChangeAeronave(object sender, EventArgs e)
-        {
             BT_guardar.Enabled = true;
         }
 
@@ -73,7 +74,6 @@ namespace AerolineaFrba.Generacion_Viaje
                 DateTime dateSalida = DTP_fecha_salida.Value.Date + DTP_hora_salida.Value.TimeOfDay;
                 DateTime dateLlegada = DTP_hora_estimada_llegada.Value.Date + DTP_hora_estimada_llegada.Value.TimeOfDay;
                 SqlCommand spALtaViaje = this.db.GetStoreProcedure("TS.spAltaViaje");
-                
                 spALtaViaje.Parameters.Add(new SqlParameter("@Fecha_salida", dateSalida));
                 spALtaViaje.Parameters.Add(new SqlParameter("@Fecha_estimada", dateLlegada));
                 spALtaViaje.Parameters.Add(new SqlParameter("@Aero", Convert.ToInt64(CB_aeronave.SelectedValue)));

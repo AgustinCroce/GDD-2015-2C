@@ -48,11 +48,6 @@ namespace AerolineaFrba.Abm_Ruta
             CB_destino.ValueMember = "Key";
             CB_origen.DisplayMember = "Value";
             CB_origen.ValueMember = "Key";
-            string QueryServicio = "SELECT TipoSer_Nombre Nombre FROM [GD2C2015].[TS].[Tipo_Servicio]";
-            Dictionary<object, object> Servicios = this.db.GetQueryDictionary(QueryServicio, "Nombre", "Nombre");
-            CB_servicio.DataSource = new BindingSource(Servicios, null);
-            CB_servicio.DisplayMember = "Value";
-            CB_servicio.ValueMember = "Key";
 
         }
     }

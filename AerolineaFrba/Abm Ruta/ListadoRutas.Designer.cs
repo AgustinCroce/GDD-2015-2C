@@ -38,9 +38,13 @@
             this.BT_agregar = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.DGV_rutas = new System.Windows.Forms.DataGridView();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.BT_quitar_sercivio = new System.Windows.Forms.Button();
+            this.BT_agregar_servicio = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DGV_rutas)).BeginInit();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -90,7 +94,7 @@
             this.groupBox2.Controls.Add(this.BT_agregar);
             this.groupBox2.Location = new System.Drawing.Point(866, 81);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(89, 227);
+            this.groupBox2.Size = new System.Drawing.Size(89, 116);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Acciones";
@@ -155,11 +159,45 @@
             this.DGV_rutas.Size = new System.Drawing.Size(848, 227);
             this.DGV_rutas.TabIndex = 7;
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.BT_quitar_sercivio);
+            this.groupBox3.Controls.Add(this.BT_agregar_servicio);
+            this.groupBox3.Location = new System.Drawing.Point(866, 203);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(89, 105);
+            this.groupBox3.TabIndex = 17;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Servicios";
+            // 
+            // BT_quitar_sercivio
+            // 
+            this.BT_quitar_sercivio.Enabled = false;
+            this.BT_quitar_sercivio.Location = new System.Drawing.Point(6, 59);
+            this.BT_quitar_sercivio.Name = "BT_quitar_sercivio";
+            this.BT_quitar_sercivio.Size = new System.Drawing.Size(75, 23);
+            this.BT_quitar_sercivio.TabIndex = 2;
+            this.BT_quitar_sercivio.Text = "Quitar";
+            this.BT_quitar_sercivio.UseVisualStyleBackColor = true;
+            this.BT_quitar_sercivio.Click += new System.EventHandler(this.BT_quitar_sercivio_Click);
+            // 
+            // BT_agregar_servicio
+            // 
+            this.BT_agregar_servicio.Enabled = false;
+            this.BT_agregar_servicio.Location = new System.Drawing.Point(6, 30);
+            this.BT_agregar_servicio.Name = "BT_agregar_servicio";
+            this.BT_agregar_servicio.Size = new System.Drawing.Size(75, 23);
+            this.BT_agregar_servicio.TabIndex = 0;
+            this.BT_agregar_servicio.Text = "Agregar";
+            this.BT_agregar_servicio.UseVisualStyleBackColor = true;
+            this.BT_agregar_servicio.Click += new System.EventHandler(this.BT_agregar_servicio_Click);
+            // 
             // ListadoRutas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(967, 350);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.DGV_rutas);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.groupBox2);
@@ -171,6 +209,7 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DGV_rutas)).EndInit();
+            this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -187,5 +226,8 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.DataGridView DGV_rutas;
         private System.Windows.Forms.ComboBox CB_ciudad;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Button BT_quitar_sercivio;
+        private System.Windows.Forms.Button BT_agregar_servicio;
     }
 }

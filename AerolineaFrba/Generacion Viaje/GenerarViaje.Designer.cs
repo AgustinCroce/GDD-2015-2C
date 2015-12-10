@@ -35,6 +35,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.BT_guardar = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.DTP_hora_estimada_llegada = new System.Windows.Forms.DateTimePicker();
+            this.DTP_hora_salida = new System.Windows.Forms.DateTimePicker();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.CB_servicio = new System.Windows.Forms.ComboBox();
             this.CB_aeronave = new System.Windows.Forms.ComboBox();
@@ -42,8 +44,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.DTP_hora_estimada_llegada = new System.Windows.Forms.DateTimePicker();
-            this.DTP_hora_salida = new System.Windows.Forms.DateTimePicker();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -117,6 +117,24 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Fechas";
             // 
+            // DTP_hora_estimada_llegada
+            // 
+            this.DTP_hora_estimada_llegada.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.DTP_hora_estimada_llegada.Location = new System.Drawing.Point(577, 49);
+            this.DTP_hora_estimada_llegada.Name = "DTP_hora_estimada_llegada";
+            this.DTP_hora_estimada_llegada.ShowUpDown = true;
+            this.DTP_hora_estimada_llegada.Size = new System.Drawing.Size(119, 20);
+            this.DTP_hora_estimada_llegada.TabIndex = 18;
+            // 
+            // DTP_hora_salida
+            // 
+            this.DTP_hora_salida.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.DTP_hora_salida.Location = new System.Drawing.Point(577, 23);
+            this.DTP_hora_salida.Name = "DTP_hora_salida";
+            this.DTP_hora_salida.ShowUpDown = true;
+            this.DTP_hora_salida.Size = new System.Drawing.Size(119, 20);
+            this.DTP_hora_salida.TabIndex = 17;
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.CB_servicio);
@@ -137,9 +155,9 @@
             this.CB_servicio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CB_servicio.Enabled = false;
             this.CB_servicio.FormattingEnabled = true;
-            this.CB_servicio.Location = new System.Drawing.Point(74, 82);
+            this.CB_servicio.Location = new System.Drawing.Point(65, 55);
             this.CB_servicio.Name = "CB_servicio";
-            this.CB_servicio.Size = new System.Drawing.Size(622, 21);
+            this.CB_servicio.Size = new System.Drawing.Size(631, 21);
             this.CB_servicio.TabIndex = 16;
             // 
             // CB_aeronave
@@ -147,24 +165,24 @@
             this.CB_aeronave.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CB_aeronave.Enabled = false;
             this.CB_aeronave.FormattingEnabled = true;
-            this.CB_aeronave.Location = new System.Drawing.Point(74, 55);
+            this.CB_aeronave.Location = new System.Drawing.Point(65, 82);
             this.CB_aeronave.Name = "CB_aeronave";
-            this.CB_aeronave.Size = new System.Drawing.Size(622, 21);
+            this.CB_aeronave.Size = new System.Drawing.Size(631, 21);
             this.CB_aeronave.TabIndex = 15;
             // 
             // CB_ruta
             // 
             this.CB_ruta.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CB_ruta.FormattingEnabled = true;
-            this.CB_ruta.Location = new System.Drawing.Point(74, 24);
+            this.CB_ruta.Location = new System.Drawing.Point(65, 24);
             this.CB_ruta.Name = "CB_ruta";
-            this.CB_ruta.Size = new System.Drawing.Size(622, 21);
+            this.CB_ruta.Size = new System.Drawing.Size(631, 21);
             this.CB_ruta.TabIndex = 14;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 85);
+            this.label5.Location = new System.Drawing.Point(6, 58);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(45, 13);
             this.label5.TabIndex = 13;
@@ -173,7 +191,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 58);
+            this.label4.Location = new System.Drawing.Point(6, 85);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(53, 13);
             this.label4.TabIndex = 12;
@@ -187,24 +205,6 @@
             this.label3.Size = new System.Drawing.Size(30, 13);
             this.label3.TabIndex = 11;
             this.label3.Text = "Ruta";
-            // 
-            // DTP_hora_estimada_llegada
-            // 
-            this.DTP_hora_estimada_llegada.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.DTP_hora_estimada_llegada.Location = new System.Drawing.Point(577, 49);
-            this.DTP_hora_estimada_llegada.Name = "DTP_hora_estimada_llegada";
-            this.DTP_hora_estimada_llegada.ShowUpDown = true;
-            this.DTP_hora_estimada_llegada.Size = new System.Drawing.Size(119, 20);
-            this.DTP_hora_estimada_llegada.TabIndex = 18;
-            // 
-            // DTP_hora_salida
-            // 
-            this.DTP_hora_salida.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.DTP_hora_salida.Location = new System.Drawing.Point(577, 23);
-            this.DTP_hora_salida.Name = "DTP_hora_salida";
-            this.DTP_hora_salida.ShowUpDown = true;
-            this.DTP_hora_salida.Size = new System.Drawing.Size(119, 20);
-            this.DTP_hora_salida.TabIndex = 17;
             // 
             // GenerarViaje
             // 

@@ -32,10 +32,8 @@
             this.BT_guardar = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.CB_origen = new System.Windows.Forms.ComboBox();
             this.CB_destino = new System.Windows.Forms.ComboBox();
-            this.CB_servicio = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.TB_precio_kg = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -52,7 +50,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 282);
+            this.button1.Location = new System.Drawing.Point(12, 258);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 1;
@@ -62,7 +60,7 @@
             // 
             // BT_guardar
             // 
-            this.BT_guardar.Location = new System.Drawing.Point(197, 282);
+            this.BT_guardar.Location = new System.Drawing.Point(197, 258);
             this.BT_guardar.Name = "BT_guardar";
             this.BT_guardar.Size = new System.Drawing.Size(75, 23);
             this.BT_guardar.TabIndex = 2;
@@ -87,15 +85,6 @@
             this.label2.TabIndex = 4;
             this.label2.Text = "Destino";
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(5, 141);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(84, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Tipo de Servicio";
-            // 
             // CB_origen
             // 
             this.CB_origen.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -114,22 +103,13 @@
             this.CB_destino.Size = new System.Drawing.Size(207, 21);
             this.CB_destino.TabIndex = 11;
             // 
-            // CB_servicio
-            // 
-            this.CB_servicio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.CB_servicio.FormattingEnabled = true;
-            this.CB_servicio.Location = new System.Drawing.Point(95, 138);
-            this.CB_servicio.Name = "CB_servicio";
-            this.CB_servicio.Size = new System.Drawing.Size(159, 21);
-            this.CB_servicio.TabIndex = 12;
-            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.TB_precio_kg);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.TB_precio_pasaje);
             this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Location = new System.Drawing.Point(12, 187);
+            this.groupBox1.Location = new System.Drawing.Point(12, 163);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(260, 89);
             this.groupBox1.TabIndex = 13;
@@ -175,16 +155,14 @@
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.TB_codigo);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Controls.Add(this.CB_servicio);
             this.groupBox2.Controls.Add(this.TB_codigo_unico);
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Controls.Add(this.CB_destino);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.CB_origen);
-            this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Location = new System.Drawing.Point(12, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(260, 169);
+            this.groupBox2.Size = new System.Drawing.Size(260, 145);
             this.groupBox2.TabIndex = 14;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Ruta";
@@ -227,7 +205,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 311);
+            this.ClientSize = new System.Drawing.Size(284, 291);
             this.Controls.Add(this.BT_guardar);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox1);
@@ -249,10 +227,8 @@
         public System.Windows.Forms.Button BT_guardar;
         public System.Windows.Forms.Label label1;
         public System.Windows.Forms.Label label2;
-        public System.Windows.Forms.Label label3;
         public System.Windows.Forms.ComboBox CB_origen;
         public System.Windows.Forms.ComboBox CB_destino;
-        public System.Windows.Forms.ComboBox CB_servicio;
         public System.Windows.Forms.GroupBox groupBox1;
         public System.Windows.Forms.TextBox TB_precio_kg;
         public System.Windows.Forms.Label label4;

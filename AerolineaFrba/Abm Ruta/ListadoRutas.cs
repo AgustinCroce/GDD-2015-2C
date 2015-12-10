@@ -29,7 +29,7 @@ namespace AerolineaFrba.Abm_Ruta
 
         private void ListadoRutas_Load(object sender, EventArgs e)
         {
-            string QueryRutas = "SELECT Ruta_Cod 'Codigo Unico', Ruta_Codigo 'Codigo', C1.Ciudad_Nombre 'Origen', C2.Ciudad_Nombre 'Destino', Ruta_Servicio 'Servicio', Ruta_Precio_Base_Kg 'Precio Kg', Ruta_Precio_Base_Pasaje 'Precio Pasaje', Ruta_Borrada Borrada FROM [GD2C2015].[TS].[Ruta], [GD2C2015].[TS].[Ciudad] as C1, [GD2C2015].[TS].[Ciudad] as C2 WHERE C1.Ciudad_Cod = Ruta_Ciudad_Origen AND  C2.Ciudad_Cod = Ruta_Ciudad_Destino";
+            string QueryRutas = "SELECT Ruta_Cod 'Codigo Unico', Ruta_Codigo 'Codigo', C1.Ciudad_Nombre 'Origen', C2.Ciudad_Nombre 'Destino', Ruta_Precio_Base_Kg 'Precio Kg', Ruta_Precio_Base_Pasaje 'Precio Pasaje', Ruta_Borrada Borrada FROM [GD2C2015].[TS].[Ruta], [GD2C2015].[TS].[Ciudad] as C1, [GD2C2015].[TS].[Ciudad] as C2 WHERE C1.Ciudad_Cod = Ruta_Ciudad_Origen AND  C2.Ciudad_Cod = Ruta_Ciudad_Destino";
             string QueryCiudades = "SELECT Ciudad_Nombre 'Nombre' FROM [GD2C2015].[TS].[Ciudad] WHERE Ciudad_Borrada = 0";
             DGV_rutas.DataSource = db.GetDataAdapter(QueryRutas).Tables[0];
             Dictionary<object, object> Ciudades = this.db.GetQueryDictionary(QueryCiudades, "Nombre", "Nombre");
@@ -46,6 +46,8 @@ namespace AerolineaFrba.Abm_Ruta
             {
                 this.BT_eliminar.Enabled = true;
                 this.BT_modificar.Enabled = true;
+                this.BT_agregar_servicio.Enabled = true;
+                this.BT_quitar_sercivio.Enabled = true;
                 DGV_rutas.SelectionChanged += this.DesactivarAcciones;
             }
             else this.DesactivarAcciones(sender, e);
@@ -55,13 +57,15 @@ namespace AerolineaFrba.Abm_Ruta
         {
             this.BT_eliminar.Enabled = false;
             this.BT_modificar.Enabled = false;
+            this.BT_agregar_servicio.Enabled = false;
+            this.BT_quitar_sercivio.Enabled = false;
             DGV_rutas.SelectionChanged -= this.DesactivarAcciones;
         }
 
 
         private void BT_buscar_Click(object sender, EventArgs e)
         {
-            string QueryBusqueda = "SELECT Ruta_Cod 'Codigo Unico', Ruta_Codigo 'Codigo', C1.Ciudad_Nombre 'Origen', C2.Ciudad_Nombre 'Destino', Ruta_Servicio 'Servicio', Ruta_Precio_Base_Kg 'Precio Kg', Ruta_Precio_Base_Pasaje 'Precio Pasaje', Ruta_Borrada Borrada FROM [GD2C2015].[TS].[Ruta], [GD2C2015].[TS].[Ciudad] as C1, [GD2C2015].[TS].[Ciudad] as C2 WHERE (C1.Ciudad_Cod = Ruta_Ciudad_Origen AND C1.Ciudad_Nombre LIKE '%" + CB_ciudad.SelectedValue + "%' AND C2.Ciudad_Cod = Ruta_Ciudad_Destino) OR (C1.Ciudad_Cod = Ruta_Ciudad_Origen AND C2.Ciudad_Nombre LIKE '%" + CB_ciudad.SelectedValue + "%' AND C2.Ciudad_Cod = Ruta_Ciudad_Destino)";
+            string QueryBusqueda = "SELECT Ruta_Cod 'Codigo Unico', Ruta_Codigo 'Codigo', C1.Ciudad_Nombre 'Origen', C2.Ciudad_Nombre 'Destino', Ruta_Precio_Base_Kg 'Precio Kg', Ruta_Precio_Base_Pasaje 'Precio Pasaje', Ruta_Borrada Borrada FROM [GD2C2015].[TS].[Ruta], [GD2C2015].[TS].[Ciudad] as C1, [GD2C2015].[TS].[Ciudad] as C2 WHERE (C1.Ciudad_Cod = Ruta_Ciudad_Origen AND C1.Ciudad_Nombre LIKE '%" + CB_ciudad.SelectedValue + "%' AND C2.Ciudad_Cod = Ruta_Ciudad_Destino) OR (C1.Ciudad_Cod = Ruta_Ciudad_Origen AND C2.Ciudad_Nombre LIKE '%" + CB_ciudad.SelectedValue + "%' AND C2.Ciudad_Cod = Ruta_Ciudad_Destino)";
             DGV_rutas.DataSource = db.GetDataAdapter(QueryBusqueda).Tables[0];
         }
 
@@ -88,6 +92,20 @@ namespace AerolineaFrba.Abm_Ruta
         private void BT_agregar_Click(object sender, EventArgs e)
         {
             AltaRuta re = new AltaRuta();
+            re.FormClosed += new FormClosedEventHandler(ListadoRutas_Load);
+            re.ShowDialog();
+        }
+
+        private void BT_agregar_servicio_Click(object sender, EventArgs e)
+        {
+            Servicios re = new Servicios(DGV_rutas.SelectedRows[0], "Agregar");
+            re.FormClosed += new FormClosedEventHandler(ListadoRutas_Load);
+            re.ShowDialog();
+        }
+
+        private void BT_quitar_sercivio_Click(object sender, EventArgs e)
+        {
+            Servicios re = new Servicios(DGV_rutas.SelectedRows[0], "Eliminar");
             re.FormClosed += new FormClosedEventHandler(ListadoRutas_Load);
             re.ShowDialog();
         }
