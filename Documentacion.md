@@ -1,3 +1,19 @@
+# Migracion
+
+## Diseño de entidades
+
+- Se ha utilizado de nombre de schema TS que son las siglas del grupo.
+- Se ha mantenido a aquellos clientes cuyo DNI se encuetra repetido pero no se permitirá el ingreso de nuevos clientes con mismo DNI.
+- Para cada cliente se ha generado un usuario con rol cliente. El nombre de usuario esta formado por el codigo generado en nuestro esquema y su nombre sin espacios y contraseña password.
+- Para cada Encomienda y Pasaje realizado se ha generado una compra que lo representa todas con un solo item (el pasaje o la encomienda) y todas en efectivo.
+- Al estar todos los vuelos de la tabla maestra con fecha de llegada ya establecida todas las millas de dichos viajes ya se encuentran asignadas a sus respectivos clientes aunque sean de fechas fúturas.
+- A todos los servicios se les ha agregado como porcentaje para el precio de la compra un 40%. 
+
+# Solucion
+
+## Archivo de configuración
+En el archivo de configuración en el parametro Modo con "Kiosko" o "Admin" segun el modo que se quiera probar.
+
 ## Registro de llegada
 Si no se llena el campo matricula no se podra llevar a cabo el registro.
 Solo se permite registrar la llegada de aquellos viajes a los cuales no se les haya registrado la llegada con anterioridad.

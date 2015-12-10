@@ -52,7 +52,7 @@ namespace AerolineaFrba.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2015-12-02")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2014-12-04")]
         public global::System.DateTime FechaSistema {
             get {
                 return ((global::System.DateTime)(this["FechaSistema"]));
@@ -61,7 +61,7 @@ namespace AerolineaFrba.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("IE8WIN7\\SQLSERVER2012")]
+        [global::System.Configuration.DefaultSettingValueAttribute("LOCALHOST\\SQLSERVER2012")]
         public string DbSource {
             get {
                 return ((string)(this["DbSource"]));

@@ -60,7 +60,7 @@ namespace AerolineaFrba.Compra
         {
             DbComunicator dbStoreProcedure = new DbComunicator();
 
-            if (encomiendaCheckBox.Checked) {
+            if (encomiendaCheckBox.Checked && !String.IsNullOrEmpty(encomiendaInput.Text)) {
                 SqlCommand funcionEncomienda = dbStoreProcedure.GetStoreProcedure("TS.fnConsultarKgs");
                 SqlParameter returnFuncionEncomienda = funcionEncomienda.Parameters.Add("RetVal", SqlDbType.Int);
                 returnFuncionEncomienda.Direction = ParameterDirection.ReturnValue;
@@ -82,7 +82,7 @@ namespace AerolineaFrba.Compra
             }
 
 
-            if (pasajeCheckBox.Checked)
+            if (pasajeCheckBox.Checked && !String.IsNullOrEmpty(pasajesInput.Text))
             {
                 SqlCommand funcionButacas = dbStoreProcedure.GetStoreProcedure("TS.fnConsultarButacas");
                 SqlParameter returnFuncionButacas = funcionButacas.Parameters.Add("RetVal", SqlDbType.Int);
@@ -105,12 +105,14 @@ namespace AerolineaFrba.Compra
 
             this.habilitado = this.pasajeHabilitado && this.encomiendaHabilitada;
 
-            if (this.habilitado) { 
-                if (pasajeCheckBox.Checked){
+            if (this.habilitado) {
+                if (pasajeCheckBox.Checked && !String.IsNullOrEmpty(pasajesInput.Text))
+                {
                     this.pasajesHabilitados = Convert.ToInt32(pasajesInput.Text);
                 }
 
-                if (encomiendaCheckBox.Checked) {
+                if (encomiendaCheckBox.Checked && !String.IsNullOrEmpty(encomiendaInput.Text))
+                {
                     this.kgsHabilitados = Convert.ToDouble(encomiendaInput.Text);
                 }
 

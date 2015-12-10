@@ -46,14 +46,14 @@ namespace AerolineaFrba.Devolucion
             acceptButton.Enabled = false;
             if (!String.IsNullOrEmpty(pnrTextBox.Text)) {
                 DbComunicator db = new DbComunicator();
-                db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Encomienda_Compra WHERE Com_PNR = " + pnrTextBox.Text);
+                db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Encomienda WHERE Com_PNR = " + pnrTextBox.Text);
                 db.getLector().Read();
 
                 if (Convert.ToInt16(db.getLector()["Cantidad"].ToString()) > 0)
                 {
-                    string queryEncomieda = "SELECT E.Enc_Cod, E.Enc_Fecha_Compra, E.Enc_Kg";
-                    queryEncomieda += " FROM TS.Encomienda_Compra AS EC, TS.Encomienda AS E";
-                    queryEncomieda += " WHERE EC.Enc_Cod = E.Enc_Cod AND EC.Com_PNR = " + pnrTextBox.Text;
+                    string queryEncomieda = "SELECT E.Enc_Cod, C.Com_Fecha, E.Enc_Kg";
+                    queryEncomieda += " FROM TS.Encomienda AS E, TS.Compra AS C, TS.Viaje AS V";
+                    queryEncomieda += " WHERE E.Com_PNR = " + pnrTextBox.Text + " AND E.Com_PNR = C.Com_PNR AND V.Viaj_Cod = E.Viaj_Cod AND V.Fecha_Llegada IS NULL";
                     encomiendaGridView.DataSource = db.GetDataAdapter(queryEncomieda).Tables[0];
                     encomiendaGridView.ClearSelection();
                     encomiendaGroupBox.Enabled = true;
@@ -61,22 +61,22 @@ namespace AerolineaFrba.Devolucion
                 else
                 {
                     DbComunicator dbC = new DbComunicator();
-                    string queryEncomieda = "SELECT E.Enc_Cod, E.Enc_Fecha_Compra, E.Enc_Kg";
-                    queryEncomieda += " FROM TS.Encomienda AS E";
+                    string queryEncomieda = "SELECT E.Enc_Cod, NULL Com_Fecha, E.Enc_Kg";
+                    queryEncomieda += " FROM TS.Encomienda AS E, TS.Compra AS C";
                     queryEncomieda += " WHERE E.Enc_Cod= -1" ;
                     encomiendaGridView.DataSource = dbC.GetDataAdapter(queryEncomieda).Tables[0];
                     encomiendaGroupBox.Enabled = false;
                 }
 
                 db = new DbComunicator();
-                db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Pasaje_Compra WHERE Com_PNR = " + pnrTextBox.Text);
+                db.EjecutarQuery("SELECT COUNT(*) Cantidad FROM TS.Pasaje WHERE Com_PNR = " + pnrTextBox.Text);
                 db.getLector().Read();
 
                 if (Convert.ToInt16(db.getLector()["Cantidad"].ToString()) > 0)
                 {
-                    string queryPasajes = "SELECT P.Pas_Cod, P.Pas_Fecha_Compra, P.Pas_Precio, C.Cli_Nombre";
-                    queryPasajes += " FROM TS.Pasaje_Compra AS PC, TS.Pasaje as P, TS.Cliente AS C";
-                    queryPasajes += " WHERE PC.Pas_Cod = P.Pas_Cod AND P.Cli_Cod = C.Cli_Cod AND PC.Com_PNR = " + pnrTextBox.Text;
+                    string queryPasajes = "SELECT P.Pas_Cod, CM.Com_Fecha, P.Pas_Precio, C.Cli_Nombre";
+                    queryPasajes += " FROM TS.Pasaje as P, TS.Cliente AS C, TS.Compra AS CM, TS.Viaje AS V";
+                    queryPasajes += " WHERE P.Cli_Cod = C.Cli_Cod AND P.Com_PNR = " + pnrTextBox.Text + " AND CM.Com_PNR = P.Com_PNR AND V.Viaj_Cod = P.Viaj_Cod AND V.Fecha_Llegada IS NULL";
                     pasajeGridView.DataSource = db.GetDataAdapter(queryPasajes).Tables[0];
                     pasajeGridView.ClearSelection();
                     pasajesGroupBox.Enabled = true;
@@ -84,7 +84,7 @@ namespace AerolineaFrba.Devolucion
                 else
                 {
                     DbComunicator dbP = new DbComunicator();
-                    string queryPasajes = "SELECT P.Pas_Cod, P.Pas_Fecha_Compra, P.Pas_Precio, 0 Cli_Nombre";
+                    string queryPasajes = "SELECT P.Pas_Cod, NULL Com_Fecha, P.Pas_Precio, '' Cli_Nombre";
                     queryPasajes += " FROM TS.Pasaje as P";
                     queryPasajes += " WHERE P.Pas_Cod = -1";
                     pasajeGridView.DataSource = dbP.GetDataAdapter(queryPasajes).Tables[0];
@@ -157,10 +157,10 @@ namespace AerolineaFrba.Devolucion
             pnrTextBox.KeyPress += this.InputNumField_KeyPress;
             pnrTextBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
             AutoCompleteStringCollection col = new AutoCompleteStringCollection();
-            string queryCompras = "SELECT PC.Com_PNR FROM TS.Pasaje_Compra as PC, TS.Viaje as V, TS.Pasaje as P";
-            queryCompras += " WHERE PC.Pas_Cod = P.Pas_Cod AND P.Viaj_Cod = V.Viaj_Cod AND V.Fecha_Llegada IS NULL";
-            queryCompras += " UNION SELECT EC.Com_PNR FROM TS.Encomienda_Compra as EC, TS.Encomienda as E, TS.Viaje as V";
-            queryCompras += " WHERE EC.Enc_Cod = E.Enc_Cod AND E.Viaj_Cod = V.Viaj_Cod AND V.Fecha_Llegada IS NULL";
+            string queryCompras = "SELECT P.Com_PNR Com_PNR FROM TS.Pasaje as P, TS.Viaje as V";
+            queryCompras += " WHERE P.Can_Cod IS NULL AND P.Viaj_Cod = V.Viaj_Cod AND V.Fecha_Llegada IS NULL";
+            queryCompras += " UNION SELECT E.Com_PNR FROM TS.Encomienda as E, TS.Viaje as V";
+            queryCompras += " WHERE E.Can_Cod IS NULL AND E.Viaj_Cod = V.Viaj_Cod AND V.Fecha_Llegada IS NULL";
             DbComunicator db = new DbComunicator();
             db.CargarAutocomplete(col, queryCompras, "Com_PNR");
             pnrTextBox.AutoCompleteCustomSource = col;
