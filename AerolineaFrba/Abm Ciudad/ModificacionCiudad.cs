@@ -25,8 +25,11 @@ namespace AerolineaFrba.Abm_Ciudad
             SqlCommand spModificarCiudad = this.db.GetStoreProcedure("TS.spModificarCiudad");
             spModificarCiudad.Parameters.Add(new SqlParameter("@nombre", TB_nombre.Text));
             spModificarCiudad.Parameters.Add(new SqlParameter("@codigo", Convert.ToInt64(TB_codigo.Text)));
+            SqlParameter returnParameter = spModificarCiudad.Parameters.Add("RetVal", SqlDbType.Int);
+            returnParameter.Direction = ParameterDirection.ReturnValue;
             spModificarCiudad.ExecuteNonQuery();
-            this.Close();
+            if ((int)returnParameter.Value == -1) MessageBox.Show("El nombre de la ciudad es unico, este nombre de ciudad ya esta utilizado, por favor cambielo");
+            else this.Close();
         }
     }
 }

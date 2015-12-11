@@ -23,7 +23,8 @@ namespace AerolineaFrba.Abm_Rol
         private void BT_guardar_Click(object sender, EventArgs e)
         {
             SqlCommand spModificarRol = this.db.GetStoreProcedure("TS.spModificarRol");
-            spModificarRol.Parameters.Add(new SqlParameter("@estado", CB_estado.SelectedText));
+            spModificarRol.Parameters.Add(new SqlParameter("@nombre", TB_nombre.Text));
+            spModificarRol.Parameters.Add(new SqlParameter("@estado", CB_estado.Text));
             spModificarRol.ExecuteNonQuery();
             this.Close();
         }
