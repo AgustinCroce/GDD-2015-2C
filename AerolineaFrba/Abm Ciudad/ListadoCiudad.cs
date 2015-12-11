@@ -36,7 +36,7 @@ namespace AerolineaFrba.Abm_Ciudad
         {
             if (!DGV_ciudad.SelectedRows[0].Cells["Nombre"].Value.ToString().Equals(""))
             {
-                this.BT_eliminar.Enabled = true;
+                if (!Convert.ToBoolean(DGV_ciudad.SelectedRows[0].Cells["Borrada"].Value)) this.BT_eliminar.Enabled = true;
                 this.BT_modificar.Enabled = true;
                 DGV_ciudad.SelectionChanged += this.DesactivarAcciones;
             }
@@ -72,11 +72,12 @@ namespace AerolineaFrba.Abm_Ciudad
 
         private void BT_eliminar_Click(object sender, EventArgs e)
         {
-            DialogResult dialogResult = MessageBox.Show("¿Usted esta seguro de borrar esta ciudad?", "Confirmación", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show("¿Usted esta seguro de borrar esta ciudad? (es importante saber que los viajes que tengan esta ciudad como destino seran cancelados y tambien sus pasajes y encomiendas)", "Confirmación", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 SqlCommand spBorrarCiudad = this.db.GetStoreProcedure("TS.spBorrarCiudad");
                 spBorrarCiudad.Parameters.Add(new SqlParameter("@Codigo", Convert.ToInt64(DGV_ciudad.SelectedRows[0].Cells["Codigo"].Value)));
+                spBorrarCiudad.Parameters.Add(new SqlParameter("@HOY", Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema)));
                 spBorrarCiudad.ExecuteNonQuery();
             }
             this.ListadoCiudad_Load(sender, e);

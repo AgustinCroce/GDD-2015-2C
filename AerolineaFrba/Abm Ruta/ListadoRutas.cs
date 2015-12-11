@@ -44,7 +44,7 @@ namespace AerolineaFrba.Abm_Ruta
         {
             if (!DGV_rutas.SelectedRows[0].Cells["Codigo"].Value.ToString().Equals(""))
             {
-                this.BT_eliminar.Enabled = true;
+                if (!Convert.ToBoolean(DGV_rutas.SelectedRows[0].Cells["Borrada"].Value)) this.BT_eliminar.Enabled = true;
                 this.BT_modificar.Enabled = true;
                 this.BT_agregar_servicio.Enabled = true;
                 this.BT_quitar_sercivio.Enabled = true;

@@ -1151,7 +1151,7 @@ BEGIN
   DECLARE @Status INT
   SET @Status = 0
   DECLARE @Matriculas INT
-  SET @Matriculas = (SELECT COUNT(*) FROM [GD2C2015].[TS].[Aeronave] WHERE Aero_Matricula = @matricula)
+  SET @Matriculas = (SELECT COUNT(*) FROM [GD2C2015].[TS].[Aeronave] WHERE Aero_Matricula = @matricula AND Aero_Num!=@numero)
 
   IF (@Matriculas>0)
 	BEGIN
@@ -1208,30 +1208,22 @@ BEGIN
   DECLARE @Status INT
   SET @Status = 0
   UPDATE [GD2C2015].[TS].[Ciudad] SET Ciudad_Borrada = 1  WHERE Ciudad_Cod = @Codigo
-  DECLARE @Com_PNRs TABLE(Com_PNR NUMERIC(18,0))
-  INSERT INTO @Com_PNRs(Com_PNR)
-	SELECT DISTINCT P.Com_PNR
-	FROM TS.Pasaje AS P, TS.Viaje AS V
-	WHERE P.Viaj_cod = V.Viaj_cod AND P.Can_Cod IS NULL AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo
-	UNION
-	SELECT DISTINCT E.Com_PNR
-	FROM TS.Encomienda AS E, TS.Viaje AS V
-	WHERE E.Viaj_cod = V.Viaj_cod AND E.Can_Cod IS NULL AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo
-
-  DECLARE @Com_PNR NUMERIC(18,0)
-  DECLARE tscursor CURSOR FOR SELECT * FROM @Com_PNRs
-  OPEN tscursor
-  FETCH NEXT FROM tscursor
-  INTO @Com_PNR
+  DECLARE @RUTAS TABLE(Ruta_Cod NUMERIC(18,0))
+  INSERT INTO @RUTAS(Ruta_Cod)
+	  SELECT R.Ruta_Cod FROM TS.Ruta AS R, TS.Viaje AS V WHERE R.Ruta_Ciudad_Destino=@Codigo OR R.Ruta_Ciudad_Origen=@Codigo
+  DECLARE @Ruta_Cod NUMERIC(18,0)
+  DECLARE tscursorciudad CURSOR FOR SELECT * FROM @RUTAS
+  OPEN tscursorciudad
+  FETCH NEXT FROM tscursorciudad
+  INTO @Ruta_Cod
   WHILE @@FETCH_STATUS = 0
 	BEGIN
-		EXEC "TS".spCancelarCompraPorRuta @HOY, @Com_PNR, 'Cancelado por borrado de ruta'
-		FETCH NEXT FROM tscursor
-		INTO @Com_PNR
+		EXEC "TS".spBorrarRuta @HOY, @Ruta_Cod
+		FETCH NEXT FROM tscursorciudad
+		INTO @Ruta_Cod
 	END
-  CLOSE tscursor
-  DEALLOCATE tscursor
-  UPDATE TS.Viaje SET Viaj_Borrado=1 WHERE Ruta_Cod=@Codigo
+  CLOSE tscursorciudad
+  DEALLOCATE tscursorciudad
   RETURN @Status
 END
 GO
@@ -1416,33 +1408,56 @@ AS
 BEGIN
   DECLARE @Status INT
   SET @Status = 0
+
+  DECLARE @CantRuta INT
+  SET @CantRuta = (SELECT COUNT(*) FROM [GD2C2015].[TS].[Ruta] AS R WHERE R.Ruta_Codigo=@codigo)
+  IF @CantRuta > 0
+  BEGIN
+    RETURN -1
+  END
+  SET @CantRuta = (SELECT COUNT(*) FROM [GD2C2015].[TS].[Ruta] AS R WHERE R.Ruta_Ciudad_Destino=@destino and R.Ruta_Ciudad_Origen=@origen)
+  IF @CantRuta > 0
+  BEGIN
+    RETURN -2
+  END
   INSERT INTO "TS".Ruta(Ruta_Codigo, Ruta_Precio_Base_Kg, Ruta_Precio_Base_Pasaje, Ruta_Ciudad_Origen, Ruta_Ciudad_Destino) VALUES
     (@codigo, @precio_kg, @precio_pasaje, @origen, @destino)
   RETURN @Status
 END
 GO
 
-IF OBJECT_ID (N'TS.spCancelarCompraPorRuta') IS NOT NULL
-   DROP PROCEDURE "TS".spCancelarCompraPorRuta
+IF OBJECT_ID (N'TS.spCancelarCompraPorViaje') IS NOT NULL
+   DROP PROCEDURE "TS".spCancelarCompraPorViaje
 GO
 
-CREATE PROCEDURE "TS".spCancelarCompraPorRuta
+CREATE PROCEDURE "TS".spCancelarCompraPorViaje
 	@Can_Fecha DATETIME,
-	@Com_PNR NUMERIC(18,0),
+	@Viaje NUMERIC(18,0),
 	@Can_Motivo NVARCHAR(255)
 AS
 BEGIN
+	
+	DECLARE @cantidadP INT
+	SET @cantidadP = (SELECT COUNT(*) FROM TS.Pasaje WHERE Viaj_Cod=@Viaje)
+	DECLARE @cantidadE INT
+	SET @cantidadE = (SELECT COUNT(*) FROM TS.Encomienda WHERE Viaj_Cod=@Viaje)
+	IF (@cantidadE + @cantidadP <= 0)
+	BEGIN
+		RETURN 0
+	END
+
 	DECLARE @Can_Cod TABLE
 	(
 		Can_Cod NUMERIC(18,0)
 	);
-	
+
 	INSERT INTO Cancelacion_Compra(Can_Fecha, Can_Motivo) OUTPUT inserted.Can_Cod INTO @Can_Cod VALUES(@Can_Fecha, @Can_Motivo)
-	UPDATE TS.Encomienda SET Can_Cod = CC.Can_Cod FROM @Can_Cod AS CC WHERE Com_PNR = @Com_PNR 	
-	UPDATE TS.Pasaje SET Can_Cod = CC.Can_Cod FROM @Can_Cod AS CC WHERE Com_PNR = @Com_PNR 
+	UPDATE TS.Encomienda SET Can_Cod = CC.Can_Cod FROM @Can_Cod AS CC, TS.Encomienda AS E WHERE Viaj_Cod=@Viaje AND E.Can_Cod IS NULL AND E.Enc_Cod = Enc_Cod
+	UPDATE TS.Pasaje SET Can_Cod = CC.Can_Cod FROM @Can_Cod AS CC, TS.Pasaje AS P WHERE Viaj_Cod=@Viaje AND P.Can_Cod IS NULL AND P.Pas_Cod=Pas_Cod
 	RETURN 0
 END
 GO
+
 
 IF OBJECT_ID (N'TS.spBorrarRuta') IS NOT NULL
   DROP PROCEDURE "TS".spBorrarRuta
@@ -1457,31 +1472,63 @@ BEGIN
   SET @Status = 0
   UPDATE [GD2C2015].[TS].[Ruta] SET Ruta_Borrada = 1  WHERE Ruta_Cod = @Codigo
  
-  DECLARE @Com_PNRs TABLE(Com_PNR NUMERIC(18,0))
-  INSERT INTO @Com_PNRs(Com_PNR)
-	SELECT DISTINCT P.Com_PNR
-	FROM TS.Pasaje AS P, TS.Viaje AS V
-	WHERE P.Viaj_cod = V.Viaj_cod AND P.Can_Cod IS NULL AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo
-	UNION
-	SELECT DISTINCT E.Com_PNR
-	FROM TS.Encomienda AS E, TS.Viaje AS V
-	WHERE E.Viaj_cod = V.Viaj_cod AND E.Can_Cod IS NULL AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo
+  DECLARE @Viaj_Cods TABLE(Viaj_Cod NUMERIC(18,0))
+  INSERT INTO @Viaj_Cods(Viaj_Cod)
+	SELECT DISTINCT V.Viaj_Cod
+	FROM TS.Viaje AS V
+	WHERE V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo
 
-  DECLARE @Com_PNR NUMERIC(18,0)
-  DECLARE tscursor CURSOR FOR SELECT * FROM @Com_PNRs
+  DECLARE @Viaje NUMERIC(18,0)
+  DECLARE tscursor CURSOR FOR SELECT * FROM @Viaj_Cods
   OPEN tscursor
   FETCH NEXT FROM tscursor
-  INTO @Com_PNR
+  INTO @Viaje
   WHILE @@FETCH_STATUS = 0
 	BEGIN
-		EXEC "TS".spCancelarCompraPorRuta @HOY, @Com_PNR, 'Cancelado por borrado de ruta'
+		EXEC "TS".spCancelarCompraPorViaje @HOY, @Viaje, 'Cancelado por borrado de ruta'
 		FETCH NEXT FROM tscursor
-		INTO @Com_PNR
+		INTO @Viaje
 	END
   CLOSE tscursor
   DEALLOCATE tscursor
-  UPDATE TS.Viaje SET Viaj_Borrado=1 WHERE Ruta_Cod=@Codigo
+  UPDATE TS.Viaje SET Viaj_Borrado=1 WHERE Ruta_Cod=@Codigo AND Fecha_Llegada IS NULL
+  RETURN @Status
+END
+GO
 
+IF OBJECT_ID (N'TS.spBorrarRutaConServicio') IS NOT NULL
+  DROP PROCEDURE "TS".spBorrarRutaConServicio
+GO
+
+CREATE PROCEDURE "TS".spBorrarRutaConServicio
+  @HOY DATETIME,
+  @Codigo NUMERIC(18,0),
+  @Servicio NVARCHAR(255)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+ 
+  DECLARE @Viaj_Cods TABLE(Viaj_Cod NUMERIC(18,0))
+  INSERT INTO @Viaj_Cods(Viaj_Cod)
+	SELECT DISTINCT V.Viaj_Cod
+	FROM TS.Viaje AS V
+	WHERE V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo AND V.Tipo_Servicio=@Servicio
+
+  DECLARE @Viaje NUMERIC(18,0)
+  DECLARE tscursor CURSOR FOR SELECT * FROM @Viaj_Cods
+  OPEN tscursor
+  FETCH NEXT FROM tscursor
+  INTO @Viaje
+  WHILE @@FETCH_STATUS = 0
+	BEGIN
+		EXEC "TS".spCancelarCompraPorViaje @HOY, @Viaje, 'Cancelado por borrado del servicio en la ruta'
+		FETCH NEXT FROM tscursor
+		INTO @Viaje
+	END
+  CLOSE tscursor
+  DEALLOCATE tscursor
+  UPDATE TS.Viaje SET Viaj_Borrado=1 WHERE Ruta_Cod=@Codigo AND Tipo_Servicio=@Servicio AND Fecha_Llegada IS NULL
   RETURN @Status
 END
 GO
@@ -1502,6 +1549,18 @@ AS
 BEGIN
   DECLARE @Status INT
   SET @Status = 0
+  DECLARE @CantRuta INT
+  SET @CantRuta = (SELECT COUNT(*) FROM [GD2C2015].[TS].[Ruta] AS R WHERE R.Ruta_Codigo=@codigo AND R.Ruta_Cod!=@codigo_unico)
+  IF @CantRuta > 0
+  BEGIN
+    RETURN -1
+  END
+  SET @CantRuta = (SELECT COUNT(*) FROM [GD2C2015].[TS].[Ruta] AS R WHERE R.Ruta_Ciudad_Destino=@destino and R.Ruta_Ciudad_Origen=@origen AND R.Ruta_Cod!=@codigo_unico)
+  IF @CantRuta > 0
+  BEGIN
+    RETURN -2
+  END
+
   UPDATE [GD2C2015].[TS].[Ruta]
   SET
     Ruta_Codigo = @codigo,
@@ -1510,26 +1569,23 @@ BEGIN
     Ruta_Precio_Base_Kg = @precio_kg,
     Ruta_Precio_Base_Pasaje = @precio_pasaje
   WHERE Ruta_Cod = @codigo_unico
-  DECLARE @Com_PNRs TABLE(Com_PNR NUMERIC(18,0))
-  INSERT INTO @Com_PNRs(Com_PNR)
-	SELECT DISTINCT P.Com_PNR
-	FROM TS.Pasaje AS P, TS.Viaje AS V
-	WHERE P.Viaj_cod = V.Viaj_cod AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @codigo_unico
-	UNION
-	SELECT DISTINCT E.Com_PNR
-	FROM TS.Encomienda AS E, TS.Viaje AS V
-	WHERE E.Viaj_cod = V.Viaj_cod AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @codigo_unico
+  DECLARE @Viaj_Cods TABLE(Viaj_Cod NUMERIC(18,0))
+  INSERT INTO @Viaj_Cods(Viaj_Cod)
+	SELECT DISTINCT V.Viaj_Cod
+	FROM TS.Viaje AS V
+	WHERE V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @codigo_unico
 
-  DECLARE @Com_PNR NUMERIC(18,0)
-  DECLARE tscursor CURSOR FOR SELECT * FROM @Com_PNRs
+  DECLARE 
+  @Viaje NUMERIC(18,0)
+  DECLARE tscursor CURSOR FOR SELECT * FROM @Viaj_Cods
   OPEN tscursor
   FETCH NEXT FROM tscursor
-  INTO @Com_PNR
+  INTO @Viaje
   WHILE @@FETCH_STATUS = 0
 	BEGIN
-		EXEC "TS".spCancelarCompraPorRuta @HOY, @Com_PNR, 'Cancelado por modificacion de ruta'
+		EXEC "TS".spCancelarCompraPorViaje @HOY, @Viaje, 'Cancelado por modificacion de ruta'
 		FETCH NEXT FROM tscursor
-		INTO @Com_PNR
+		INTO @Viaje
 	END
   CLOSE tscursor
   DEALLOCATE tscursor
@@ -1580,6 +1636,78 @@ GO
 
 IF OBJECT_ID (N'TS.spEditarTarjeta') IS NOT NULL
    DROP PROCEDURE "TS".spEditarTarjeta
+GO
+
+IF OBJECT_ID (N'TS.spCancelacionViajes') IS NOT NULL
+  DROP PROCEDURE "TS".spCancelacionViajes
+GO
+
+CREATE PROCEDURE "TS".spCancelacionViajes
+  @HOY DATETIME,
+  @Aero NUMERIC(18, 0)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  DECLARE @Viaj_Cods TABLE(Viaj_Cod NUMERIC(18,0))
+  INSERT INTO @Viaj_Cods(Viaj_Cod)
+	SELECT DISTINCT V.Viaj_Cod
+	FROM TS.Viaje AS V
+	WHERE V.Fecha_Llegada IS NULL AND V.Aero_Num=@Aero
+
+  DECLARE @Viaje NUMERIC(18,0)
+  DECLARE tscursor CURSOR FOR SELECT * FROM @Viaj_Cods
+  OPEN tscursor
+  FETCH NEXT FROM tscursor
+  INTO @Viaje
+  WHILE @@FETCH_STATUS = 0
+	BEGIN
+		EXEC "TS".spCancelarCompraPorViaje @HOY, @Viaje, 'Cancelado por estado de la aeronave'
+		FETCH NEXT FROM tscursor
+		INTO @Viaje
+	END
+  CLOSE tscursor
+  DEALLOCATE tscursor
+  UPDATE TS.Viaje SET Viaj_Borrado=1 WHERE Aero_Num=@Aero AND Fecha_Llegada IS NULL
+  RETURN @Status
+END
+GO
+
+IF OBJECT_ID (N'TS.spCancelacionViajesDesdeHasta') IS NOT NULL
+  DROP PROCEDURE "TS".spCancelacionViajesDesdeHasta
+GO
+
+CREATE PROCEDURE "TS".spCancelacionViajesDesdeHasta
+  @HOY DATETIME,
+  @Desde DATETIME,
+  @Hasta DATETIME,
+  @Aero NUMERIC(18, 0)
+AS
+BEGIN
+  DECLARE @Status INT
+  SET @Status = 0
+  DECLARE @Viaj_Cods TABLE(Viaj_Cod NUMERIC(18,0))
+  INSERT INTO @Viaj_Cods(Viaj_Cod)
+	SELECT DISTINCT V.Viaj_Cod
+	FROM TS.Viaje AS V
+	WHERE V.Fecha_Llegada IS NULL AND V.Aero_Num=@Aero AND DATEDIFF(DAY, V.Fecha_Salida, @Desde)>0 AND DATEDIFF(DAY, V.Fecha_Salida, @Hasta)<0
+
+  DECLARE @Viaje NUMERIC(18,0)
+  DECLARE tscursor CURSOR FOR SELECT * FROM @Viaj_Cods
+  OPEN tscursor
+  FETCH NEXT FROM tscursor
+  INTO @Viaje
+  WHILE @@FETCH_STATUS = 0
+	BEGIN
+		EXEC "TS".spCancelarCompraPorViaje @HOY, @Viaje, 'Cancelado por estado de la aeronave'
+		FETCH NEXT FROM tscursor
+		INTO @Viaje
+	END
+  CLOSE tscursor
+  DEALLOCATE tscursor
+  UPDATE TS.Viaje SET Viaj_Borrado=1 WHERE Aero_Num=@Aero AND Fecha_Llegada IS NULL
+  RETURN @Status
+END
 GO
 
 CREATE PROCEDURE "TS".spEditarTarjeta
@@ -2003,26 +2131,22 @@ BEGIN
 
   DELETE FROM [GD2C2015].[TS].[Ruta_Servicio] WHERE Ruta_Cod=@ruta AND Tipo_Servicio=@servicio
 
-  DECLARE @Com_PNRs TABLE(Com_PNR NUMERIC(18,0))
-  INSERT INTO @Com_PNRs(Com_PNR)
-	SELECT DISTINCT P.Com_PNR
-	FROM TS.Pasaje AS P, TS.Viaje AS V
-	WHERE P.Viaj_cod = V.Viaj_cod AND P.Can_Cod IS NULL AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @ruta AND V.Tipo_Servicio = @servicio
-	UNION
-	SELECT DISTINCT E.Com_PNR
-	FROM TS.Encomienda AS E, TS.Viaje AS V
-	WHERE E.Viaj_cod = V.Viaj_cod AND E.Can_Cod IS NULL AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @ruta AND V.Tipo_Servicio = @servicio
+  DECLARE @Viaj_Cods TABLE(Viaj_Cod NUMERIC(18,0))
+  INSERT INTO @Viaj_Cods(Viaj_Cod)
+	SELECT DISTINCT V.Viaj_Cod
+	FROM TS.Viaje AS V
+	WHERE V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @ruta AND V.Tipo_Servicio = @servicio
 
-  DECLARE @Com_PNR NUMERIC(18,0)
-  DECLARE tscursor CURSOR FOR SELECT * FROM @Com_PNRs
+  DECLARE @Viaje NUMERIC(18,0)
+  DECLARE tscursor CURSOR FOR SELECT * FROM @Viaj_Cods
   OPEN tscursor
   FETCH NEXT FROM tscursor
-  INTO @Com_PNR
+  INTO @Viaje
   WHILE @@FETCH_STATUS = 0
 	BEGIN
-		EXEC "TS".spCancelarCompraPorRuta @HOY, @Com_PNR, 'Cancelado por borrado de ruta'
+		EXEC "TS".spCancelarCompraPorViaje @HOY, @Viaje, 'Cancelado por borrado de servicio en la ruta'
 		FETCH NEXT FROM tscursor
-		INTO @Com_PNR
+		INTO @Viaje
 	END
   CLOSE tscursor
   DEALLOCATE tscursor

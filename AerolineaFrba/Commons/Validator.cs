@@ -22,10 +22,7 @@ namespace AerolineaFrba.Commons
 
         public Boolean validateDouble(string texto){
             double output;
-            if (texto.ToCharArray().First() == (char)46 && !this.blocked) {
-                this.blocked = true;
-                return true;
-            }
+            if (texto.IndexOf('.') != -1) return false;
             return double.TryParse(texto, NumberStyles.Number, CultureInfo.InvariantCulture, out output);
         }
 
@@ -33,6 +30,14 @@ namespace AerolineaFrba.Commons
             if (!validatorFunc(e.KeyChar.ToString())) e.Handled = true;
             if (e.KeyChar == (char)8) e.Handled = false; //Permite Backspace
             if (e.KeyChar == (char)32) e.Handled = !space;
+        }
+
+        public void KeyPressBinding2(Func<string, Boolean> validatorFunc, Boolean space, KeyPressEventArgs e, string texto)
+        {
+            if (texto.IndexOf('.') != -1 && e.KeyChar == (char)46) e.Handled = true;
+            if (e.KeyChar == (char)8) e.Handled = false; //Permite Backspace
+            if (e.KeyChar == (char)32) e.Handled = !space;
+            if (!Char.IsDigit(e.KeyChar) && e.KeyChar != (char)8 && e.KeyChar != (char)46 && e.KeyChar != (char)32) e.Handled = true;
         }
     }
 }

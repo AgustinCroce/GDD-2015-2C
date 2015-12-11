@@ -34,7 +34,7 @@ namespace AerolineaFrba.Abm_Rol
         {
             if (!DGV_rol.SelectedRows[0].Cells["Nombre"].Value.ToString().Equals(""))
             {
-                this.BT_eliminar.Enabled = true;
+                if (!Convert.ToBoolean(DGV_rol.SelectedRows[0].Cells["Borrado"].Value)) this.BT_eliminar.Enabled = true;
                 this.BT_modificar.Enabled = true;
                 this.BT_Habilitar.Enabled = true;
                 this.BT_Deshabilitar.Enabled = true;
