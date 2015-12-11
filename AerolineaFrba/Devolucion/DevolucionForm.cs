@@ -53,7 +53,7 @@ namespace AerolineaFrba.Devolucion
                 {
                     string queryEncomieda = "SELECT E.Enc_Cod, C.Com_Fecha, E.Enc_Kg";
                     queryEncomieda += " FROM TS.Encomienda AS E, TS.Compra AS C, TS.Viaje AS V";
-                    queryEncomieda += " WHERE E.Com_PNR = " + pnrTextBox.Text + " AND E.Com_PNR = C.Com_PNR AND V.Viaj_Cod = E.Viaj_Cod AND V.Fecha_Llegada IS NULL";
+                    queryEncomieda += " WHERE E.Com_PNR = " + pnrTextBox.Text + " AND E.Com_PNR = C.Com_PNR AND E.Can_Cod IS NULL AND V.Viaj_Cod = E.Viaj_Cod AND V.Fecha_Llegada IS NULL";
                     encomiendaGridView.DataSource = db.GetDataAdapter(queryEncomieda).Tables[0];
                     encomiendaGridView.ClearSelection();
                     encomiendaGroupBox.Enabled = true;
@@ -76,7 +76,7 @@ namespace AerolineaFrba.Devolucion
                 {
                     string queryPasajes = "SELECT P.Pas_Cod, CM.Com_Fecha, P.Pas_Precio, C.Cli_Nombre";
                     queryPasajes += " FROM TS.Pasaje as P, TS.Cliente AS C, TS.Compra AS CM, TS.Viaje AS V";
-                    queryPasajes += " WHERE P.Cli_Cod = C.Cli_Cod AND P.Com_PNR = " + pnrTextBox.Text + " AND CM.Com_PNR = P.Com_PNR AND V.Viaj_Cod = P.Viaj_Cod AND V.Fecha_Llegada IS NULL";
+                    queryPasajes += " WHERE P.Cli_Cod = C.Cli_Cod AND P.Com_PNR = " + pnrTextBox.Text + " AND P.Can_Cod IS NULL AND CM.Com_PNR = P.Com_PNR AND V.Viaj_Cod = P.Viaj_Cod AND V.Fecha_Llegada IS NULL";
                     pasajeGridView.DataSource = db.GetDataAdapter(queryPasajes).Tables[0];
                     pasajeGridView.ClearSelection();
                     pasajesGroupBox.Enabled = true;

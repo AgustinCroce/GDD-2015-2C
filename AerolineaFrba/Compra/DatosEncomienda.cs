@@ -40,14 +40,14 @@ namespace AerolineaFrba.Compra
 
             DbComunicator db = new DbComunicator();
             SqlCommand storeProcedure = db.GetStoreProcedure("TS.fnGetPrecioEncomienda");
-            SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Int);
+            SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Decimal);
             returnParameter.Direction = ParameterDirection.ReturnValue;
             storeProcedure.Parameters.Add(new SqlParameter("@Enc_Kgs", kgs));
             storeProcedure.Parameters.Add(new SqlParameter("@Viaj_Cod", viajCod));
             storeProcedure.ExecuteNonQuery();
             db.CerrarConexion();
 
-            precioTextBox.Text = ((int) returnParameter.Value).ToString();
+            precioTextBox.Text = Convert.ToDecimal(returnParameter.Value).ToString();
         }
 
         private void InputNumField_KeyPress(object sender, KeyPressEventArgs e)
@@ -59,9 +59,16 @@ namespace AerolineaFrba.Compra
         {
             if (String.IsNullOrEmpty(kgsTextBox.Text)) {
                 MessageBox.Show("Debe ingresar un peso en la casilla Kgs.");
-            } else if (Convert.ToInt16(kgsTextBox.Text) > maxKgs){
+            }
+            else if (Convert.ToInt16(kgsTextBox.Text) <= 0) {
+                MessageBox.Show("El kg de la encomienda debe ser más de 0.");
+            }
+            else if (Convert.ToInt16(kgsTextBox.Text) > maxKgs)
+            {
                 MessageBox.Show("No puede superar más de los " + maxKgs.ToString() + " kilos");
-            } else {
+            }
+            else
+            {
                 string cliDni = "";
                 DbComunicator db = new DbComunicator();
                 db.EjecutarQuery("SELECT Cli_DNI FROM TS.Cliente WHERE Cli_Cod = " + this.cliCod);
