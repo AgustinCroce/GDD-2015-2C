@@ -880,7 +880,7 @@ BEGIN
 		DECLARE @Costo INT;
 		SET @Costo = (SELECT Prod_Valor FROM "TS".Producto WHERE Prod_Cod = @Prod_Cod)
 
-		IF(@Costo > @Saldo)
+		IF(@Costo * @Canje_Cantidad_Prod > @Saldo)
 		BEGIN
 			RETURN 0
 		END
@@ -1207,23 +1207,26 @@ AS
 BEGIN
   DECLARE @Status INT
   SET @Status = 0
-  UPDATE [GD2C2015].[TS].[Ciudad] SET Ciudad_Borrada = 1  WHERE Ciudad_Cod = @Codigo
-  DECLARE @RUTAS TABLE(Ruta_Cod NUMERIC(18,0))
-  INSERT INTO @RUTAS(Ruta_Cod)
-	  SELECT R.Ruta_Cod FROM TS.Ruta AS R, TS.Viaje AS V WHERE R.Ruta_Ciudad_Destino=@Codigo OR R.Ruta_Ciudad_Origen=@Codigo
-  DECLARE @Ruta_Cod NUMERIC(18,0)
-  DECLARE tscursorciudad CURSOR FOR SELECT * FROM @RUTAS
+  
+  DECLARE @Viaj_Cods TABLE(Viaj_Cod NUMERIC(18,0))
+  INSERT INTO @Viaj_Cods(Viaj_Cod)
+	  SELECT V.Viaj_Cod FROM TS.Ruta AS R, TS.Viaje AS V WHERE (R.Ruta_Ciudad_Destino=@Codigo OR R.Ruta_Ciudad_Origen=@Codigo) AND V.Ruta_Cod=R.Ruta_Cod AND V.Viaj_Borrado=0 AND V.Fecha_Llegada IS NULL
+  DECLARE @Viaj_Cod NUMERIC(18,0)
+  DECLARE tscursorciudad CURSOR FOR SELECT * FROM @Viaj_Cods
   OPEN tscursorciudad
   FETCH NEXT FROM tscursorciudad
-  INTO @Ruta_Cod
+  INTO @Viaj_Cod
   WHILE @@FETCH_STATUS = 0
 	BEGIN
-		EXEC "TS".spBorrarRuta @HOY, @Ruta_Cod
+		EXEC "TS".spCancelarCompraPorViaje @HOY, @Viaj_Cod, 'Cancelado por borrado de ciudad destino u origen'
 		FETCH NEXT FROM tscursorciudad
-		INTO @Ruta_Cod
+		INTO @Viaj_Cod
 	END
   CLOSE tscursorciudad
   DEALLOCATE tscursorciudad
+  UPDATE TS.Ruta SET Ruta_Borrada=1 WHERE Ruta_Ciudad_Destino=@Codigo OR Ruta_Ciudad_Origen=@Codigo
+  UPDATE [GD2C2015].[TS].[Ciudad] SET Ciudad_Borrada = 1  WHERE Ciudad_Cod = @Codigo
+  UPDATE TS.Viaje SET Viaj_Borrado = 1 FROM TS.Viaje AS V, TS.Ruta AS R WHERE Viaj_Cod = V.Viaj_Cod AND V.Ruta_Cod = R.Ruta_Cod AND (R.Ruta_Ciudad_Destino = @Codigo OR R.Ruta_Ciudad_Origen = @Codigo) AND Viaj_Borrado = 0
   RETURN @Status
 END
 GO
@@ -1476,7 +1479,7 @@ BEGIN
   INSERT INTO @Viaj_Cods(Viaj_Cod)
 	SELECT DISTINCT V.Viaj_Cod
 	FROM TS.Viaje AS V
-	WHERE V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo
+	WHERE V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo AND V.Viaj_Borrado=0
 
   DECLARE @Viaje NUMERIC(18,0)
   DECLARE tscursor CURSOR FOR SELECT * FROM @Viaj_Cods
@@ -1513,7 +1516,7 @@ BEGIN
   INSERT INTO @Viaj_Cods(Viaj_Cod)
 	SELECT DISTINCT V.Viaj_Cod
 	FROM TS.Viaje AS V
-	WHERE V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo AND V.Tipo_Servicio=@Servicio
+	WHERE V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo AND V.Tipo_Servicio=@Servicio AND V.Viaj_Borrado=0
 
   DECLARE @Viaje NUMERIC(18,0)
   DECLARE tscursor CURSOR FOR SELECT * FROM @Viaj_Cods
@@ -1573,7 +1576,7 @@ BEGIN
   INSERT INTO @Viaj_Cods(Viaj_Cod)
 	SELECT DISTINCT V.Viaj_Cod
 	FROM TS.Viaje AS V
-	WHERE V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @codigo_unico
+	WHERE V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @codigo_unico AND V.Viaj_Borrado=0
 
   DECLARE 
   @Viaje NUMERIC(18,0)

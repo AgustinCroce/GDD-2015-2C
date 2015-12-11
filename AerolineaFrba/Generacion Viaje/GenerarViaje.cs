@@ -70,6 +70,11 @@ namespace AerolineaFrba.Generacion_Viaje
             DateTime llegada = DTP_fecha_estimada_llegada.Value;
             TimeSpan ts = llegada - salida;
             int differenceInDays = ts.Days;
+            if (Convert.ToInt64(CB_aeronave.SelectedValue) == -1){
+                MessageBox.Show("Para generar un viaje tiene que seleccionar una aeronave, de no tener aeronaves en la lista agregue el servicio deseado a la ruta solicitada");
+                return;
+            }
+
             if (differenceInDays >= 0 && differenceInDays <= 1){
                 DateTime dateSalida = DTP_fecha_salida.Value.Date + DTP_hora_salida.Value.TimeOfDay;
                 DateTime dateLlegada = DTP_hora_estimada_llegada.Value.Date + DTP_hora_estimada_llegada.Value.TimeOfDay;

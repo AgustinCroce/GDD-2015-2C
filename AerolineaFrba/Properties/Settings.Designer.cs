@@ -52,7 +52,7 @@ namespace AerolineaFrba.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2014-12-04")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2017-02-01")]
         public global::System.DateTime FechaSistema {
             get {
                 return ((global::System.DateTime)(this["FechaSistema"]));

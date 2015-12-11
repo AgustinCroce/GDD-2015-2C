@@ -36,7 +36,7 @@ namespace AerolineaFrba.Compra
             string queryVuelos = "SELECT Viaj_Cod Codigo, Fecha_Salida, C2.Ciudad_Nombre Salida, C1.Ciudad_Nombre Destino ,Fecha_Llegada_Estimada Fecha_Llegada, Tipo_Servicio Servicio, TS.fnKGsDisponibles(Viaj_Cod) Kgs_Libres, TS.fnButacasDisponibles(Viaj_Cod) Butacas_Libres";
             queryVuelos += " FROM TS.Ruta as R, TS.Viaje as V, TS.Aeronave as A, TS.Ciudad as C1, TS.Ciudad as C2";
             queryVuelos += " WHERE R.Ruta_Cod = V.Ruta_Cod AND V.Ruta_Cod = R.Ruta_Cod AND C1.Ciudad_Cod = R.Ruta_Ciudad_Destino AND C2.Ciudad_Cod = R.Ruta_Ciudad_Origen";
-            queryVuelos += " AND A.Aero_Num = V.Aero_Num AND A.Aero_Borrado = 0 AND A.Aero_Baja_Vida_Util = 0 AND A.Aero_Baja_Fuera_De_Servicio = 0";
+            queryVuelos += " AND V.Fecha_Llegada IS NULL AND V.Viaj_Borrado = 0 AND A.Aero_Num = V.Aero_Num AND A.Aero_Borrado = 0 AND A.Aero_Baja_Vida_Util = 0 AND A.Aero_Baja_Fuera_De_Servicio = 0";
             queryVuelos += " AND C2.Ciudad_Cod = ' " + origenComboBox.SelectedValue +"' AND C1.Ciudad_Cod = ' " + destinoComboBox.SelectedValue + "' AND convert(date, V.Fecha_Salida) = convert(date, '" + despegueTimePicker.Value +"')";
             vuelosGridView.DataSource = db.GetDataAdapter(queryVuelos).Tables[0];
         }

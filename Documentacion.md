@@ -4,12 +4,15 @@
 
 - Se ha utilizado de nombre de schema TS que son las siglas del grupo.
 - Se ha mantenido a aquellos clientes cuyo DNI se encuetra repetido pero no se permitirá el ingreso de nuevos clientes con mismo DNI.
-- Para cada cliente se ha generado un usuario con rol cliente. El nombre de usuario esta formado por el codigo generado en nuestro esquema y su nombre sin espacios y contraseña password.
 - Para cada Encomienda y Pasaje realizado se ha generado una compra que lo representa todas con un solo item (el pasaje o la encomienda) y todas en efectivo.
 - Al estar todos los vuelos de la tabla maestra con fecha de llegada ya establecida todas las millas de dichos viajes ya se encuentran asignadas a sus respectivos clientes aunque sean de fechas fúturas.
-- A todos los servicios se les ha agregado como porcentaje para el precio de la compra un 40%. 
+- A todos los servicios se les ha agregado como porcentaje para el precio de la compra un 40%.
+- Se utiliza las filas de la tabla clientes para representar a los tenedores de las encomiendas y pasajes.
 
 # Solucion
+
+## Cancelación de Viajes por borrado de Ruta, Ciudad y Aeronave
+En el caso especial de que haya un número elevado de pasajes para dicha Ruta, Ciudad o Aeronave el proceso demora entre 2 y 3 minutos.
 
 ## Archivo de configuración
 En el archivo de configuración en el parametro Modo con "Kiosko" o "Admin" segun el modo que se quiera probar.
@@ -216,6 +219,7 @@ Permite el ingreso al sistema mediante el username y la contraseña en sha256.
 Verifica el estado del usuario, si la contreseña es incorrecta avisa al usuario y agrega el intento del login al usaurio en la base datos y valida que el estado es en correcto (segun la cantidad de intentos fallidos).
 Si la contraseña es correcta logea al usuario si su estado lo permite, en caso de no permitirlo indica al usuario que se contacte con un administrados para que este pude habilitarlo que su cuenta intento se ingresada insactifactoriomente mas de tres veces.
 En el caso de login correcto y estado valido abre la ventana de seleccion de rol.
+En el modo Kiosko se saltea el Login y se inicia la solución con la selección de funcionalidad.
 
 ### Seleccion de Rol
 Permite al usuario logeado seleccion el rol a utilizar de sus roles actuales.

@@ -48,7 +48,12 @@ namespace AerolineaFrba.Canje_Millas
             }
             else if (String.IsNullOrEmpty(quantityTextBox.Text)) {
                 MessageBox.Show("Debe ingresar una cantidad para poder realizar el canje");
-            } else {
+            }
+            else if (Convert.ToInt32(quantityTextBox.Text) <= 0) {
+                MessageBox.Show("La cantidad ingresada debe ser mayor a 0.");
+            }
+            else
+            {
                 DbComunicator dbStoreProcedure = new DbComunicator();
                 SqlCommand storeProcedure = dbStoreProcedure.GetStoreProcedure("TS.spRegistrarCanje");
                 SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Int);
@@ -70,7 +75,8 @@ namespace AerolineaFrba.Canje_Millas
                     MessageBox.Show("El cliente no tiene saldo suficiente");
                 }
 
-                if ((int)returnParameter.Value > 0) {
+                if ((int)returnParameter.Value > 0)
+                {
                     MessageBox.Show("Canje Realizado");
                 }
             }

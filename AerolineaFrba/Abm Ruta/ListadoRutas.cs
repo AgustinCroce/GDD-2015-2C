@@ -82,6 +82,7 @@ namespace AerolineaFrba.Abm_Ruta
             if (dialogResult == DialogResult.Yes)
             {
                 SqlCommand spBorrarRuta = this.db.GetStoreProcedure("TS.spBorrarRuta");
+                spBorrarRuta.CommandTimeout = 0;
                 spBorrarRuta.Parameters.Add(new SqlParameter("@HOY", Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema)));
                 spBorrarRuta.Parameters.Add(new SqlParameter("@Codigo", Convert.ToInt64(DGV_rutas.SelectedRows[0].Cells["Codigo Unico"].Value)));
                 spBorrarRuta.ExecuteNonQuery();

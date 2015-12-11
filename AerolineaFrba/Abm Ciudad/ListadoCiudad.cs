@@ -76,6 +76,7 @@ namespace AerolineaFrba.Abm_Ciudad
             if (dialogResult == DialogResult.Yes)
             {
                 SqlCommand spBorrarCiudad = this.db.GetStoreProcedure("TS.spBorrarCiudad");
+                spBorrarCiudad.CommandTimeout = 0;
                 spBorrarCiudad.Parameters.Add(new SqlParameter("@Codigo", Convert.ToInt64(DGV_ciudad.SelectedRows[0].Cells["Codigo"].Value)));
                 spBorrarCiudad.Parameters.Add(new SqlParameter("@HOY", Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema)));
                 spBorrarCiudad.ExecuteNonQuery();

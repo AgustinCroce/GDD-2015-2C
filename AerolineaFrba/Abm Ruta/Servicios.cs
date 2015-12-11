@@ -42,6 +42,7 @@ namespace AerolineaFrba.Abm_Ruta
             }
             if (execsp){
                 SqlCommand spRutaServicio = this.db.GetStoreProcedure(storedProcedure);
+                spRutaServicio.CommandTimeout = 0;
                 spRutaServicio.Parameters.Add(new SqlParameter("@HOY", Convert.ToDateTime(AerolineaFrba.Properties.Settings.Default.FechaSistema)));
                 spRutaServicio.Parameters.Add(new SqlParameter("@ruta", Convert.ToInt64(this.rutacod)));
                 spRutaServicio.Parameters.Add(new SqlParameter("@servicio", CB_servicios.SelectedValue));

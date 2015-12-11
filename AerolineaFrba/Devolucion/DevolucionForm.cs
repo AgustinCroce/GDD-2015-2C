@@ -158,9 +158,9 @@ namespace AerolineaFrba.Devolucion
             pnrTextBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
             AutoCompleteStringCollection col = new AutoCompleteStringCollection();
             string queryCompras = "SELECT P.Com_PNR Com_PNR FROM TS.Pasaje as P, TS.Viaje as V";
-            queryCompras += " WHERE P.Can_Cod IS NULL AND P.Viaj_Cod = V.Viaj_Cod AND V.Fecha_Llegada IS NULL";
+            queryCompras += " WHERE P.Can_Cod IS NULL AND P.Viaj_Cod = V.Viaj_Cod AND V.Fecha_Llegada IS NULL AND V.Viaj_Borrado = 0";
             queryCompras += " UNION SELECT E.Com_PNR FROM TS.Encomienda as E, TS.Viaje as V";
-            queryCompras += " WHERE E.Can_Cod IS NULL AND E.Viaj_Cod = V.Viaj_Cod AND V.Fecha_Llegada IS NULL";
+            queryCompras += " WHERE E.Can_Cod IS NULL AND E.Viaj_Cod = V.Viaj_Cod AND V.Fecha_Llegada IS NULL AND V.Viaj_Borrado = 0";
             DbComunicator db = new DbComunicator();
             db.CargarAutocomplete(col, queryCompras, "Com_PNR");
             pnrTextBox.AutoCompleteCustomSource = col;
