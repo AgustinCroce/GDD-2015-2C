@@ -102,7 +102,7 @@ namespace AerolineaFrba.Compra
                 foreach (DataGridViewRow row in pasajeGridView.Rows)
                 {
                     pasajes.Rows.Add(row.Cells[0].Value, row.Cells[4].Value);
-                    this.precio += Convert.ToInt32(row.Cells[5].Value);
+                    this.precio += Convert.ToDouble(row.Cells[5].Value);
                 }
 
                 if (encomiendaGridView.RowCount >= 1)

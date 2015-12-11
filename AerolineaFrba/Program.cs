@@ -17,7 +17,16 @@ namespace AerolineaFrba
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new AerolineaFrba.Login());
+
+            if(Properties.Settings.Default.Modo == "Admin"){
+                Application.Run(new AerolineaFrba.Login());
+            }
+
+            if (Properties.Settings.Default.Modo == "Kiosko")
+            {
+                Application.Run(new AerolineaFrba.SeleccionFuncionalidad("Cliente"));
+            }
+            
         }
     }
 }

@@ -31,13 +31,13 @@ namespace AerolineaFrba.Compra
 
             DbComunicator db = new DbComunicator();
             SqlCommand storeProcedure = db.GetStoreProcedure("TS.fnGetPrecioPasaje");
-            SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Int);
+            SqlParameter returnParameter = storeProcedure.Parameters.Add("RetVal", SqlDbType.Decimal);
             returnParameter.Direction = ParameterDirection.ReturnValue;
             storeProcedure.Parameters.Add(new SqlParameter("@Viaj_Cod", viajCod));
             storeProcedure.ExecuteNonQuery();
             db.CerrarConexion();
 
-            precioTextBox.Text = ((int)returnParameter.Value).ToString();
+            precioTextBox.Text = Convert.ToDecimal(returnParameter.Value).ToString();
 
             foreach (var butaca in butacasReservadas)
             {

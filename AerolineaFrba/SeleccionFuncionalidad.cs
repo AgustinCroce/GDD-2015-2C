@@ -13,14 +13,13 @@ namespace AerolineaFrba
 {
     public partial class SeleccionFuncionalidad : Form
     {
-        string rol, username;
+        string rol;
         DbComunicator db;
 
-        public SeleccionFuncionalidad(string rolNombre, string user)
+        public SeleccionFuncionalidad(string rolNombre)
         {
             InitializeComponent();
             this.rol = rolNombre;
-            this.username = user;
             this.db = new DbComunicator();
         }
 
@@ -50,7 +49,7 @@ namespace AerolineaFrba
             if (CB_funcionalidades.SelectedValue.ToString() == "Registro de Llegada Destino") re = new Registro_Llegada_Destino.Llegada();
             if (CB_funcionalidades.SelectedValue.ToString() == "Compra de Pasaje o Encomienda") re = new Compra.SeleccionVueloForm();
             if (CB_funcionalidades.SelectedValue.ToString() == "Cancelacion de Pasaje o Encomienda") re = new Devolucion.DevolucionForm();
-            if (CB_funcionalidades.SelectedValue.ToString() == "Consulta de Millas de Pasajero Frecuente") re = new Consulta_Millas.ConsultaForm(username);
+            if (CB_funcionalidades.SelectedValue.ToString() == "Consulta de Millas de Pasajero Frecuente") re = new Consulta_Millas.ConsultaForm();
             if (CB_funcionalidades.SelectedValue.ToString() == "Canje de Millas de Pasajero Frecuente") re = new Canje_Millas.CanjeForm();
             if (CB_funcionalidades.SelectedValue.ToString() == "Listado Estadistico") re = new Listado_Estadistico.Listado();
             if (re != null) re.ShowDialog();

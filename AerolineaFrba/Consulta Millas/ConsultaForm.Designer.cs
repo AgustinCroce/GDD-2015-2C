@@ -35,7 +35,7 @@
             this.millasGridView = new System.Windows.Forms.DataGridView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.comprasGridView = new System.Windows.Forms.DataGridView();
-            this.nombreLabel = new System.Windows.Forms.Label();
+            this.dniComboBox = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.millasGridView)).BeginInit();
@@ -45,7 +45,7 @@
             // 
             // searchButton
             // 
-            this.searchButton.Location = new System.Drawing.Point(367, 8);
+            this.searchButton.Location = new System.Drawing.Point(367, 10);
             this.searchButton.Name = "searchButton";
             this.searchButton.Size = new System.Drawing.Size(75, 23);
             this.searchButton.TabIndex = 2;
@@ -109,20 +109,20 @@
             this.comprasGridView.Size = new System.Drawing.Size(406, 251);
             this.comprasGridView.TabIndex = 0;
             // 
-            // nombreLabel
+            // dniComboBox
             // 
-            this.nombreLabel.AutoSize = true;
-            this.nombreLabel.Location = new System.Drawing.Point(23, 13);
-            this.nombreLabel.Name = "nombreLabel";
-            this.nombreLabel.Size = new System.Drawing.Size(0, 13);
-            this.nombreLabel.TabIndex = 1;
+            this.dniComboBox.FormattingEnabled = true;
+            this.dniComboBox.Location = new System.Drawing.Point(16, 12);
+            this.dniComboBox.Name = "dniComboBox";
+            this.dniComboBox.Size = new System.Drawing.Size(271, 21);
+            this.dniComboBox.TabIndex = 1;
             // 
             // ConsultaForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(464, 388);
-            this.Controls.Add(this.nombreLabel);
+            this.Controls.Add(this.dniComboBox);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.saldoLabel);
             this.Controls.Add(this.searchButton);
@@ -147,6 +147,6 @@
         private System.Windows.Forms.DataGridView millasGridView;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.DataGridView comprasGridView;
-        private System.Windows.Forms.Label nombreLabel;
+        private System.Windows.Forms.ComboBox dniComboBox;
     }
 }

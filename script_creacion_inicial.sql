@@ -784,7 +784,7 @@ BEGIN
 
 		SET @Millas= ISNULL((SELECT SUM(Mil_Cantidad)
 						FROM "TS".Milla
-						WHERE Cli_Cod = @Cli_Cod AND DATEDIFF(DAY, Mil_Fecha, @Hoy) <= 365
+						WHERE Cli_Cod = @Cli_Cod AND DATEDIFF(DAY, Mil_Fecha, @Hoy) <= 365 AND Mil_Valida = 1
 						GROUP BY Cli_Cod),0);
 		SET @Canjes = ISNULL((SELECT ISNULL(SUM(Canje_Total),0)
 						FROM "TS".Canje
@@ -1602,7 +1602,7 @@ IF OBJECT_ID (N'TS.fnGetPrecioPasaje') IS NOT NULL
 GO
 
 CREATE FUNCTION "TS".fnGetPrecioPasaje(@Viaj_Cod NUMERIC(18,0))
-RETURNS INT
+RETURNS NUMERIC(8,2)
 AS
 BEGIN
 	RETURN (SELECT R.Ruta_Precio_Base_Pasaje * (1 + T.TipoSer_Porcentaje)
@@ -1616,7 +1616,7 @@ IF OBJECT_ID (N'TS.fnGetPrecioEncomienda') IS NOT NULL
 GO
 
 CREATE FUNCTION "TS".fnGetPrecioEncomienda(@Viaj_Cod NUMERIC(18,0), @Enc_Kgs NUMERIC(18,0))
-RETURNS INT
+RETURNS NUMERIC(8,2)
 AS
 BEGIN
 	RETURN (SELECT R.Ruta_Precio_Base_Kg * @Enc_Kgs * (1 + T.TipoSer_Porcentaje)
@@ -1730,18 +1730,31 @@ BEGIN
 	IF @Enc_Cod > 0
 	BEGIN
 		UPDATE "TS".Encomienda
-		SET Com_PNR = NULL, Can_Cod = (SELECT TOP 1 Can_Cod FROM @Can_Cod)
+		SET Can_Cod = (SELECT TOP 1 Can_Cod FROM @Can_Cod)
 	END
 
 	UPDATE "TS".Pasaje
-	SET Com_PNR = NULL, Can_Cod = (SELECT TOP 1 Can_Cod FROM @Can_Cod)
+	SET Can_Cod = (SELECT TOP 1 Can_Cod FROM @Can_Cod)
 	WHERE Pas_Cod IN (SELECT L.Pas_Cod FROM @ListaPasajes as L)
 
 	RETURN 0
 END
 GO
 
+IF OBJECT_ID (N'TS.fnButacasTotalesViaje') IS NOT NULL
+   DROP FUNCTION "TS".fnButacasTotalesViaje
+GO
 
+CREATE FUNCTION "TS".fnButacasTotalesViaje(
+  @Viaj_Cod NUMERIC(18,0))
+RETURNS INT
+AS
+BEGIN
+	DECLARE @Butacas INT;
+	SET @Butacas = (SELECT COUNT(*) FROM TS.Butaca as B, TS.Viaje as V WHERE V.Viaj_Cod=@Viaj_Cod AND B.Aero_Num = V.Aero_Num)
+	RETURN (@Butacas)
+END
+GO
 
 /* o Top 5 de los destinos con más pasajes comprados. */
 IF OBJECT_ID (N'TS.vsDestinoConMasPasajesComprados') IS NOT NULL
@@ -1757,16 +1770,27 @@ CREATE VIEW "TS".vsDestinoConMasPasajesComprados
 GO
 
 /* o Top 5 de los destinos con aeronaves más vacías.*/
+IF OBJECT_ID (N'TS.vsDisponibilidadViajes') IS NOT NULL
+   DROP VIEW "TS".vsDisponibilidadViajes
+GO
+
+CREATE VIEW "TS".vsDisponibilidadViajes
+   AS
+	SELECT V.Viaj_Cod, V.Fecha_Salida, TS.fnButacasTotalesViaje(V.Viaj_Cod) - COUNT(*) Butacas_Libres
+	FROM TS.Viaje as V, TS.Pasaje as P
+	WHERE P.Viaj_Cod = V.Viaj_Cod AND P.Can_Cod IS NULL
+	GROUP BY V.Viaj_Cod, V.Fecha_Salida
+GO
+
 IF OBJECT_ID (N'TS.vsDestinoAernovesMasVacias') IS NOT NULL
    DROP VIEW "TS".vsDestinoAernovesMasVacias
 GO
 
 CREATE VIEW "TS".vsDestinoAernovesMasVacias
    AS
-	SELECT C.Ciudad_Nombre Nombre, SUM(TS.fnButacasDisponibles(AE.Aero_Num)) Cantidad, YEAR(V.Fecha_Salida) as Anio, MONTH(V.Fecha_Salida) as Mes
-	FROM TS.Pasaje AS P, TS.Viaje AS V, TS.Ruta AS R, TS.Ciudad AS C, TS.Aeronave AS AE
-	WHERE P.Viaj_Cod=V.Viaj_Cod AND V.Ruta_Cod=R.Ruta_Cod AND R.Ruta_Ciudad_Destino=C.Ciudad_Cod AND AE.Aero_Num=V.Aero_Num AND P.Can_Cod IS NULL
-	GROUP BY C.Ciudad_Nombre, YEAR(V.Fecha_Salida), MONTH(V.Fecha_Salida)
+	SELECT C.Ciudad_Nombre Nombre , DV.Butacas_Libres Cantidad, YEAR(DV.Fecha_Salida) as Anio, MONTH(DV.Fecha_Salida) as Mes
+	FROM TS.vsDisponibilidadViajes as DV, TS.Ruta AS R, TS.Ciudad AS C, TS.Viaje AS V
+	WHERE DV.Viaj_Cod = V.Viaj_Cod AND V.Ruta_Cod = R.Ruta_Cod AND C.Ciudad_Cod = R.Ruta_Ciudad_Destino
 GO
 
 /* o Top 5 de los Clientes con más puntos acumulados a la fecha*/
@@ -2037,20 +2061,20 @@ GO
 CREATE INDEX ixCliente ON "TS".Cliente (Cli_DNI)
 GO
 
-IF OBJECT_ID (N'TS.trCompraPasaje') IS NOT NULL
-   DROP TRIGGER "TS".trCompraPasaje
+IF OBJECT_ID (N'TS.trInsertEncomienda') IS NOT NULL
+   DROP TRIGGER "TS".trInsertEncomienda
 GO
 
-IF OBJECT_ID (N'TS.trCancelacionEncomienda') IS NOT NULL
-   DROP TRIGGER "TS".CancelacionEncomienda
+IF OBJECT_ID (N'TS.trInsertPasaje') IS NOT NULL
+   DROP TRIGGER "TS".trInsertPasaje
 GO
 
-IF OBJECT_ID (N'TS.trCancelacionPasaje') IS NOT NULL
-   DROP TRIGGER "TS".CancelacionPasaje
+IF OBJECT_ID (N'TS.trUpdatePasaje') IS NOT NULL
+   DROP TRIGGER "TS".trUpdatePasaje
 GO
 
-IF OBJECT_ID (N'TS.trCompraEncomienda') IS NOT NULL
-   DROP TRIGGER "TS".trCompraEncomienda
+IF OBJECT_ID (N'TS.trUpdateEncomienda') IS NOT NULL
+   DROP TRIGGER "TS".trUpdateEncomienda
 GO
 /******************************* MIGRACION *********************************************/
 
@@ -2273,6 +2297,13 @@ SELECT P.Cli_Cod, P.Pas_Cod,C.Com_Fecha, P.Pas_Precio / 10, 1
 FROM "TS".Pasaje as P , "TS".Compra as C
 WHERE P.Com_PNR = C.Com_PNR
 
+UPDATE TS.Ciudad
+SET Ciudad_Nombre = rtrim(ltrim(case when Ciudad_Nombre not like '[a-zA-Z0-9]%'
+                                then stuff(Ciudad_Nombre, 1, 1, '')
+                                else Ciudad_Nombre
+                           end)
+                    );
+
 IF OBJECT_ID (N'TS.trInsertPasaje') IS NOT NULL
    DROP TRIGGER "TS".trInsertPasaje
 GO
@@ -2291,10 +2322,6 @@ BEGIN
 END
 GO
 
-IF OBJECT_ID (N'TS.trUpdatePasaje') IS NOT NULL
-   DROP TRIGGER "TS".trUpdatePasaje
-GO
-
 CREATE TRIGGER "TS".trUpdatePasaje ON "TS".Pasaje AFTER UPDATE 
 AS
 BEGIN
@@ -2305,11 +2332,6 @@ BEGIN
 		WHERE M.Pas_Cod IS NOT NULL AND Mil_Cod = M.Mil_Cod AND M.Pas_Cod = I.Pas_Cod AND I.Can_Cod IS NOT NULL
 	END
 END
-GO
-
-
-IF OBJECT_ID (N'TS.trInsertEncomienda') IS NOT NULL
-   DROP TRIGGER "TS".trInsertEncomienda
 GO
 
 CREATE TRIGGER "TS".trInsertEncomienda ON "TS".Encomienda AFTER INSERT 
@@ -2323,10 +2345,6 @@ BEGIN
 		WHERE  I.Com_PNR = C.Com_PNR
 	END
 END
-GO
-
-IF OBJECT_ID (N'TS.trUpdateEncomienda') IS NOT NULL
-   DROP TRIGGER "TS".trUpdateEncomienda
 GO
 
 CREATE TRIGGER "TS".trUpdateEncomienda ON "TS".Encomienda AFTER UPDATE 
