@@ -268,6 +268,7 @@ CREATE TABLE "TS".Viaje
   Fecha_Llegada_Estimada DATETIME NOT NULL,
   Aero_Num NUMERIC(18,0) REFERENCES "TS".Aeronave(Aero_Num),
   Ruta_Cod NUMERIC(18,0) REFERENCES "TS".Ruta(Ruta_Cod),
+  Viaj_Borrado BIT NOT NULL DEFAULT 0,
   Tipo_Servicio NVARCHAR(255) NOT NULL REFERENCES "TS".Tipo_Servicio(TipoSer_Nombre)
 );
 
@@ -1180,6 +1181,15 @@ AS
 BEGIN
   DECLARE @Status INT
   SET @Status = 0
+  
+  DECLARE @cantidad INT
+  SET @cantidad = (SELECT COUNT(*) FROM TS.Ciudad WHERE Ciudad_Nombre=@nombre)
+
+  IF @cantidad>0
+  BEGIN
+	RETURN -1
+  END
+  
   INSERT INTO "TS".Ciudad(Ciudad_Nombre)
   VALUES (@nombre)
   RETURN @Status
@@ -1191,12 +1201,37 @@ IF OBJECT_ID (N'TS.spBorrarCiudad') IS NOT NULL
 GO
 
 CREATE PROCEDURE "TS".spBorrarCiudad
+  @HOY DATETIME,
   @Codigo NUMERIC(18, 0)
 AS
 BEGIN
   DECLARE @Status INT
   SET @Status = 0
   UPDATE [GD2C2015].[TS].[Ciudad] SET Ciudad_Borrada = 1  WHERE Ciudad_Cod = @Codigo
+  DECLARE @Com_PNRs TABLE(Com_PNR NUMERIC(18,0))
+  INSERT INTO @Com_PNRs(Com_PNR)
+	SELECT DISTINCT P.Com_PNR
+	FROM TS.Pasaje AS P, TS.Viaje AS V
+	WHERE P.Viaj_cod = V.Viaj_cod AND P.Can_Cod IS NULL AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo
+	UNION
+	SELECT DISTINCT E.Com_PNR
+	FROM TS.Encomienda AS E, TS.Viaje AS V
+	WHERE E.Viaj_cod = V.Viaj_cod AND E.Can_Cod IS NULL AND V.Fecha_Llegada IS NULL AND V.Ruta_Cod = @Codigo
+
+  DECLARE @Com_PNR NUMERIC(18,0)
+  DECLARE tscursor CURSOR FOR SELECT * FROM @Com_PNRs
+  OPEN tscursor
+  FETCH NEXT FROM tscursor
+  INTO @Com_PNR
+  WHILE @@FETCH_STATUS = 0
+	BEGIN
+		EXEC "TS".spCancelarCompraPorRuta @HOY, @Com_PNR, 'Cancelado por borrado de ruta'
+		FETCH NEXT FROM tscursor
+		INTO @Com_PNR
+	END
+  CLOSE tscursor
+  DEALLOCATE tscursor
+  UPDATE TS.Viaje SET Viaj_Borrado=1 WHERE Ruta_Cod=@Codigo
   RETURN @Status
 END
 GO
@@ -1212,6 +1247,14 @@ AS
 BEGIN
   DECLARE @Status INT
   SET @Status = 0
+    DECLARE @cantidad INT
+  SET @cantidad = (SELECT COUNT(*) FROM TS.Ciudad WHERE Ciudad_Nombre=@nombre AND Ciudad_Cod!=@codigo)
+
+  IF @cantidad>0
+  BEGIN
+	RETURN -1
+  END
+
   UPDATE [GD2C2015].[TS].[Ciudad] SET Ciudad_Nombre = @nombre  WHERE Ciudad_Cod = @codigo
   RETURN @Status
 END
@@ -1228,6 +1271,15 @@ AS
 BEGIN
   DECLARE @Status INT
   SET @Status = 0
+
+  DECLARE @cantidad INT
+  SET @cantidad = (SELECT COUNT(*) FROM TS.Rol WHERE Rol_Nombre=@nombre)
+
+  IF @cantidad>0
+  BEGIN
+	RETURN -1
+  END
+
   INSERT INTO "TS".Rol(Rol_Nombre, Rol_Estado)
   VALUES (@nombre, @estado)
   RETURN @Status
@@ -1342,7 +1394,7 @@ BEGIN
   SET @Status = 0
   IF (@estado = 'Habilitado')
 	EXEC "TS".spHabilitarRol @nombre
-  ELSE IF (@Status = 'Deshabilitado')
+  ELSE IF (@estado = 'Deshabilitado')
 	EXEC "TS".spDeshabilitarRol @nombre
   ELSE
 	SET @Status = -1
@@ -1428,6 +1480,8 @@ BEGIN
 	END
   CLOSE tscursor
   DEALLOCATE tscursor
+  UPDATE TS.Viaje SET Viaj_Borrado=1 WHERE Ruta_Cod=@Codigo
+
   RETURN @Status
 END
 GO
